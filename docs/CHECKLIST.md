@@ -71,5 +71,5 @@ Per spec §0 non-goals: **no real `$STANDARD` or charter NFTs get deployed, ever
 - [x] `pnpm --filter web run build` green
 - [x] Both Playwright e2e flows passing against a running server
 - [x] Manual visual pass on `/`, `/lab`, `/bank/c-0042` (screenshots)
-- [x] `pnpm --filter web run e2e` wired into a CI check (`.github/workflows/ci.yml`: install → engine test → web build → Playwright install → e2e, on push to `main` and on PRs)
+- [x] `pnpm --filter web run e2e` wired into a CI check (`.github/workflows/ci.yml`: `test` job — install → engine test → web build → Playwright install → e2e; `contracts` job — forge test + forge fmt --check; on push to `main` and on PRs). Confirmed actually green on GitHub itself for both jobs, not just locally — checked via the Actions API after each push.
 - [x] Final disclaimer/footer text spot-check across all routes — lives once in `apps/web/app/layout.tsx`'s shared footer, so every route (`/`, `/lab`, `/bank/:id`, `/scenarios`, `/law`) renders it identically; text matches spec verbatim
