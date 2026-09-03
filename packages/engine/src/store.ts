@@ -75,6 +75,7 @@ export function seedGenesis(world0: World, count: number, ownerKeyPrefix = "owne
     const id = nextGenesisCharterId(world);
     world.charters[id] = createCharter(world, id, `${ownerKeyPrefix}-${id}`, true);
   }
+  world.lastError = undefined;
   world.invariantsOk = invariantCheckImpl(world).ok;
   return world;
 }
@@ -93,6 +94,7 @@ export function tick(world0: World, dtSec: number): World {
     advancePolicy(world);
     steps += 1;
   }
+  world.lastError = undefined;
   world.invariantsOk = invariantCheckImpl(world).ok;
   return world;
 }
@@ -152,6 +154,7 @@ export function retireBranch(world0: World, charterId: string, branchId: number)
 export function checkIn(world0: World, charterId: string): World {
   const world = clone(world0);
   dormancyCheckIn(world, charterId);
+  world.lastError = undefined;
   world.invariantsOk = invariantCheckImpl(world).ok;
   return world;
 }
@@ -167,6 +170,7 @@ export function reportDormant(world0: World, charterId: string, reporterKey: str
 export function closeEpochIfDue(world0: World): World {
   const world = clone(world0);
   advancePolicy(world);
+  world.lastError = undefined;
   world.invariantsOk = invariantCheckImpl(world).ok;
   return world;
 }

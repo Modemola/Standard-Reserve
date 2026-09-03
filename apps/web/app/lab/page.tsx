@@ -10,6 +10,7 @@ import {
   createWorld,
   invariantCheck,
   quoteCharterPrice,
+  reportDormant,
   seedGenesis,
   spotPriceEthPerStd,
   supplyCirc,
@@ -43,6 +44,8 @@ function LabInner() {
   const [showConstants, setShowConstants] = useState(false);
   const [seedCount, setSeedCount] = useState("10");
   const [charterOwnerKey, setCharterOwnerKey] = useState("");
+  const [dormantCharterId, setDormantCharterId] = useState("c-0042");
+  const [dormantReporterKey, setDormantReporterKey] = useState("reporter-1");
   const [dailyCap, setDailyCap] = useState(String(world.params.charterDailyCap));
   const [scenarioId, setScenarioId] = useState<string>(SCENARIO_IDS[0]);
 
@@ -257,6 +260,31 @@ function LabInner() {
               className="flex-1 rounded border border-white/15 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-40"
             >
               buy charter ({fmtEth(quoteCharterPrice(world))} ETH)
+            </button>
+          </div>
+
+          <div className="flex gap-2">
+            <input
+              value={dormantCharterId}
+              onChange={(e) => setDormantCharterId(e.target.value)}
+              aria-label="Charter id to report dormant"
+              placeholder="charter id"
+              className="w-20 rounded border border-white/15 bg-transparent px-2 py-1 text-sm"
+            />
+            <input
+              value={dormantReporterKey}
+              onChange={(e) => setDormantReporterKey(e.target.value)}
+              aria-label="Reporter key"
+              placeholder="reporter"
+              className="w-20 rounded border border-white/15 bg-transparent px-2 py-1 text-sm"
+            />
+            <button
+              onClick={() =>
+                store.apply((w) => reportDormant(w, dormantCharterId, dormantReporterKey || "reporter"))
+              }
+              className="flex-1 rounded border border-white/15 py-1 text-xs"
+            >
+              report dormant
             </button>
           </div>
 

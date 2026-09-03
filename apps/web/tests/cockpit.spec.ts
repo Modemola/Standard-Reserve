@@ -109,3 +109,23 @@ test("lab: buy charter opens a charter auction slot, only when charterDailyCap i
   await page.waitForURL("**/bank/**");
   await expect(page.getByText("1/5 sold")).toBeVisible();
 });
+
+test("lab: report dormant rejects an active charter, succeeds once truly dormant", async ({ page }) => {
+  await page.goto("/lab");
+
+  const reportBtn = page.getByRole("button", { name: "report dormant" });
+  await expect(page.getByLabel("Charter id to report dormant")).toHaveValue("c-0042");
+
+  // c-0042 was just interacted with by the demo seed -> not yet dormant.
+  await reportBtn.click();
+  await expect(page.getByTestId("error-toast")).toHaveText(
+    "This charter hasn't been idle long enough to report yet.",
+  );
+
+  // dormancySeconds is 30 days; 31 daily ticks clears it.
+  const dayBtn = page.getByRole("button", { name: "+1 day" });
+  for (let i = 0; i < 31; i++) await dayBtn.click();
+
+  await reportBtn.click();
+  await expect(page.getByTestId("error-toast")).toHaveCount(0);
+});
