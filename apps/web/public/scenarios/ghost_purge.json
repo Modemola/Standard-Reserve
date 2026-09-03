@@ -1,0 +1,15 @@
+{
+  "id": "ghost_purge",
+  "title": "Ghost purge",
+  "teach": "Charters that never check in cross dormancySeconds; anyone can report them, capping the reporter bounty and burning the rest.",
+  "paramsOverlay": {},
+  "actions": [
+    { "t": 0, "op": "seedGenesis", "count": 30 },
+    { "t": 0, "op": "tick", "dt": 2592000 },
+    { "t": 2592000, "op": "checkIn", "charterId": "c-0001" },
+    { "t": 2592000, "op": "tick", "dt": 3600 },
+    { "t": 2595600, "op": "reportDormant", "charterId": "c-0002", "reporterKey": "ghost-reporter" },
+    { "t": 2595600, "op": "reportDormant", "charterId": "c-0015", "reporterKey": "ghost-reporter" },
+    { "t": 2595600, "op": "reportDormant", "charterId": "c-0001", "reporterKey": "ghost-reporter" }
+  ]
+}

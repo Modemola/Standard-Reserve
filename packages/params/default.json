@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "whitepaper": "v0.1",
+    "sourceNotes": {
+      "mRule": "unpublished_placeholder",
+      "baseDaily": "unpublished_placeholder",
+      "epochSeconds": "unpublished_placeholder",
+      "feeCurve": "unpublished_placeholder",
+      "licenseMinFloorStd": "implementation_default, WP leaves min floor unspecified"
+    }
+  },
+  "epochSeconds": 86400,
+  "baseDailyStd": "100000000000000000000000",
+  "mMin": 0.2,
+  "mMax": 1.25,
+  "mLaunch": 1.0,
+  "cutStep": 0.25,
+  "raiseStep": 0.05,
+  "poolFeeBps": 30,
+  "genesisEth": "100000000000000000000",
+  "ethPerGoldGram": "200000000000000000",
+  "licensesPerDay": 100,
+  "maxLicensesPerCharterPerDay": 3,
+  "maxBranches": 10,
+  "genesisCharterCap": 1000,
+  "charterDailyCap": 0,
+  "charterAdminFloorEth": "100000000000000000",
+  "dormancySeconds": 2592000,
+  "dormancyBountyBps": 200,
+  "dormancyBountyCapStd": "100000000000000000000",
+  "revocationBps": 7000,
+  "feeFloor": 0.01,
+  "feeCeil": 0.35,
+  "exitDenomMin": "1000000000000000000",
+  "withdrawWindowSeconds": 604800,
+  "licenseMinFloorStd": "1000000000000000000"
+}

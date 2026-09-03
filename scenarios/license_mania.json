@@ -1,0 +1,20 @@
+{
+  "id": "license_mania",
+  "title": "License mania",
+  "teach": "Aggressive same-day license buying decays P(t) fast and burns $STANDARD directly into B, shrinking S_max in real time.",
+  "paramsOverlay": {},
+  "actions": [
+    { "t": 0, "op": "seedGenesis", "count": 10 },
+    { "t": 0, "op": "buyLicense", "charterId": "c-0001" },
+    { "t": 60, "op": "buyLicense", "charterId": "c-0002" },
+    { "t": 120, "op": "buyLicense", "charterId": "c-0003" },
+    { "t": 180, "op": "buyLicense", "charterId": "c-0004" },
+    { "t": 240, "op": "buyLicense", "charterId": "c-0005" },
+    { "t": 300, "op": "buyLicense", "charterId": "c-0001" },
+    { "t": 360, "op": "buyLicense", "charterId": "c-0002" },
+    { "t": 420, "op": "buyLicense", "charterId": "c-0003" },
+    { "t": 480, "op": "buyLicense", "charterId": "c-0001" },
+    { "t": 540, "op": "buyLicense", "charterId": "c-0004" },
+    { "t": 600, "op": "tick", "dt": 3600 }
+  ]
+}
