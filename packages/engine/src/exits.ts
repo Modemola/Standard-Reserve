@@ -75,6 +75,11 @@ export function retireBranch(world: World, charterId: string, branchId: number):
   if (otherLive.length > 0) {
     const rebatePerBranch = rebateTotal / BigInt(otherLive.length);
     for (const b of otherLive) b.ledger += rebatePerBranch;
+    // Integer division truncates; credit the undistributed remainder to the
+    // first branch rather than letting it vanish from tracked totals.
+    const distributed = rebatePerBranch * BigInt(otherLive.length);
+    const dust = rebateTotal - distributed;
+    if (dust > 0n) otherLive[0].ledger += dust;
   } else {
     // No other branches to rebate; the remainder burns too rather than vanishing.
     world.B += rebateTotal;

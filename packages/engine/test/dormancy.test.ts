@@ -26,4 +26,27 @@ describe("dormancy", () => {
     // Accrued ledger over 30 days at full issuance dwarfs the bounty cap.
     expect(world.M - mBefore).toBe(DEFAULT_PARAMS.dormancyBountyCapStd);
   });
+
+  it("bounty is dormancyBountyBps of the fee (capped), not a hardcoded 50/50 split", () => {
+    let world = createWorld(DEFAULT_PARAMS, 0);
+    // Dilute issuance across the max genesis charter count so accrued ledger
+    // per branch stays well under the bounty cap after 30 days.
+    world = seedGenesis(world, DEFAULT_PARAMS.genesisCharterCap);
+    const id = Object.keys(world.charters)[0];
+    world = tick(world, DEFAULT_PARAMS.dormancySeconds + 3600);
+
+    const ledger = world.charters[id].branches[0].ledger;
+    const fee = (ledger * BigInt(DEFAULT_PARAMS.revocationBps)) / 10_000n;
+    const expectedBounty = (fee * BigInt(DEFAULT_PARAMS.dormancyBountyBps)) / 10_000n;
+    // Sanity check: this test only proves the point if we're under the cap.
+    expect(expectedBounty).toBeLessThan(DEFAULT_PARAMS.dormancyBountyCapStd);
+
+    const mBefore = world.M;
+    const bBefore = world.B;
+    world = reportDormant(world, id, "reporter-1");
+    expect(world.lastError).toBeUndefined();
+
+    expect(world.M - mBefore).toBe(expectedBounty);
+    expect(world.B - bBefore).toBe(fee - expectedBounty);
+  });
 });

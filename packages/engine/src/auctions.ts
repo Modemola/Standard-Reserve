@@ -78,9 +78,15 @@ export function initCharterAuction(world: World): Auction {
   };
 }
 
-function rollOneDay(auction: Auction, newDay: number, newFloor: bigint, newCap: number): Auction {
+function rollOneDay(
+  auction: Auction,
+  newDay: number,
+  newFloor: bigint,
+  newCap: number,
+  openMultiplier: bigint,
+): Auction {
   const hadSale = auction.sold > 0;
-  const pStart = hadSale ? auction.pLast * 2n : newFloor * 2n;
+  const pStart = hadSale ? auction.pLast * openMultiplier : newFloor * openMultiplier;
   return {
     ...auction,
     day: newDay,
@@ -102,6 +108,7 @@ export function rollAuctionsIfNeeded(world: World): World {
       nextDay,
       licenseFloor(world),
       world.params.licensesPerDay,
+      2n, // WP §6-8 — license open: P_start = 2 * P_last (or 2 * P_floor)
     );
   }
   while (world.charterAuction.day < world.day) {
@@ -111,6 +118,7 @@ export function rollAuctionsIfNeeded(world: World): World {
       nextDay,
       world.params.charterAdminFloorEth,
       world.params.charterDailyCap,
+      3n, // WP §6-8 — charter open: P_start = 3 * P_last (or 3 * adminFloor)
     );
   }
   return world;

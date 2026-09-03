@@ -103,11 +103,17 @@ export function runContractionBuyback(world: World): World {
   return world;
 }
 
-/** Advance all time-driven policy: auctions, buyback, epoch close. Order matters. */
+/**
+ * Advance all time-driven policy: epoch close, then auctions, then buyback.
+ * Epoch close must run first — it updates world.m for the epoch that just
+ * ended, and rollAuctionsIfNeeded prices the new day's license floor off
+ * that m. Rolling auctions before the epoch closes would price tomorrow's
+ * floor off yesterday's (stale) multiplier.
+ */
 export function advancePolicy(world: World): World {
   world.day = Math.floor(world.now / 86_400);
+  closeEpochIfDue(world);
   rollAuctionsIfNeeded(world);
   runContractionBuyback(world);
-  closeEpochIfDue(world);
   return world;
 }

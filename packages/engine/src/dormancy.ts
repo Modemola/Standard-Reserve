@@ -33,15 +33,14 @@ export function reportDormant(
   for (const branch of charter.branches) if (branch.alive) totalLedger += branch.ledger;
 
   const fee = bigintBps(totalLedger, world.params.revocationBps);
-  const burnHalf = fee / 2n;
-  const bountyRaw = fee - burnHalf;
+  const bountyRaw = bigintBps(fee, world.params.dormancyBountyBps);
   const bountyCap = world.params.dormancyBountyCapStd;
   const bounty = bountyRaw < bountyCap ? bountyRaw : bountyCap;
-  const leftover = bountyRaw - bounty;
+  const burn = fee - bounty;
 
   // The non-fee remainder of the ledger (1 - revocationBps) was never minted
   // to anyone: the owner abandoned it, so it is simply not credited.
-  world.B += burnHalf + leftover;
+  world.B += burn;
   world.M += bounty;
   world.withdrawWindow.push({ ts: world.now, amount: bounty });
 
@@ -51,7 +50,7 @@ export function reportDormant(
   }
   charter.alive = false;
 
-  return { world, ok: true, bounty, burned: burnHalf + leftover };
+  return { world, ok: true, bounty, burned: burn };
 }
 
 function bigintBps(v: bigint, bps: number): bigint {

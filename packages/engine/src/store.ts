@@ -14,7 +14,7 @@ import {
   quoteLicensePrice,
 } from "./auctions.js";
 import { streamIssuance } from "./issuance.js";
-import { advancePolicy, closeEpochIfDue as closeEpochIfDueImpl } from "./epoch.js";
+import { advancePolicy } from "./epoch.js";
 import { checkIn as dormancyCheckIn, reportDormant as dormancyReportDormant } from "./dormancy.js";
 import {
   quoteRetirement as quoteRetirementImpl,
@@ -150,7 +150,9 @@ export function retireBranch(world0: World, charterId: string, branchId: number)
 
 export function checkIn(world0: World, charterId: string): World {
   const world = clone(world0);
-  return dormancyCheckIn(world, charterId);
+  dormancyCheckIn(world, charterId);
+  world.invariantsOk = invariantCheckImpl(world).ok;
+  return world;
 }
 
 export function reportDormant(world0: World, charterId: string, reporterKey: string): World {
@@ -163,7 +165,7 @@ export function reportDormant(world0: World, charterId: string, reporterKey: str
 
 export function closeEpochIfDue(world0: World): World {
   const world = clone(world0);
-  closeEpochIfDueImpl(world);
+  advancePolicy(world);
   world.invariantsOk = invariantCheckImpl(world).ok;
   return world;
 }
