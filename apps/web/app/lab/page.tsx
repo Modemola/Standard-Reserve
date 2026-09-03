@@ -245,6 +245,16 @@ function LabInner() {
           >
             reset world
           </button>
+
+          {process.env.NODE_ENV !== "production" && (
+            <button
+              onClick={() => store.apply((w) => ({ ...w, polEth: -1n }))}
+              title="Dev-only: directly corrupts polEth to demo the invariant pill failing. Not a legal action — reset world to recover."
+              className="w-full rounded border border-dashed border-contraction/60 py-1.5 text-xs text-contraction/80"
+            >
+              debug: break POL (dev only)
+            </button>
+          )}
         </div>
       </section>
 

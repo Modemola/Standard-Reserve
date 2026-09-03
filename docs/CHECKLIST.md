@@ -2,6 +2,8 @@
 
 Master list, ordered start to finish, per [`docs/ARCHITECTURE.md`](ARCHITECTURE.md). Tick items off in place (`[ ]` → `[x]`) as we land them — this file is the source of truth for what's left, not memory or chat history.
 
+**Status: every item is checked off** except the §6 boundary note (not a task — a standing reminder of what stays out of scope). Phases A–E are built, tested, and verified live (screenshots, e2e, CI green on GitHub for both jobs). Nothing here means "done forever" — reopen an item (`[x]` → `[ ]`) if a regression or new requirement calls for it.
+
 ## 0. Foundation
 
 - [x] Architecture spec locked (`docs/ARCHITECTURE.md`)
@@ -23,7 +25,7 @@ No server/DB in this project — "backend" is the pure-TS simulation engine ever
 - [x] Public engine API + `SimStore` wrapper (`store.ts`)
 - [x] Vitest suite covering the §11 checklist — **26/26 passing**
 - [x] Spec-vs-implementation correctness audit — 6 bugs found and fixed (charter auction 3x rollover, `dormancyBountyBps` wiring, resolution-fee rebate dust loss, stale-`m` license floor pricing, `closeEpochIfDue`/`checkIn` API consistency), each with a regression test proven to fail pre-fix
-- [ ] Optional debug "break POL" toggle (dev-only) so the Lab invariant pill can be demoed going red (§11, explicitly optional)
+- [x] Optional debug "break POL" toggle (dev-only) so the Lab invariant pill can be demoed going red (§11, explicitly optional) — verified: hidden in the production build (`NODE_ENV === "production"`, 0 matches in the built app), present under `next dev` and correctly flips `invariants OK` → `invariants FAIL` on click
 
 ## 2. Frontend — scenarios & scaffolding
 
@@ -53,7 +55,7 @@ No server/DB in this project — "backend" is the pure-TS simulation engine ever
 - [x] README: how to change unpublished params
 - [x] Responsive check at 1280px — verified via screenshot: cockpit branch rack (5 cols), right rail, and Lab telemetry/injectors/charts all render cleanly, no overflow or cramping
 - [x] Screen-reader labels on badges — `RegimeBadge` (`role="status"`, `aria-label`), invariants pill (`role="status"`, `aria-live`), `ExitTicket` retire modal (`role="dialog"`, `aria-modal`, `aria-labelledby`), what-if sliders (`aria-label` per control), branch rack buy/retire buttons (descriptive `aria-label`)
-- [ ] Content pass on `/` and `/law` copy (functional, not yet reviewed for polish)
+- [x] Content pass on `/` and `/law` copy — `/` already met the spec; `/law` was stale (missing the Phase E work) and thin, so `law-mapping.ts` and the page now also cover the three `LawMath.sol` functions in a second table, plus a framing paragraph explaining what the mapping is for
 
 ## 6. Blockchain — optional Solidity twins (Phase E)
 
