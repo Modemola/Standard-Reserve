@@ -7,6 +7,17 @@ simulated state. Simulation-first, local-first, no wallet required for v1.
 Full spec: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 Engine ↔ whitepaper mapping: [`docs/LAW.md`](docs/LAW.md) (also live at `/law`).
 
+## Official references (read-only, do not scrape at runtime)
+
+- [Whitepaper](https://www.standardreserve.xyz/whitepaper/) — "the full design of a sovereign onchain central bank and its reflexive monetary policy"
+- [App — About](https://www.standardreserve.xyz/app/about/)
+- [App — Protocol](https://www.standardreserve.xyz/app/protocol/)
+
+These pages are client-rendered and don't expose the whitepaper's numeric
+constants to static fetch. Any constant not confirmed there is treated in
+this repo as `unpublished_placeholder` and lives in
+`packages/params/default.json`, never hardcoded into JSX.
+
 > *STANDARD is an experimental onchain protocol. This app is unofficial. Not
 > a bank. Not investment advice. Not affiliated with The Standard Reserve
 > team unless they say otherwise.*
