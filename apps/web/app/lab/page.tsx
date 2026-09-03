@@ -15,6 +15,7 @@ import {
   tick,
 } from "@standard-law/engine";
 import { Charts } from "@/components/Charts";
+import { ConstantsDrawer } from "@/components/ConstantsDrawer";
 import { RegimeBadge } from "@/components/RegimeBadge";
 import { fmtDuration, fmtEth, fmtToken, fmtWad } from "@/lib/format";
 import { useEpochHistory, useSimStore, useWorld } from "@/lib/sim-context";
@@ -37,6 +38,7 @@ function LabInner() {
 
   const [buyEthAmount, setBuyEthAmount] = useState("1");
   const [sellStdAmount, setSellStdAmount] = useState("1000");
+  const [showConstants, setShowConstants] = useState(false);
   const [seedCount, setSeedCount] = useState("10");
   const [dailyCap, setDailyCap] = useState(String(world.params.charterDailyCap));
   const [scenarioId, setScenarioId] = useState<string>(SCENARIO_IDS[0]);
@@ -275,6 +277,15 @@ function LabInner() {
             </button>
           )}
         </div>
+
+        <button
+          onClick={() => setShowConstants((v) => !v)}
+          aria-expanded={showConstants}
+          className="w-full rounded border border-white/15 py-1.5 text-xs text-white/70"
+        >
+          {showConstants ? "hide constants (params.json)" : "show constants (params.json)"}
+        </button>
+        {showConstants && <ConstantsDrawer params={world.params} />}
       </section>
 
       <section className="lg:col-span-12">

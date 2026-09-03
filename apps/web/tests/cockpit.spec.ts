@@ -7,6 +7,16 @@ test("lab: loading exodus flips the regime to contraction", async ({ page }) => 
   await expect(page.getByTestId("regime-badge")).toHaveText(/contraction/i);
 });
 
+test("lab: the constants drawer surfaces unpublished-placeholder params (§0 non-goal: don't hide them)", async ({
+  page,
+}) => {
+  await page.goto("/lab");
+  await expect(page.getByText("unpublished_placeholder")).toHaveCount(0);
+
+  await page.getByRole("button", { name: /show constants/ }).click();
+  await expect(page.getByText("unpublished_placeholder").first()).toBeVisible();
+});
+
 test("bank: buy a license, retire a branch, S_max falls", async ({ page }) => {
   await page.goto("/bank/c-0042");
   await expect(page.getByText(/No charter/)).toHaveCount(0);
