@@ -75,6 +75,16 @@ contract LawMathTest is Test {
         assertEq(LawMath.dutchPrice(pStart, pFloor, DAY_SECONDS), pFloor, "t=DAY must equal pFloor");
     }
 
+    function testFuzz_dutchPrice_neverLeavesFloorStartRange(uint256 pStart, uint256 pFloor, uint256 t) public pure {
+        pStart = bound(pStart, 1, 1e30);
+        pFloor = bound(pFloor, 0, pStart);
+        t = bound(t, 0, DAY_SECONDS * 2); // beyond DAY_SECONDS exercises the clamp path too
+
+        uint256 price = LawMath.dutchPrice(pStart, pFloor, t);
+        assertGe(price, pFloor, "price must never fall below pFloor, regardless of pow() precision");
+        assertLe(price, pStart, "price must never exceed pStart, regardless of pow() precision");
+    }
+
     function testFuzz_dutchPrice_monotonicDecay(uint256 pStart, uint256 pFloor, uint256 t1, uint256 t2) public pure {
         pStart = bound(pStart, 1e6, 1e30);
         pFloor = bound(pFloor, 0, pStart);

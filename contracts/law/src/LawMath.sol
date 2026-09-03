@@ -45,7 +45,19 @@ library LawMath {
         }
         UD60x18 exponent = convert(t).div(convert(DAY_SECONDS));
         UD60x18 price = ud(pStart).mul(ratio.pow(exponent));
-        return UD60x18.unwrap(price);
+        uint256 result = UD60x18.unwrap(price);
+
+        // dutchPrice must always lie in [pFloor, pStart] by construction
+        // (it decays monotonically from one to the other) -- but pow()'s
+        // ln/exp implementation loses relative precision when the ratio is
+        // extreme (pStart many orders of magnitude above pFloor) and t is
+        // very close to DAY_SECONDS, and can undershoot below pFloor.
+        // Clamp rather than chase perfect precision at the tail: this is
+        // an audit-narrative reference, and the invariant is exact math,
+        // not a numerical-precision compromise.
+        if (result < pFloor) return pFloor;
+        if (result > pStart) return pStart;
+        return result;
     }
 
     /// @notice feeRate = feeFloor + (feeCeil - feeFloor) * P^2, clamped to
