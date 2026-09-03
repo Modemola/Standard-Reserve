@@ -44,7 +44,7 @@ No server/DB in this project — "backend" is the pure-TS simulation engine ever
 - [x] What-if drawer (clone-and-preview, does not touch live state until commit)
 - [x] Retire modal + check-in
 - [x] Verified live: buy license → retire branch → `S_max` falls (Playwright + manual)
-- [ ] Re-verify "what-if does not persist until commit" with an explicit test (currently only implied by code structure, not asserted — §11 UI checklist)
+- [x] "What-if does not persist until commit" — explicit Playwright test added (`bank: what-if preview does not touch live state until committed`): moving a slider changes the preview stat but leaves live `S_max` untouched; only `Commit on live sim` mutates it
 
 ## 5. Frontend — polish (Phase D)
 
@@ -70,5 +70,5 @@ Per spec §0 non-goals: **no real `$STANDARD` or charter NFTs get deployed, ever
 - [x] `pnpm --filter web run build` green
 - [x] Both Playwright e2e flows passing against a running server
 - [x] Manual visual pass on `/`, `/lab`, `/bank/c-0042` (screenshots)
-- [ ] `pnpm --filter web run e2e` wired into a CI check (GitHub Actions) so this doesn't regress silently
-- [ ] Final disclaimer/footer text spot-check across all routes
+- [x] `pnpm --filter web run e2e` wired into a CI check (`.github/workflows/ci.yml`: install → engine test → web build → Playwright install → e2e, on push to `main` and on PRs)
+- [x] Final disclaimer/footer text spot-check across all routes — lives once in `apps/web/app/layout.tsx`'s shared footer, so every route (`/`, `/lab`, `/bank/:id`, `/scenarios`, `/law`) renders it identically; text matches spec verbatim

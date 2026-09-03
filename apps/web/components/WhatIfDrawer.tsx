@@ -98,6 +98,7 @@ export function WhatIfDrawer({
         <Stat
           label="S_max now → preview"
           value={`${fmtToken(supplyMax(world))} → ${fmtToken(supplyMax(preview))}`}
+          testId="whatif-s-max-preview"
         />
       </div>
 
@@ -151,9 +152,9 @@ function Slider({
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, testId }: { label: string; value: string; testId?: string }) {
   return (
-    <div>
+    <div data-testid={testId}>
       <p className="text-white/40">{label}</p>
       <p className="tabular font-mono text-white/80">{value}</p>
     </div>
