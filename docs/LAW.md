@@ -14,9 +14,28 @@ changes).
 | charter lifecycle | §6 | `packages/engine/src/auctions.ts` — `createCharter`, `buyCharter` |
 | licenses, `P(t)` | §7 (7.1) | `packages/engine/src/auctions.ts` — `dutchPrice`, `buyLicense`, `licenseFloor` |
 | Dutch open 2× / 3× | §8 | `packages/engine/src/auctions.ts` — `rollOneDay` |
-| resolution fee | §9 (9.1) | `packages/engine/src/exits.ts` — `computeFeeRate`, `retireBranch` |
+| resolution fee | §9 (9.1) | `packages/engine/src/exits.ts` — `computeFeeRate`, `feeRateFromP`, `retireBranch` |
 | dormancy | dormancy section | `packages/engine/src/dormancy.ts` — `checkIn`, `reportDormant` |
-| 70/15/15, spend_tick | §11 (11.1) | `packages/engine/src/epoch.ts` — `splitFees`; `runContractionBuyback` |
+| 70/15/15, spend_tick | §11 (11.1) | `packages/engine/src/epoch.ts` — `splitFees`; `runContractionBuyback`, `contractionSpend` |
+
+### Phase E — Solidity twins (audit narrative only, never deployed)
+
+`contracts/law/src/LawMath.sol` re-implements three of the above pure
+formulas in Solidity, checked against shared vectors generated from the
+live engine (`packages/engine/scripts/generate-law-vectors.ts` →
+`contracts/law/test/vectors/*.json`, consumed by
+`contracts/law/test/LawMath.t.sol`):
+
+| `LawMath.sol` | Engine equivalent |
+|---|---|
+| `dutchPrice` | `auctions.ts` — `dutchPrice` |
+| `resolutionFeeRate` | `exits.ts` — `feeRateFromP` |
+| `contractionSpend` | `epoch.ts` — `contractionSpend` |
+
+`dutchPrice` is not bit-exact between the two (IEEE-754 `Math.pow` in TS vs.
+PRBMath's fixed-point `ln`/`exp`-based `pow` in Solidity) — vectors assert
+agreement within a small relative tolerance, not equality. See the
+comment atop `LawMath.sol`.
 
 ## Known simplifications (documented, not hidden)
 

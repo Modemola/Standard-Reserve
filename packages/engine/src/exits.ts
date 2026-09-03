@@ -17,15 +17,19 @@ function totalLedger(world: World): bigint {
   return d;
 }
 
+/** feeRate = feeFloor + (feeCeil - feeFloor) * P^2, clamped to [feeFloor, feeCeil]. */
+export function feeRateFromP(feeFloor: number, feeCeil: number, P: number): number {
+  const rate = feeFloor + (feeCeil - feeFloor) * P * P;
+  return Math.min(feeCeil, Math.max(feeFloor, rate));
+}
+
 /** feeRate = feeFloor + (feeCeil - feeFloor) * P^2, P = W / max(D+W, exitDenomMin). */
 export function computeFeeRate(world: World): number {
   const W = trailingWithdrawn(world);
   const D = totalLedger(world);
   const denom = D + W > world.params.exitDenomMin ? D + W : world.params.exitDenomMin;
   const P = denom > 0n ? Number(W) / Number(denom) : 0;
-  const { feeFloor, feeCeil } = world.params;
-  const rate = feeFloor + (feeCeil - feeFloor) * P * P;
-  return Math.min(feeCeil, Math.max(feeFloor, rate));
+  return feeRateFromP(world.params.feeFloor, world.params.feeCeil, P);
 }
 
 export function quoteRetirement(world: World, charterId: string, branchId: number): Quote | null {

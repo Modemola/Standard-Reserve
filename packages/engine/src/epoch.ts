@@ -78,12 +78,17 @@ export function closeEpochIfDue(world: World): World {
   return world;
 }
 
+/** spend = min(10% of vaultEth, 0.2% of poolEthReserve). */
+export function contractionSpend(vaultEth: bigint, poolEthReserve: bigint): bigint {
+  const tenPctVault = vaultEth / 10n;
+  const twentyBpsPool = (poolEthReserve * 2n) / 1000n;
+  return tenPctVault < twentyBpsPool ? tenPctVault : twentyBpsPool;
+}
+
 function contractionBuybackOnce(world: World): void {
   const vault = world.vaults.contractionEth;
   if (vault <= 0n || world.pool.eth <= 0n) return;
-  const tenPctVault = vault / 10n;
-  const twentyBpsPool = (world.pool.eth * 2n) / 1000n;
-  const spend = tenPctVault < twentyBpsPool ? tenPctVault : twentyBpsPool;
+  const spend = contractionSpend(vault, world.pool.eth);
   if (spend <= 0n) return;
 
   const { pool, amountOut } = buyStd(world.pool, spend, 0);

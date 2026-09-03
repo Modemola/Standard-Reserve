@@ -59,9 +59,10 @@ No server/DB in this project — "backend" is the pure-TS simulation engine ever
 
 Per spec §0 non-goals: **no real `$STANDARD` or charter NFTs get deployed, ever, in this project.** This phase is narrow — audit-narrative Solidity twins of the pure math, nothing else. Do not start until Phase C is playable (it is).
 
-- [ ] `contracts/law/LawMath.sol` — `pure` Solidity twin of `P(t)` Dutch decay, the resolution-fee quadratic, and the contraction spend-tick formula
-- [ ] Foundry test harness
-- [ ] Shared test vectors run against both the TS engine and `LawMath.sol`, asserting they agree
+- [x] `contracts/law/src/LawMath.sol` — `pure` Solidity twin of `P(t)` Dutch decay (via PRBMath UD60x18 `pow`), the resolution-fee quadratic, and the contraction spend-tick formula
+- [x] Foundry test harness (`contracts/law`, forge-std + PRBMath vendored, not submodules)
+- [x] Shared test vectors generated from the live TS engine (`packages/engine/scripts/generate-law-vectors.ts` → `contracts/law/test/vectors/*.json`) and checked against `LawMath.sol` within a relative tolerance for `dutchPrice`/`resolutionFeeRate`, exactly for `contractionSpend` — plus 5 fuzz property tests (monotonicity, bounds, day-clamp). All 8 pass at 5000 runs each. One real bug found and fixed in the process: `dutchPrice`'s ratio could underflow UD60x18's precision and collapse to a hard 0 before `t` reached `DAY_SECONDS` for extreme `pStart`≫`pFloor` gaps — fixed by extending the engine's own "never let the ratio hit a literal zero" floor to cover fixed-point underflow, not just `pFloor==0`
+- [x] Wired into CI as a separate `contracts` job (`foundry-rs/foundry-toolchain`, `forge test` + `forge fmt --check`)
 - [ ] Explicitly out of scope unless requested later: wallet integration, real deployment, mint site, allowlist checker, governance, token unlocks — all non-goals per §0
 
 ## 7. Release readiness / QA

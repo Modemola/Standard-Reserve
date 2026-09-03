@@ -34,3 +34,18 @@ jobs:
 
       - name: Web e2e (Lab regime flip, cockpit license/retire, what-if isolation)
         run: pnpm --filter web run e2e
+
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: foundry-rs/foundry-toolchain@v1
+
+      - name: LawMath test suite (Phase E, audit narrative only — never deployed)
+        working-directory: contracts/law
+        run: forge test -vv
+
+      - name: forge fmt --check
+        working-directory: contracts/law
+        run: forge fmt --check
