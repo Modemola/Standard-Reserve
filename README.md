@@ -6,6 +6,7 @@ simulated state. Simulation-first, local-first, no wallet required for v1.
 
 Full spec: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 Engine ↔ whitepaper mapping: [`docs/LAW.md`](docs/LAW.md) (also live at `/law`).
+Build progress: [`docs/CHECKLIST.md`](docs/CHECKLIST.md).
 
 ## Official references (read-only, do not scrape at runtime)
 
