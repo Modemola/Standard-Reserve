@@ -129,3 +129,15 @@ test("lab: report dormant rejects an active charter, succeeds once truly dormant
   await reportBtn.click();
   await expect(page.getByTestId("error-toast")).toHaveCount(0);
 });
+
+test("lab: a failed scenario fetch surfaces an error toast instead of doing nothing", async ({ page }) => {
+  await page.goto("/lab");
+
+  await page.route("**/scenarios/*.json", (route) => route.abort("failed"));
+  await page.getByRole("combobox").selectOption("inflow_week");
+  await page.getByRole("button", { name: "load scenario" }).click();
+
+  await expect(page.getByTestId("error-toast")).toHaveText(
+    "Couldn't load that scenario. Check your connection and try again.",
+  );
+});

@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import { useWorld } from "@/lib/sim-context";
 
 // Every world.lastError value the engine can set (packages/engine/src:
-// auctions.ts, exits.ts, dormancy.ts, store.ts), in the app's own voice.
+// auctions.ts, exits.ts, dormancy.ts, store.ts), in the app's own voice,
+// plus a couple of app-level codes (not from the engine) that reuse this
+// same lastError -> toast path for consistency rather than inventing a
+// second error-display mechanism.
 const MESSAGES: Record<string, string> = {
   unknown_charter: "That charter doesn't exist in this simulation.",
   unknown_branch: "That branch isn't live.",
@@ -15,6 +18,8 @@ const MESSAGES: Record<string, string> = {
   not_yet_dormant: "This charter hasn't been idle long enough to report yet.",
   insufficient_payment: "That payment is below the current auction price.",
   "amount must be positive": "Enter an amount greater than zero.",
+  // App-level, not from the engine (see lab/page.tsx loadScenarioById).
+  scenario_load_failed: "Couldn't load that scenario. Check your connection and try again.",
 };
 
 function humanize(code: string): string {

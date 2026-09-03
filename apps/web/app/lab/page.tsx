@@ -22,7 +22,7 @@ import { ConstantsDrawer } from "@/components/ConstantsDrawer";
 import { RegimeBadge } from "@/components/RegimeBadge";
 import { fmtDuration, fmtEth, fmtToken, fmtWad } from "@/lib/format";
 import { useEpochHistory, useSimStore, useWorld } from "@/lib/sim-context";
-import { SCENARIO_IDS } from "@/lib/scenarios";
+import { SCENARIO_IDS, fetchScenario } from "@/lib/scenarios";
 import type { Scenario } from "@standard-law/engine";
 
 export default function LabPage() {
@@ -50,8 +50,16 @@ function LabInner() {
   const [scenarioId, setScenarioId] = useState<string>(SCENARIO_IDS[0]);
 
   async function loadScenarioById(id: string) {
-    const scenario = (await (await fetch(`/scenarios/${id}.json`)).json()) as Scenario;
-    store.loadScenario(scenario, world.params);
+    try {
+      const scenario = (await fetchScenario(id)) as Scenario;
+      store.loadScenario(scenario, world.params);
+    } catch {
+      // fetchScenario throws on a non-OK response; a malformed-JSON parse
+      // failure lands here too. Surface it through the same lastError ->
+      // ErrorToast path every other rejected action already uses, rather
+      // than failing silently.
+      store.apply((w) => ({ ...w, lastError: "scenario_load_failed" }));
+    }
   }
 
   useEffect(() => {
