@@ -14,8 +14,13 @@ export function ExitTicket({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="w-full max-w-sm rounded-lg border border-white/10 bg-ink p-5">
-        <h3 className="mb-4 font-mono text-sm uppercase tracking-widest text-white/60">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="exit-ticket-title"
+        className="w-full max-w-sm rounded-lg border border-white/10 bg-ink p-5"
+      >
+        <h3 id="exit-ticket-title" className="mb-4 font-mono text-sm uppercase tracking-widest text-white/60">
           Retire branch {quote.branchId}
         </h3>
         <dl className="space-y-2 text-sm">

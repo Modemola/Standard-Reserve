@@ -6,13 +6,18 @@ export function RegimeBadge({ regime, size = "md" }: { regime: Regime; size?: "m
   return (
     <span
       data-testid="regime-badge"
+      role="status"
+      aria-label={`regime: ${regime}`}
       className={`inline-flex items-center gap-2 rounded-md border font-mono uppercase tracking-widest ${sizeClasses} ${
         isExpansion
           ? "border-expansion/40 bg-expansion/10 text-expansion"
           : "border-contraction/40 bg-contraction/10 text-contraction"
       }`}
     >
-      <span className={`h-2 w-2 rounded-full ${isExpansion ? "bg-expansion" : "bg-contraction"}`} />
+      <span
+        aria-hidden="true"
+        className={`h-2 w-2 rounded-full ${isExpansion ? "bg-expansion" : "bg-contraction"}`}
+      />
       {regime}
     </span>
   );

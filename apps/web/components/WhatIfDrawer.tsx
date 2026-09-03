@@ -139,6 +139,7 @@ function Slider({
       </div>
       <input
         type="range"
+        aria-label={`${label}: ${display}`}
         min={min}
         max={max}
         step={step}

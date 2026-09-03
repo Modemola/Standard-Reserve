@@ -51,8 +51,8 @@ No server/DB in this project — "backend" is the pure-TS simulation engine ever
 - [x] `/` landing content
 - [x] `/law` page (engine ↔ whitepaper mapping table)
 - [x] README: how to change unpublished params
-- [ ] Responsive check at 1280px specifically (cockpit must be usable there; Lab may require desktop per spec) — only tested at 1440px so far
-- [ ] Screen-reader labels on badges and key numbers (currently zero `aria-*`/`role` attributes in `apps/web/components`)
+- [x] Responsive check at 1280px — verified via screenshot: cockpit branch rack (5 cols), right rail, and Lab telemetry/injectors/charts all render cleanly, no overflow or cramping
+- [x] Screen-reader labels on badges — `RegimeBadge` (`role="status"`, `aria-label`), invariants pill (`role="status"`, `aria-live`), `ExitTicket` retire modal (`role="dialog"`, `aria-modal`, `aria-labelledby`), what-if sliders (`aria-label` per control), branch rack buy/retire buttons (descriptive `aria-label`)
 - [ ] Content pass on `/` and `/law` copy (functional, not yet reviewed for polish)
 
 ## 6. Blockchain — optional Solidity twins (Phase E)

@@ -118,6 +118,9 @@ function LabInner() {
         </div>
 
         <div
+          role="status"
+          aria-live="polite"
+          aria-label={inv.ok ? "invariants OK" : `invariants FAIL: ${inv.failures.join(", ")}`}
           className={`rounded-lg border p-4 text-sm ${
             inv.ok ? "border-expansion/30 bg-expansion/5 text-expansion" : "border-contraction/40 bg-contraction/10 text-contraction"
           }`}

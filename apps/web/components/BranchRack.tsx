@@ -27,9 +27,10 @@ export function BranchRack({
               key={branch.id}
               onClick={onBuyLicense}
               disabled={licenseRemainingToday <= 0}
+              aria-label={`Buy license for empty branch slot ${branch.id}, ${fmtToken(licensePriceNow)} STD, ${licenseRemainingToday} of 3 remaining today`}
               className="flex h-32 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-white/15 p-3 text-center text-xs text-white/50 hover:border-expansion/40 hover:text-expansion disabled:cursor-not-allowed disabled:opacity-40"
             >
-              <span className="font-mono text-base">+</span>
+              <span aria-hidden="true" className="font-mono text-base">+</span>
               <span>Buy license</span>
               <span className="tabular font-mono">{fmtToken(licensePriceNow)} STD</span>
               <span>remaining {licenseRemainingToday}/3</span>
@@ -56,6 +57,7 @@ export function BranchRack({
             </div>
             <button
               onClick={() => onRetire(branch.id)}
+              aria-label={`Retire branch ${branch.id}, ledger ${fmtToken(branch.ledger)} STD`}
               className="mt-2 rounded border border-white/15 py-1 text-xs text-white/70 hover:border-contraction/50 hover:text-contraction"
             >
               retire branch
