@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SimProvider } from "@/lib/sim-context";
+import { ErrorToast } from "@/components/ErrorToast";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </em>
             </p>
           </footer>
+          <ErrorToast />
         </SimProvider>
       </body>
     </html>

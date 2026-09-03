@@ -75,3 +75,11 @@ Per spec §0 non-goals: **no real `$STANDARD` or charter NFTs get deployed, ever
 - [x] Manual visual pass on `/`, `/lab`, `/bank/c-0042` (screenshots)
 - [x] `pnpm --filter web run e2e` wired into a CI check (`.github/workflows/ci.yml`: `test` job — install → engine test → web build → Playwright install → e2e; `contracts` job — forge test + forge fmt --check; on push to `main` and on PRs). Confirmed actually green on GitHub itself for both jobs, not just locally — checked via the Actions API after each push.
 - [x] Final disclaimer/footer text spot-check across all routes — lives once in `apps/web/app/layout.tsx`'s shared footer, so every route (`/`, `/lab`, `/bank/:id`, `/scenarios`, `/law`) renders it identically; text matches spec verbatim
+
+## 8. Post-spec UX iteration
+
+Not in the original architecture doc — found while deliberately looking for rough edges beyond the spec's minimum.
+
+- [x] **Silent-failure bug**: `world.lastError` is set by the engine on every rejected action (daily caps, insufficient payment, unknown charter, not-yet-dormant, ...) but nothing in the UI ever read it — a rejected click just did nothing, indistinguishable from a bug. Added `components/ErrorToast.tsx`: a global toast (mounted once in the root layout, inside `SimProvider`) that shows a human-voiced message per error code and auto-dismisses after 4s, re-triggering even on back-to-back identical failures (keyed on the `World` object reference, which is fresh on every `store.apply()`, not on the error string). Covered by a permanent Playwright test, not just an ad-hoc check.
+- [x] **Mislabeled swap input**: `/lab`'s buy/sell used one shared text input for both an ETH amount (buy) and an STD amount (sell) with no unit indicator — found this while adding the `aria-label` the input was missing, since any label would have been wrong for one of the two buttons. Split into two clearly-labeled inputs (`ETH to spend buying STD` / `STD to sell`, defaults `1` / `1000`) rather than papering over it with a vague shared label.
+- [x] Added `aria-label`/`placeholder` to the remaining unlabelled Lab injector inputs (seed count, `charterDailyCap` override) missed in the earlier Phase D a11y pass, which had focused on badges/modals/sliders and not plain text inputs.

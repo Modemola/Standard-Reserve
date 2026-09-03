@@ -66,3 +66,17 @@ test("bank: what-if preview does not touch live state until committed", async ({
   const sMaxAfterCommit = await page.getByTestId("s-max").innerText();
   expect(sMaxAfterCommit).not.toEqual(sMaxBefore);
 });
+
+test("lab: a rejected action surfaces an error toast instead of failing silently", async ({ page }) => {
+  await page.goto("/lab");
+
+  await expect(page.getByTestId("error-toast")).toHaveCount(0);
+
+  // parseAmount("") -> 0n -> applySwap rejects with "amount must be positive".
+  await page.getByLabel("ETH to spend buying STD").fill("");
+  await page.getByRole("button", { name: "buy STD (ETH)" }).click();
+
+  const toast = page.getByTestId("error-toast");
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveText("Enter an amount greater than zero.");
+});

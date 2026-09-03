@@ -35,7 +35,8 @@ function LabInner() {
   const history = useEpochHistory();
   const searchParams = useSearchParams();
 
-  const [swapAmount, setSwapAmount] = useState("1");
+  const [buyEthAmount, setBuyEthAmount] = useState("1");
+  const [sellStdAmount, setSellStdAmount] = useState("1000");
   const [seedCount, setSeedCount] = useState("10");
   const [dailyCap, setDailyCap] = useState(String(world.params.charterDailyCap));
   const [scenarioId, setScenarioId] = useState<string>(SCENARIO_IDS[0]);
@@ -142,18 +143,32 @@ function LabInner() {
 
           <div className="flex gap-2">
             <input
-              value={swapAmount}
-              onChange={(e) => setSwapAmount(e.target.value)}
+              value={buyEthAmount}
+              onChange={(e) => setBuyEthAmount(e.target.value)}
+              aria-label="ETH to spend buying STD"
+              placeholder="ETH"
+              inputMode="decimal"
               className="w-24 rounded border border-white/15 bg-transparent px-2 py-1 text-sm"
             />
             <button
-              onClick={() => store.apply((w) => applySwap(w, "buyStd", parseEth(swapAmount)))}
+              onClick={() => store.apply((w) => applySwap(w, "buyStd", parseAmount(buyEthAmount)))}
               className="flex-1 rounded border border-expansion/40 bg-expansion/10 px-2 py-1 text-xs text-expansion"
             >
               buy STD (ETH)
             </button>
+          </div>
+
+          <div className="flex gap-2">
+            <input
+              value={sellStdAmount}
+              onChange={(e) => setSellStdAmount(e.target.value)}
+              aria-label="STD to sell"
+              placeholder="STD"
+              inputMode="decimal"
+              className="w-24 rounded border border-white/15 bg-transparent px-2 py-1 text-sm"
+            />
             <button
-              onClick={() => store.apply((w) => applySwap(w, "sellStd", parseEth(swapAmount)))}
+              onClick={() => store.apply((w) => applySwap(w, "sellStd", parseAmount(sellStdAmount)))}
               className="flex-1 rounded border border-contraction/40 bg-contraction/10 px-2 py-1 text-xs text-contraction"
             >
               sell STD
@@ -185,6 +200,8 @@ function LabInner() {
             <input
               value={seedCount}
               onChange={(e) => setSeedCount(e.target.value)}
+              aria-label="Number of genesis charters to spawn"
+              inputMode="numeric"
               className="w-20 rounded border border-white/15 bg-transparent px-2 py-1 text-sm"
             />
             <button
@@ -199,6 +216,8 @@ function LabInner() {
             <input
               value={dailyCap}
               onChange={(e) => setDailyCap(e.target.value)}
+              aria-label="New charterDailyCap value"
+              inputMode="numeric"
               className="w-20 rounded border border-white/15 bg-transparent px-2 py-1 text-sm"
             />
             <button
@@ -265,7 +284,9 @@ function LabInner() {
   );
 }
 
-function parseEth(v: string): bigint {
+/** Parses a decimal string to a WAD (1e18) bigint. Used for both ETH and
+ * STD amounts, which share the same fixed-point scale. */
+function parseAmount(v: string): bigint {
   const n = Number(v);
   if (!Number.isFinite(n) || n <= 0) return 0n;
   return BigInt(Math.round(n * 1e18));
