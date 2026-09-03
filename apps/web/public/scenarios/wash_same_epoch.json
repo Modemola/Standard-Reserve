@@ -1,0 +1,13 @@
+{
+  "id": "wash_same_epoch",
+  "title": "Wash trade, same epoch",
+  "teach": "Equal buy+sell volume in one epoch nets F_n ≈ 0 — contraction-side fee routing, but issuance is not pumped by volume.",
+  "paramsOverlay": {},
+  "actions": [
+    { "t": 0, "op": "seedGenesis", "count": 20 },
+    { "t": 0, "op": "tick", "dt": 1800 },
+    { "t": 1800, "op": "swap", "side": "buyStd", "amount": "1000000000000000000" },
+    { "t": 1800, "op": "swap", "side": "sellStd", "amount": "987000000000000000000000" },
+    { "t": 1800, "op": "tick", "dt": 84600 }
+  ]
+}

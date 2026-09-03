@@ -1,0 +1,23 @@
+{
+  "id": "inflow_week",
+  "title": "Inflow week",
+  "teach": "Sustained net ETH inflow keeps two epochs' signal positive, so m raises toward mMax and the expansion vault grows.",
+  "paramsOverlay": {},
+  "actions": [
+    { "t": 0, "op": "seedGenesis", "count": 50 },
+    { "t": 0, "op": "tick", "dt": 86400 },
+    { "t": 86400, "op": "swap", "side": "buyStd", "amount": "20000000000000000000" },
+    { "t": 86400, "op": "tick", "dt": 86400 },
+    { "t": 172800, "op": "swap", "side": "buyStd", "amount": "20000000000000000000" },
+    { "t": 172800, "op": "tick", "dt": 86400 },
+    { "t": 259200, "op": "swap", "side": "buyStd", "amount": "20000000000000000000" },
+    { "t": 259200, "op": "tick", "dt": 86400 },
+    { "t": 345600, "op": "swap", "side": "buyStd", "amount": "20000000000000000000" },
+    { "t": 345600, "op": "tick", "dt": 86400 },
+    { "t": 432000, "op": "swap", "side": "buyStd", "amount": "20000000000000000000" },
+    { "t": 432000, "op": "tick", "dt": 86400 },
+    { "t": 518400, "op": "swap", "side": "buyStd", "amount": "20000000000000000000" },
+    { "t": 518400, "op": "tick", "dt": 86400 },
+    { "t": 604800, "op": "tick", "dt": 3600 }
+  ]
+}
