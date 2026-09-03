@@ -77,3 +77,22 @@ Nothing is hardcoded into JSX — every policy number flows through
 - `pnpm --filter web run e2e` — Playwright: load a scenario in the Lab and
   watch the regime flip; open `/bank/c-0042`, buy a license, retire a
   branch, and confirm `S_max` falls (`apps/web/tests/cockpit.spec.ts`).
+
+## Deploying
+
+The app is zero-config for Vercel — no environment variables, no database,
+no server beyond what Next.js provides. `apps/web/next.config.mjs` already
+declares `transpilePackages` for the two workspace packages, and the root
+`package.json` pins the exact pnpm version (`packageManager`), so Vercel's
+build reproduces `pnpm install && pnpm --filter web run build` exactly as
+run in CI.
+
+The one setting that isn't automatic: this is a pnpm monorepo, so when
+connecting the repo at vercel.com, set **Root Directory** to `apps/web` in
+the project's configure step (Vercel still runs the install from the
+workspace root once it detects `pnpm-workspace.yaml` there — no extra
+`vercel.json` needed). Framework Preset auto-detects as Next.js; leave the
+build/install/output commands on their defaults.
+
+Once connected, every push to `main` deploys to production and every PR
+gets its own preview URL, same as the GitHub Actions CI already does.
