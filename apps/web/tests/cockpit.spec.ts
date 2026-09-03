@@ -90,3 +90,22 @@ test("lab: a rejected action surfaces an error toast instead of failing silently
   await expect(toast).toBeVisible();
   await expect(toast).toHaveText("Enter an amount greater than zero.");
 });
+
+test("lab: buy charter opens a charter auction slot, only when charterDailyCap is open", async ({ page }) => {
+  await page.goto("/lab");
+
+  const buyBtn = page.getByRole("button", { name: /buy charter/ });
+  await expect(buyBtn).toBeDisabled(); // charterDailyCap is 0 by default
+
+  await page.getByLabel("New charterDailyCap value").fill("5");
+  await page.getByRole("button", { name: "force charterDailyCap" }).click();
+  await expect(buyBtn).toBeEnabled();
+
+  await page.getByLabel("New charter owner key").fill("test-owner-1");
+  await buyBtn.click();
+  await expect(page.getByTestId("error-toast")).toHaveCount(0);
+
+  await page.getByRole("link", { name: "Bank" }).click();
+  await page.waitForURL("**/bank/**");
+  await expect(page.getByText("1/5 sold")).toBeVisible();
+});

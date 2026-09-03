@@ -6,8 +6,10 @@ import {
   DEFAULT_PARAMS,
   ISSUANCE_BUDGET,
   applySwap,
+  buyCharter,
   createWorld,
   invariantCheck,
+  quoteCharterPrice,
   seedGenesis,
   spotPriceEthPerStd,
   supplyCirc,
@@ -40,6 +42,7 @@ function LabInner() {
   const [sellStdAmount, setSellStdAmount] = useState("1000");
   const [showConstants, setShowConstants] = useState(false);
   const [seedCount, setSeedCount] = useState("10");
+  const [charterOwnerKey, setCharterOwnerKey] = useState("");
   const [dailyCap, setDailyCap] = useState(String(world.params.charterDailyCap));
   const [scenarioId, setScenarioId] = useState<string>(SCENARIO_IDS[0]);
 
@@ -233,6 +236,27 @@ function LabInner() {
               className="flex-1 rounded border border-white/15 py-1 text-xs"
             >
               force charterDailyCap
+            </button>
+          </div>
+
+          <div className="flex gap-2">
+            <input
+              value={charterOwnerKey}
+              onChange={(e) => setCharterOwnerKey(e.target.value)}
+              aria-label="New charter owner key"
+              placeholder="owner key"
+              className="w-24 rounded border border-white/15 bg-transparent px-2 py-1 text-sm"
+            />
+            <button
+              onClick={() =>
+                store.apply((w) =>
+                  buyCharter(w, charterOwnerKey || `owner-${w.now}-${w.day}`, quoteCharterPrice(w)),
+                )
+              }
+              disabled={world.params.charterDailyCap <= 0}
+              className="flex-1 rounded border border-white/15 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              buy charter ({fmtEth(quoteCharterPrice(world))} ETH)
             </button>
           </div>
 

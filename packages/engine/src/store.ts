@@ -132,6 +132,7 @@ export function buyCharter(world0: World, ownerKey: string, payEth: bigint): Wor
   const price = quoteCharterPrice(world);
   if (payEth < price) {
     world.lastError = "insufficient_payment";
+    world.invariantsOk = invariantCheckImpl(world).ok;
     return world;
   }
   const result = auctionBuyCharter(world, ownerKey);
