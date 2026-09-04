@@ -1,9 +1,13 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, FlaskConical, Landmark } from "lucide-react";
 import { Card } from "@/components/Card";
 import { Guilloche } from "@/components/Guilloche";
 import { Motes } from "@/components/Motes";
 import { DEMO_CHARTER_ID } from "@/lib/demo-seed";
+// Static import (not a "/hero-preview.png" string): this is what lets next
+// read the real 2800x1480 up front and generate the blur placeholder.
+import heroPreview from "@/public/hero-preview.png";
 
 const LOOPS = [
   {
@@ -116,10 +120,20 @@ export default function HomePage() {
           className="absolute inset-x-10 -top-10 h-40 rounded-full bg-expansion/[0.14] blur-[64px]"
         />
         <div className="relative overflow-hidden rounded-xl border border-white/[0.08] shadow-[0_40px_80px_-32px_rgba(0,0,0,0.9)]">
-          <img
-            src="/hero-preview.png"
+          {/* This shot is the LCP element on the landing page. As a raw
+              <img> it shipped 756KB of 2800x1480 PNG with no intrinsic size,
+              so it both dominated the load and shifted the page as it
+              arrived. next/image serves a width-appropriate WebP/AVIF and
+              reserves the box; priority takes it off the lazy path, since
+              lazy-loading the thing the viewport is waiting for only delays
+              it. sizes caps the request at the container's real 1024px. */}
+          <Image
+            src={heroPreview}
             alt="The Banker's Cockpit at /bank/c-0042 — regime badge, branch rack, auction clocks, and the what-if drawer"
             className="w-full"
+            sizes="(max-width: 1024px) 100vw, 1024px"
+            priority
+            placeholder="blur"
           />
           <div
             aria-hidden="true"

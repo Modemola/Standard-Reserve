@@ -29,6 +29,12 @@ jobs:
       - name: Engine test suite (Phase A gate)
         run: pnpm test
 
+      # react-hooks/rules-of-hooks is the point of this step. It caught a real
+      # conditional useMemo in the cockpit that every other gate -- types,
+      # build, e2e -- passed straight over.
+      - name: Lint web app
+        run: pnpm --filter web run lint
+
       - name: Build web app
         run: pnpm --filter web run build
 

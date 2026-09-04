@@ -26,6 +26,20 @@ export default function BankPage({ params }: { params: { id: string } }) {
 
   const charter = world.charters[params.id];
 
+  // Every hook has to run before the not-found return below. Calling useMemo
+  // after it means the hook count changes the moment a charter stops
+  // resolving -- a scenario load that drops this id, or a link to one that
+  // was never seeded -- and React tears the whole page down with "rendered
+  // fewer hooks than expected" rather than showing the empty state.
+  const systemLedgerTotal = useMemo(() => {
+    let total = 0n;
+    for (const c of Object.values(world.charters)) {
+      if (!c.alive) continue;
+      for (const b of c.branches) if (b.alive) total += b.ledger;
+    }
+    return total;
+  }, [world]);
+
   if (!charter) {
     return (
       <Card className="text-center">
@@ -36,14 +50,6 @@ export default function BankPage({ params }: { params: { id: string } }) {
 
   const liveBranches = charter.branches.filter((b) => b.alive);
   const totalLedger = liveBranches.reduce((acc, b) => acc + b.ledger, 0n);
-  const systemLedgerTotal = useMemo(() => {
-    let total = 0n;
-    for (const c of Object.values(world.charters)) {
-      if (!c.alive) continue;
-      for (const b of c.branches) if (b.alive) total += b.ledger;
-    }
-    return total;
-  }, [world]);
 
   const regime = world.F.length > 0 && (world.F.at(-1) ?? 0n) > 0n ? "expansion" : "contraction";
   const signal =
