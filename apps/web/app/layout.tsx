@@ -39,9 +39,44 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const DESCRIPTION =
+  "An unofficial, deterministic simulator of The Standard Reserve's onchain monetary policy — auctions, issuance, epochs and exits, all runnable in the browser.";
+
 export const metadata: Metadata = {
-  title: "Policy Twin — The Standard Reserve",
-  description: "An unofficial simulator of The Standard Reserve's onchain monetary policy.",
+  // metadataBase makes the relative og:image below resolve to an absolute
+  // URL, which every social crawler requires. Without it Next warns at build
+  // time and the card renders with no image at all.
+  metadataBase: new URL("https://standard-law.vercel.app"),
+  // The template is what gives each route its own tab title. Every page used
+  // to render the same string, so four open tabs were indistinguishable and
+  // every shared link previewed identically.
+  title: {
+    default: "Policy Twin — The Standard Reserve",
+    template: "%s — Policy Twin",
+  },
+  description: DESCRIPTION,
+  applicationName: "Policy Twin",
+  openGraph: {
+    type: "website",
+    siteName: "Policy Twin",
+    title: "Policy Twin — The Standard Reserve",
+    description: DESCRIPTION,
+    images: [
+      {
+        url: "/hero-preview.png",
+        width: 2800,
+        height: 1480,
+        alt: "The Banker's Cockpit — regime badge, branch rack, auction clocks and exit pressure.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Policy Twin — The Standard Reserve",
+    description: DESCRIPTION,
+    images: ["/hero-preview.png"],
+  },
+  robots: { index: true, follow: true },
 };
 
 /** Paper grain — keeps the near-black from reading as flat plastic. */

@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Law",
+  description:
+    "Every formula the engine implements, mapped to the whitepaper section it comes from and the file it lives in.",
+};
+
 import { LAW_MAPPING, LAW_MAPPING_SOLIDITY } from "@/lib/law-mapping";
 
 export default function LawPage() {

@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Scenarios",
+  description:
+    "Five scripted replays -- an exodus, a licence mania, a ghost purge and more -- each teaching one behaviour of the monetary policy.",
+};
+
 import Link from "next/link";
 import { Play } from "lucide-react";
 import { Card } from "@/components/Card";
