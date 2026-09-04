@@ -23,6 +23,12 @@ const bodoni = Bodoni_Moda({
   style: ["normal", "italic"],
   variable: "--font-serif",
   display: "swap",
+  // Bodoni Moda is not in Next's font-metrics table, so it cannot compute a
+  // size-adjust for the fallback and logs "Failed to find font override
+  // values" on every build. Name the fallback explicitly and opt out of the
+  // automatic adjustment rather than leaving a build error nobody can act on.
+  fallback: ["Georgia", "Times New Roman", "serif"],
+  adjustFontFallback: false,
 });
 
 /** Data — every number in the engine. */

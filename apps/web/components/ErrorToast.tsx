@@ -20,6 +20,7 @@ const MESSAGES: Record<string, string> = {
   "amount must be positive": "Enter an amount greater than zero.",
   // App-level, not from the engine (see lab/page.tsx loadScenarioById).
   scenario_load_failed: "Couldn't load that scenario. Check your connection and try again.",
+  scenario_unknown_op: "That scenario contains a step this build doesn't recognise — it may be out of date.",
 };
 
 function humanize(code: string): string {

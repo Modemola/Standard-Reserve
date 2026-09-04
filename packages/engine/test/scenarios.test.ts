@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { DEFAULT_RAW_PARAMS, loadParamsWithOverlay } from "@standard-law/params";
-import { SimStore, hashWorld, invariantCheck } from "../src/index.js";
+import { SCENARIO_OPS, SimStore, hashWorld, invariantCheck } from "../src/index.js";
 import type { Scenario } from "../src/types.js";
 
 const scenariosDir = join(dirname(fileURLToPath(import.meta.url)), "../../../scenarios");
@@ -22,6 +22,17 @@ describe("bundled scenarios", () => {
       expect(ids).toContain(required);
     }
   });
+
+  for (const file of files) {
+    it(`${file} uses only ops the replayer knows`, () => {
+      // Without this, a typo'd op is skipped in silence: invariants still
+      // hold and the replay still hashes deterministically, so the checks
+      // below would happily pass a scenario that teaches nothing.
+      const scenario = JSON.parse(readFileSync(join(scenariosDir, file), "utf8")) as Scenario;
+      const ops = scenario.actions.map((a) => a.op);
+      for (const op of ops) expect(SCENARIO_OPS).toContain(op);
+    });
+  }
 
   for (const file of files) {
     it(`${file} replays without breaking invariants and hashes deterministically`, () => {

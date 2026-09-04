@@ -26,6 +26,19 @@ import type { Auction, LicenseQuote, Params, Quote, Scenario, World } from "./ty
 
 const MAX_TICK_STEPS = 5_000;
 
+/** Every op SimStore.loadScenario knows how to replay. Exported so the
+ *  bundled-scenario tests can reject a typo'd op before it ships. */
+export const SCENARIO_OPS = [
+  "seedGenesis",
+  "tick",
+  "swap",
+  "buyLicense",
+  "buyCharter",
+  "retire",
+  "checkIn",
+  "reportDormant",
+] as const;
+
 function clone(world: World): World {
   return structuredClone(world);
 }
@@ -221,6 +234,7 @@ export class SimStore {
 
   loadScenario(scenario: Scenario, baseParams: Params): void {
     let world = createWorld(baseParams, 0);
+    const unknownOps: string[] = [];
     for (const action of scenario.actions) {
       if (action.t > world.now) world = tick(world, action.t - world.now);
       switch (action.op) {
@@ -252,6 +266,12 @@ export class SimStore {
         case "reportDormant":
           world = reportDormant(world, String(action.charterId), String(action.reporterKey));
           break;
+        default:
+          // A typo'd op ("buylicense") would otherwise be skipped in
+          // silence: invariants still hold and the replay still hashes
+          // deterministically, so nothing downstream notices that the
+          // scenario quietly taught nothing.
+          unknownOps.push(String((action as { op?: unknown }).op));
       }
     }
     // A scenario is a scripted replay, not something the user just did, and
@@ -260,6 +280,9 @@ export class SimStore {
     // fail. Carrying that last rejection out of the replay surfaces a red
     // toast that reads as "loading the scenario failed", which it did not.
     world.lastError = undefined;
+    // A malformed scenario file, on the other hand, is a real problem and
+    // does belong in front of the user.
+    if (unknownOps.length > 0) world.lastError = "scenario_unknown_op";
     this.world = world;
     for (const l of this.listeners) l();
   }
