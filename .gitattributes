@@ -1,0 +1,24 @@
+# Normalise line endings in the repo, and check text files out with LF on
+# every platform. Two things here are load-bearing rather than cosmetic:
+#
+#   - Generated files. `gen:law-vectors` and `sync-scenarios.mjs` both write
+#     LF. Without this, git hands a Windows checkout CRLF, the generators
+#     rewrite LF, and every regeneration reports a diff that is nothing but
+#     line endings. That makes `sync-scenarios --check` in CI meaningless
+#     (it can't tell a stale file from a checkout artefact) and buries any
+#     real change in noise.
+#
+#   - Shell scripts. A CRLF shebang line makes a script unrunnable in CI.
+*               text=auto eol=lf
+
+# Binary: never touch these.
+*.png           binary
+*.jpg           binary
+*.woff          binary
+*.woff2         binary
+*.ico           binary
+
+# Generated — collapse in review diffs, but still tracked and still checked.
+contracts/law/test/vectors/*.json  linguist-generated=true
+apps/web/public/scenarios/*.json   linguist-generated=true
+pnpm-lock.yaml                     linguist-generated=true

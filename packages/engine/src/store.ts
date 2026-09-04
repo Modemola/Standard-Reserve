@@ -108,6 +108,11 @@ export function tick(world0: World, dtSec: number): World {
     steps += 1;
   }
   world.lastError = undefined;
+  // The step bound stops a hostile or fat-fingered dt from hanging the tab,
+  // but quietly advancing less time than asked for is the worse failure:
+  // every downstream number would then describe a world that never reached
+  // the requested instant, with nothing to say so.
+  if (remaining > 0) world.lastError = "tick_truncated";
   world.invariantsOk = invariantCheckImpl(world).ok;
   return world;
 }
