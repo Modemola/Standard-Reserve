@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
-import Link from "next/link";
 import { SimProvider } from "@/lib/sim-context";
 import { ErrorToast } from "@/components/ErrorToast";
+import { SiteNav } from "@/components/SiteNav";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
@@ -24,14 +24,6 @@ export const metadata: Metadata = {
   description: "An unofficial simulator of The Standard Reserve's onchain monetary policy.",
 };
 
-const NAV = [
-  { href: "/", label: "Home" },
-  { href: "/lab", label: "Lab" },
-  { href: "/bank/c-0042", label: "Bank" },
-  { href: "/scenarios", label: "Scenarios" },
-  { href: "/law", label: "Law" },
-];
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -44,25 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             aria-hidden="true"
             className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_50%_-10%,rgba(201,162,39,0.07),transparent_55%)]"
           />
-          <header className="relative border-b border-white/[0.06]">
-            <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-              <Link href="/" className="font-display text-sm font-medium tracking-[0.16em] text-paper/90">
-                STANDARD·LAW
-              </Link>
-              <ul className="flex gap-6 text-sm">
-                {NAV.map((n) => (
-                  <li key={n.href}>
-                    <Link
-                      href={n.href}
-                      className="text-white/55 transition-colors duration-150 hover:text-paper"
-                    >
-                      {n.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </header>
+          <SiteNav />
           <main className="relative mx-auto max-w-6xl px-4 py-10">{children}</main>
           <footer className="relative mx-auto max-w-6xl px-4 pb-10 pt-6 text-xs leading-relaxed text-white/35">
             <p>

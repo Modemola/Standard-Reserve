@@ -11,6 +11,8 @@ import {
   tick,
 } from "@standard-law/engine";
 import type { World } from "@standard-law/engine";
+import { Sparkles } from "lucide-react";
+import { Card } from "@/components/Card";
 import { fmtPct, fmtToken } from "@/lib/format";
 
 export function WhatIfDrawer({
@@ -57,8 +59,8 @@ export function WhatIfDrawer({
   const feeRatePreview = computeFeeRate(preview);
 
   return (
-    <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-      <h3 className="mb-3 text-sm font-medium text-white/70">What-if</h3>
+    <Card>
+      <h3 className="mb-4 font-display text-sm font-medium tracking-wide text-white/75">What-if</h3>
 
       <Slider
         label="Remaining-epoch ETH flow"
@@ -88,7 +90,7 @@ export function WhatIfDrawer({
         display={`${branchesToRetire}`}
       />
 
-      <div className="mt-4 grid grid-cols-2 gap-3 border-t border-white/10 pt-4 text-xs">
+      <div className="mt-5 grid grid-cols-2 gap-3 border-t border-white/[0.06] pt-4 text-xs">
         <Stat label="m now → preview" value={`${world.m.toFixed(2)} → ${preview.m.toFixed(2)}`} />
         <Stat
           label="S_circ now → preview"
@@ -104,14 +106,15 @@ export function WhatIfDrawer({
 
       <button
         onClick={() => onCommit(applyActions)}
-        className="mt-4 w-full rounded border border-expansion/40 bg-expansion/10 py-2 text-sm text-expansion"
+        className="mt-5 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-expansion/40 bg-expansion/10 py-2.5 text-sm font-medium text-expansion shadow-glow-expansion transition-transform duration-150 hover:scale-[1.01] active:scale-[0.99]"
       >
+        <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
         Commit on live sim
       </button>
-      <p className="mt-2 text-center text-[10px] text-white/40">
+      <p className="mt-2 text-center text-[10px] text-white/35">
         Nothing here touches the live simulation until you commit.
       </p>
-    </div>
+    </Card>
   );
 }
 
@@ -133,10 +136,10 @@ function Slider({
   display: string;
 }) {
   return (
-    <div className="mb-3">
-      <div className="mb-1 flex justify-between text-xs text-white/60">
+    <div className="mb-4">
+      <div className="mb-1.5 flex justify-between text-xs text-white/55">
         <span>{label}</span>
-        <span className="tabular font-mono">{display}</span>
+        <span className="tabular font-mono text-white/80">{display}</span>
       </div>
       <input
         type="range"
@@ -146,7 +149,7 @@ function Slider({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-expansion"
+        className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-black/30 accent-expansion"
       />
     </div>
   );

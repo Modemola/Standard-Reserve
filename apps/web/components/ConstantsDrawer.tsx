@@ -1,4 +1,5 @@
 import type { Params } from "@standard-law/engine";
+import { Card } from "@/components/Card";
 
 function replacer(_key: string, value: unknown) {
   return typeof value === "bigint" ? value.toString() : value;
@@ -7,7 +8,7 @@ function replacer(_key: string, value: unknown) {
 export function ConstantsDrawer({ params }: { params: Params }) {
   const notes = Object.entries(params.meta.sourceNotes);
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-surface p-5 text-xs shadow-card">
+    <Card className="text-xs">
       <h3 className="mb-3 font-display text-sm font-medium tracking-wide text-white/75">
         Constants (params.json)
       </h3>
@@ -23,6 +24,6 @@ export function ConstantsDrawer({ params }: { params: Params }) {
       <pre className="max-h-64 overflow-auto rounded-lg border border-white/[0.05] bg-black/20 p-3 font-mono text-white/55">
         {JSON.stringify(params, replacer, 2)}
       </pre>
-    </div>
+    </Card>
   );
 }

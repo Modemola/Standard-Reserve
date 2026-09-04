@@ -9,8 +9,10 @@ import {
   quoteRetirement,
   retireBranch,
 } from "@standard-law/engine";
+import { CheckCircle2, Gauge } from "lucide-react";
 import { AuctionClock } from "@/components/AuctionClock";
 import { BranchRack } from "@/components/BranchRack";
+import { Card } from "@/components/Card";
 import { ExitTicket } from "@/components/ExitTicket";
 import { RegimeBadge } from "@/components/RegimeBadge";
 import { WhatIfDrawer } from "@/components/WhatIfDrawer";
@@ -26,9 +28,9 @@ export default function BankPage({ params }: { params: { id: string } }) {
 
   if (!charter) {
     return (
-      <div className="rounded-lg border border-white/10 bg-white/[0.03] p-6 text-center">
+      <Card className="text-center">
         <p className="text-white/60">No charter {params.id} in this simulation.</p>
-      </div>
+      </Card>
     );
   }
 
@@ -56,10 +58,10 @@ export default function BankPage({ params }: { params: { id: string } }) {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <Card>
+        <div className="flex flex-wrap items-center justify-between gap-5">
           <RegimeBadge regime={regime} size="lg" />
-          <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-4">
             <Stat label="net flow this epoch" value={fmtEth(world.ethInEpoch - world.ethOutEpoch)} />
             <Stat label="signal" value={fmtEth(signal)} />
             <Stat label="m now" value={world.m.toFixed(2)} />
@@ -69,12 +71,13 @@ export default function BankPage({ params }: { params: { id: string } }) {
           </div>
           <button
             onClick={() => store.apply((w) => checkIn(w, charter.id))}
-            className="rounded border border-expansion/40 bg-expansion/10 px-4 py-2 text-sm text-expansion"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-expansion/40 bg-expansion/10 px-4 py-2 text-sm text-expansion shadow-glow-expansion transition-transform duration-150 hover:scale-[1.03] active:scale-[0.98]"
           >
+            <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
             check in
           </button>
         </div>
-      </div>
+      </Card>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         <div className="lg:col-span-8">
@@ -102,16 +105,15 @@ export default function BankPage({ params }: { params: { id: string } }) {
             unit="ETH"
             disabled={world.params.charterDailyCap <= 0}
           />
-          <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4 text-sm">
-            <h3 className="mb-2 text-sm font-medium text-white/70">Exit pressure</h3>
-            <p className="text-white/60">current fee rate</p>
-            <p className="tabular font-mono text-xl">{fmtPct(feeRate)}</p>
-          </div>
-          <WhatIfDrawer
-            world={world}
-            charterId={charter.id}
-            onCommit={(fn) => store.apply(fn)}
-          />
+          <Card className="text-sm">
+            <h3 className="mb-2 flex items-center gap-1.5 font-display text-sm font-medium tracking-wide text-white/75">
+              <Gauge className="h-3.5 w-3.5 text-white/40" aria-hidden="true" />
+              Exit pressure
+            </h3>
+            <p className="text-white/55">current fee rate</p>
+            <p className="tabular font-mono text-xl text-paper/95">{fmtPct(feeRate)}</p>
+          </Card>
+          <WhatIfDrawer world={world} charterId={charter.id} onCommit={(fn) => store.apply(fn)} />
         </div>
       </div>
 
@@ -133,8 +135,8 @@ export default function BankPage({ params }: { params: { id: string } }) {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-xs text-white/40">{label}</p>
-      <p className="tabular font-mono text-white/85">{value}</p>
+      <p className="text-[11px] uppercase tracking-wide text-white/35">{label}</p>
+      <p className="tabular mt-0.5 font-mono text-white/90">{value}</p>
     </div>
   );
 }

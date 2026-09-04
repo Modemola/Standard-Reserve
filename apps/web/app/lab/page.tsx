@@ -33,6 +33,7 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
+import { Card } from "@/components/Card";
 import { Charts } from "@/components/Charts";
 import { ConstantsDrawer } from "@/components/ConstantsDrawer";
 import { RegimeBadge } from "@/components/RegimeBadge";
@@ -406,14 +407,6 @@ function parseAmount(v: string): bigint {
 
 function inputClass(width: string): string {
   return `${width} rounded-lg border border-white/[0.08] bg-black/20 px-2.5 py-1.5 text-sm text-paper/90 placeholder:text-white/25 transition-colors duration-150 focus:border-white/25 focus:outline-none`;
-}
-
-function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div className={`rounded-xl border border-white/[0.06] bg-surface p-5 shadow-card ${className}`}>
-      {children}
-    </div>
-  );
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
