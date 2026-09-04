@@ -14,3 +14,4 @@ export { supplyCirc, supplyMax } from "./invariants.js";
 // retireBranch, checkIn, reportDormant, closeEpochIfDue, quoteRetirement,
 // quoteLicense, invariantCheck, hashWorld, SimStore).
 export * from "./store.js";
+export * from "./sweep.js";

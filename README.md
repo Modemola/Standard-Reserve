@@ -78,6 +78,8 @@ Nothing is hardcoded into JSX — every policy number flows through
 - `pnpm test` — engine suite (`packages/engine/test/`). Example-based tests
   cover supply identities, wash-trade neutrality, branch/license caps,
   retirement, dormancy, POL monotonicity and the issuance budget cap.
+  `sweep.test.ts` guards the parameter-sweep instrument — that it measures
+  what it claims to, not merely that it runs.
   `properties.test.ts` adds a seeded fuzz layer over random op sequences,
   asserting the invariants that must hold on *every* path: the supply
   identity, `S_max` and POL monotonicity, no negative balances, a
@@ -104,6 +106,33 @@ Nothing is hardcoded into JSX — every policy number flows through
   the palette silently forked once.
 - `cd contracts/law && forge test` — the Solidity twins, fuzzed against
   vectors generated from the live TS engine.
+
+## Parameter sweeps
+
+```
+pnpm --filter @standard-law/engine run sweep            # all three workloads
+pnpm --filter @standard-law/engine run sweep --workload choppy --days 90
+pnpm --filter @standard-law/engine run sweep --json out.json
+```
+
+The Lab drives one world down one path, which shows what the policy *did* but
+never whether it is sound. A sweep runs a grid of parameter values across a
+fixed market and reports where the policy degenerates — issuance stuck at its
+floor, the 900M budget gone inside the horizon, liquidity never forming.
+
+Two rules make the output mean something. Every cell runs the **identical**
+workload, so a difference between cells is the parameter rather than noise.
+And every cell runs several **seeds**, so a verdict means the configuration
+fails reliably — a single-seed version of this reported a finding that
+vanished on three seeds out of five.
+
+Degeneracy is judged relative to the market, not absolutely: `m` riding its
+ceiling under sustained inflow is the policy working, and the same reading
+under an outflow is the failure `cut_never_bit`.
+
+**A caveat that bears on any conclusion drawn here:** several constants are
+still `unpublished_placeholder`. A sweep tells you about the *shape* of the
+model. It cannot tell you the real protocol is well calibrated.
 
 ## Deploying
 
