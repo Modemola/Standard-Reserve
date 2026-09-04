@@ -13,13 +13,16 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { CONTRACTION, EXPANSION } from "@/lib/palette";
 import type { EpochSnapshot } from "@/lib/sim-context";
 
 const WAD = 1e18;
 const AXIS_COLOR = "rgba(244,242,236,0.35)";
 const GRID_COLOR = "rgba(244,242,236,0.06)";
-const GOLD = "#C9A227";
-const RED = "#C0392B";
+// From lib/palette, not copied: these were literals until the red was
+// lifted for contrast and the charts kept drawing the old failing #C0392B.
+const GOLD = EXPANSION;
+const RED = CONTRACTION;
 
 function toUnits(v: bigint): number {
   return Number(v) / WAD;

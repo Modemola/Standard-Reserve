@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
@@ -34,7 +35,6 @@ import {
   Users,
 } from "lucide-react";
 import { Card } from "@/components/Card";
-import { Charts } from "@/components/Charts";
 import { ConstantsDrawer } from "@/components/ConstantsDrawer";
 import { EpochRing } from "@/components/EpochRing";
 import { Guilloche } from "@/components/Guilloche";
@@ -44,6 +44,27 @@ import { fmtDuration, fmtEth, fmtToken, fmtWad } from "@/lib/format";
 import { useEpochHistory, useSimStore, useWorld } from "@/lib/sim-context";
 import { SCENARIO_IDS, fetchScenario } from "@/lib/scenarios";
 import type { Scenario } from "@standard-law/engine";
+import { EXPANSION, regimeStroke } from "@/lib/palette";
+
+// recharts is 102kB gzipped -- 45% of this route's JavaScript -- for four
+// charts that sit below every interactive control on the page. Loading it
+// eagerly meant the Lab could not be used until the charting library had
+// arrived. Split out, the controls hydrate on ~123kB (in line with every
+// other route) and the charts stream in behind them.
+//
+// ssr:false because recharts measures the DOM to size itself and renders
+// nothing useful on the server anyway. The placeholder reserves the charts'
+// exact height so their arrival shifts nothing.
+const Charts = dynamic(() => import("@/components/Charts").then((m) => m.Charts), {
+  ssr: false,
+  loading: () => (
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2" aria-hidden="true">
+      {[0, 1, 2, 3].map((i) => (
+        <div key={i} className="h-[281px] rounded-xl border border-white/[0.06] bg-surface shadow-card" />
+      ))}
+    </div>
+  ),
+});
 
 export default function LabPage() {
   return (
@@ -118,7 +139,7 @@ function LabInner() {
         <Card className="relative overflow-hidden">
           <Guilloche
             uid="lab"
-            stroke={regime === "expansion" ? "#C9A227" : "#C0392B"}
+            stroke={regimeStroke(regime)}
             className="pointer-events-none absolute -right-36 -top-40 h-[320px] w-[320px] opacity-40"
           />
           <div className="relative flex items-center gap-6">
@@ -146,7 +167,7 @@ function LabInner() {
                   label="F_n (last epoch)"
                   value={fmtEth(world.F.at(-1) ?? 0n)}
                   series={history.map((h) => Number(h.F_n) / 1e18)}
-                  stroke={(world.F.at(-1) ?? 0n) > 0n ? "#C9A227" : "#C0392B"}
+                  stroke={regimeStroke((world.F.at(-1) ?? 0n) > 0n ? "expansion" : "contraction")}
                 />
                 <Stat label="signal" value={fmtEth(signal)} />
                 <StatSpark label="m" value={world.m.toFixed(2)} series={history.map((h) => h.m)} />
@@ -526,7 +547,7 @@ function StatSpark({
   label,
   value,
   series,
-  stroke = "#C9A227",
+  stroke = EXPANSION,
 }: {
   label: string;
   value: string;

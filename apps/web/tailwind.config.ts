@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import { CONTRACTION, EXPANSION } from "./lib/palette";
 
 const config: Config = {
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}"],
@@ -9,13 +10,13 @@ const config: Config = {
         surface: "#111318",
         "surface-2": "#171A20",
         paper: "#F4F2EC",
-        expansion: "#C9A227", // muted gold
+        expansion: EXPANSION, // muted gold
         // Cold red, lifted from #C0392B. The original was 3.66:1 on ink and
         // 3.4:1 on the card surfaces -- below AA for normal text -- which put
         // the contraction regime label, the error toast, and the sell/reset
         // buttons under the threshold. This clears 4.5:1 on every surface in
         // the palette while staying the same brick hue.
-        contraction: "#DC5546",
+        contraction: CONTRACTION,
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],

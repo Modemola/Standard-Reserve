@@ -1,11 +1,12 @@
 "use client";
 
 import { useId } from "react";
+import { EXPANSION } from "@/lib/palette";
 
 /** Inline ribbon chart — the "ribbons move" half of the spec's motion rule. */
 export function Sparkline({
   values,
-  stroke = "#C9A227",
+  stroke = EXPANSION,
   width = 120,
   height = 28,
   fill = true,

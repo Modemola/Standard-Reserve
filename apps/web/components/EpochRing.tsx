@@ -1,4 +1,5 @@
 import { fmtDuration } from "@/lib/format";
+import { EXPANSION } from "@/lib/palette";
 
 /** Instrument-style epoch dial: how far through the current epoch we are. */
 export function EpochRing({
@@ -44,7 +45,7 @@ export function EpochRing({
           <circle
             r={r}
             fill="none"
-            stroke="#C9A227"
+            stroke={EXPANSION}
             strokeWidth={stroke}
             strokeLinecap="round"
             strokeDasharray={circumference}

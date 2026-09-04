@@ -38,6 +38,13 @@ jobs:
       - name: Build web app
         run: pnpm --filter web run build
 
+      # Weight, not timing. LCP/TTI swing with runner load and would either
+      # be set so loose they catch nothing or fail at random; bytes on disk
+      # do not. The 756KB hero image that shipped as the LCP element was
+      # caught by a lint warning, not by anything that would have blocked it.
+      - name: Performance budget
+        run: pnpm perf
+
       - name: Install Playwright browsers
         run: pnpm --filter web exec playwright install --with-deps chromium
 

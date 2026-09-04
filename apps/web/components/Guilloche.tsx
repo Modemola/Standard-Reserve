@@ -1,3 +1,5 @@
+import { EXPANSION } from "@/lib/palette";
+
 /**
  * Guilloché — the interference-pattern engraving used on banknotes, share
  * certificates and passports since the 18th century. Generated here as
@@ -42,7 +44,7 @@ const LAYERS = [
 export function Guilloche({
   className = "",
   uid = "g0",
-  stroke = "#C9A227",
+  stroke = EXPANSION,
 }: {
   className?: string;
   uid?: string;
