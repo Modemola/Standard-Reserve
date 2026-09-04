@@ -164,21 +164,31 @@ textarea:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Blanket first, exceptions after.
+   *
+   * This used to enumerate the animated classes by name, and it silently
+   * failed: the rule for the spinner was written `[class*="animate-[spin"]`,
+   * which matches Tailwind's arbitrary-value syntax and not the plain
+   * `animate-spin` utility the code actually uses. The sweep page's loading
+   * spinner therefore span at full speed for exactly the people who had asked
+   * it not to, and nothing caught it because the selector *looked* right.
+   *
+   * Enumerating is the wrong shape for this: it fails open, and it fails again
+   * for every animation anyone adds later. Killing everything and then naming
+   * the few that need a specific resting state fails closed instead. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Animations whose *end* state is not the state we want to rest in. */
   .mote {
     animation: none;
     opacity: 0.22;
-  }
-
-  /* The guilloché rosettes, foil sweep, entrances, draw-ins and the
-     ticker's live pulse all stand still. */
-  .animate-ping,
-  .foil,
-  .rise,
-  .draw,
-  .value-flash,
-  [class*="animate-[spin"],
-  [class*="animate-pulse"] {
-    animation: none !important;
   }
 
   .draw {

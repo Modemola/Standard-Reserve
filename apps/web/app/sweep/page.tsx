@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { VERDICT_MEANING, WORKLOADS } from "@standard-law/engine";
 import type { Verdict } from "@standard-law/engine";
-import { AlertTriangle, Play, Loader2 } from "lucide-react";
+import { AlertTriangle, Play, Loader2, X } from "lucide-react";
 import { Card } from "@/components/Card";
 import { Sparkline } from "@/components/Sparkline";
 import { CONTRACTION, EXPANSION } from "@/lib/palette";
@@ -39,10 +39,22 @@ export default function SweepPage() {
   const [selected, setSelected] = useState<SweepCellView | null>(null);
   const workerRef = useRef<Worker | null>(null);
 
-  // One worker for the page's lifetime. Terminated on unmount so a navigation
-  // mid-sweep does not leave a thread burning CPU behind the next page.
+  // Terminated on unmount so navigating away mid-sweep does not leave a thread
+  // grinding behind the next page. The browser cannot kill a worker instantly
+  // while it is inside a synchronous block, so it lingers for up to ~2s on a
+  // large grid; that is the browser's floor, not something the page controls.
   useEffect(() => {
     return () => workerRef.current?.terminate();
+  }, []);
+
+  // Cancellation has to be terminate(), not a message. runSweep is one long
+  // synchronous block, so the worker never pumps its message queue mid-run and
+  // a cooperative { kind: "cancel" } would not be read until the sweep it was
+  // meant to stop had already finished.
+  const cancel = useCallback(() => {
+    workerRef.current?.terminate();
+    workerRef.current = null;
+    setProgress(null);
   }, []);
 
   const run = useCallback(() => {
@@ -164,6 +176,18 @@ export default function SweepPage() {
             )}
             {running ? "running…" : "run sweep"}
           </button>
+
+          {running && (
+            <button
+              type="button"
+              onClick={cancel}
+              data-testid="cancel-sweep"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.12] px-4 py-2 text-sm text-white/70 transition-colors duration-150 hover:border-white/25 hover:text-paper"
+            >
+              <X className="h-3.5 w-3.5" aria-hidden="true" />
+              cancel
+            </button>
+          )}
         </div>
 
         <p className="mt-4 border-t border-white/[0.06] pt-3 text-xs leading-relaxed text-white/60">
