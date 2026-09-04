@@ -36,7 +36,10 @@ import {
 import { Card } from "@/components/Card";
 import { Charts } from "@/components/Charts";
 import { ConstantsDrawer } from "@/components/ConstantsDrawer";
+import { EpochRing } from "@/components/EpochRing";
+import { Guilloche } from "@/components/Guilloche";
 import { RegimeBadge } from "@/components/RegimeBadge";
+import { Sparkline } from "@/components/Sparkline";
 import { fmtDuration, fmtEth, fmtToken, fmtWad } from "@/lib/format";
 import { useEpochHistory, useSimStore, useWorld } from "@/lib/sim-context";
 import { SCENARIO_IDS, fetchScenario } from "@/lib/scenarios";
@@ -109,20 +112,35 @@ function LabInner() {
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
       <section className="space-y-4 lg:col-span-7">
-        <Card>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-widest text-white/40">
-                epoch {world.epoch}
-              </p>
-              <p className="mt-0.5 text-xs text-white/40">{fmtDuration(epochRemaining)} remaining</p>
+        <Card className="relative overflow-hidden">
+          <Guilloche
+            uid="lab"
+            className="pointer-events-none absolute -right-36 -top-40 h-[320px] w-[320px] opacity-40"
+          />
+          <div className="relative flex items-center gap-6">
+            <EpochRing
+              epoch={world.epoch}
+              elapsed={epochElapsed}
+              total={world.params.epochSeconds}
+            />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-3">
+                <RegimeBadge regime={regime} />
+                <span className="tabular font-mono text-xs text-white/35">
+                  {fmtDuration(epochRemaining)} remaining
+                </span>
+              </div>
+              <div className="mt-5 grid grid-cols-3 gap-4 border-t border-white/[0.06] pt-4 text-sm">
+                <StatSpark
+                  label="F_n (last epoch)"
+                  value={fmtEth(world.F.at(-1) ?? 0n)}
+                  series={history.map((h) => Number(h.F_n) / 1e18)}
+                  stroke={(world.F.at(-1) ?? 0n) > 0n ? "#C9A227" : "#C0392B"}
+                />
+                <Stat label="signal" value={fmtEth(signal)} />
+                <StatSpark label="m" value={world.m.toFixed(2)} series={history.map((h) => h.m)} />
+              </div>
             </div>
-            <RegimeBadge regime={regime} />
-          </div>
-          <div className="mt-5 grid grid-cols-3 gap-3 border-t border-white/[0.06] pt-4 text-sm">
-            <Stat label="F_n (last epoch)" value={fmtEth(world.F.at(-1) ?? 0n)} />
-            <Stat label="signal" value={fmtEth(signal)} />
-            <Stat label="m" value={world.m.toFixed(2)} />
           </div>
         </Card>
 
@@ -470,6 +488,27 @@ function Stat({ label, value }: { label: string; value: string }) {
     <div>
       <p className="text-[11px] uppercase tracking-wide text-white/35">{label}</p>
       <p className="tabular mt-0.5 font-mono text-base text-white/90">{value}</p>
+    </div>
+  );
+}
+
+/** A stat with its own history ribbon underneath — "ribbons move" (spec §3). */
+function StatSpark({
+  label,
+  value,
+  series,
+  stroke = "#C9A227",
+}: {
+  label: string;
+  value: string;
+  series: number[];
+  stroke?: string;
+}) {
+  return (
+    <div className="min-w-0">
+      <p className="text-[11px] uppercase tracking-wide text-white/35">{label}</p>
+      <p className="tabular mt-0.5 font-mono text-base text-white/90">{value}</p>
+      <Sparkline values={series} stroke={stroke} width={104} height={22} className="mt-1.5" />
     </div>
   );
 }

@@ -19,3 +19,42 @@ body {
   background-color: rgba(201, 162, 39, 0.28);
   color: #f4f2ec;
 }
+
+/* Ambient gold motes (components/Motes.tsx) — slow vertical drift with a
+   fade in/out at the ends of each cycle. */
+@keyframes mote-drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  12% {
+    opacity: var(--mote-opacity, 0.4);
+  }
+  88% {
+    opacity: var(--mote-opacity, 0.4);
+  }
+  100% {
+    transform: translate3d(var(--mote-dx, 0px), calc(-1 * var(--mote-dy, 300px)), 0);
+    opacity: 0;
+  }
+}
+
+.mote {
+  animation-name: mote-drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mote {
+    animation: none;
+    opacity: 0.22;
+  }
+
+  /* The guilloché rosettes and the ticker's live pulse also stand still. */
+  .animate-ping,
+  [class*="animate-[spin"] {
+    animation: none !important;
+  }
+}
