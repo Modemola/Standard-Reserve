@@ -19,7 +19,7 @@ export default function ScenariosPage() {
             <Card key={id}>
               <h2 className="font-mono text-sm text-white/80">{id}</h2>
               <p className="mt-1 text-sm text-white/60">{meta.title}</p>
-              <p className="mt-2 text-xs leading-relaxed text-white/40">{meta.teach}</p>
+              <p className="mt-2 text-xs leading-relaxed text-white/60">{meta.teach}</p>
               <Link
                 href={`/lab?scenario=${id}`}
                 className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-expansion/40 bg-expansion/10 px-3 py-1.5 text-xs text-expansion transition-colors duration-150 hover:bg-expansion/[0.18]"

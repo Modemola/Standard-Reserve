@@ -17,6 +17,32 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Keyboard focus. The app had no focus styles at all: every button and link
+   fell back to the UA ring, and the Lab's inputs explicitly killed even that
+   with focus:outline-none, leaving only a white/8 -> white/25 border tint
+   that is close to invisible on a near-black ground. A keyboard user could
+   not tell where they were.
+
+   :focus-visible (not :focus) so the ring appears for keyboard and
+   programmatic focus but never on a mouse click, which is what makes a
+   permanent ring acceptable in a design this dark. Gold rather than the
+   UA default so it reads as part of the plate, with an ink offset ring
+   underneath so it stays visible where controls sit on lighter surfaces. */
+:focus-visible {
+  outline: 2px solid rgba(201, 162, 39, 0.9);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+/* Inputs carry their own rounding and sit flush in dense rows, so the
+   offset ring above would collide with neighbours. Ring inward instead. */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline-offset: 0;
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.18);
+}
+
 /* Bodoni Moda carries an optical-size axis. Pushing it toward the display
    end at hero scale sharpens the hairlines the way a real engraved plate
    would; without it the browser renders text-optimised shapes that go

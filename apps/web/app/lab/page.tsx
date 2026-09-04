@@ -130,7 +130,7 @@ function LabInner() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-3">
                 <RegimeBadge regime={regime} />
-                <span className="tabular font-mono text-xs text-white/35">
+                <span className="tabular font-mono text-xs text-white/55">
                   {fmtDuration(epochRemaining)} remaining
                 </span>
               </div>
@@ -165,7 +165,7 @@ function LabInner() {
             <Stat label="M (minted)" value={fmtToken(world.M)} />
             <Stat label="B (burned)" value={fmtToken(world.B)} />
           </div>
-          <p className="mt-4 border-t border-white/[0.06] pt-3 text-xs text-white/40">
+          <p className="mt-4 border-t border-white/[0.06] pt-3 text-xs text-white/60">
             issuance credits{" "}
             <span className="tabular font-mono text-white/60">
               {fmtToken(world.issuanceCreditsCum)} / {fmtToken(ISSUANCE_BUDGET)}
@@ -437,8 +437,12 @@ function parseAmount(v: string): bigint {
   return BigInt(Math.round(n * 1e18));
 }
 
+// No focus:outline-none here. Tailwind's version wins the specificity fight
+// against the global :focus-visible rule, and the border tint it left behind
+// (white/8 -> white/25) is not a focus indicator anyone can see on this
+// ground. Letting the global gold ring through is the whole point.
 function inputClass(width: string): string {
-  return `${width} rounded-lg border border-white/[0.08] bg-black/20 px-2.5 py-1.5 text-sm text-paper/90 placeholder:text-white/25 transition-colors duration-150 focus:border-white/25 focus:outline-none`;
+  return `${width} rounded-lg border border-white/[0.08] bg-black/20 px-2.5 py-1.5 text-sm text-paper/90 placeholder:text-white/45 transition-colors duration-150 focus:border-white/25`;
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -457,8 +461,8 @@ function InjectorGroup({
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between gap-2">
-        <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-white/30">{label}</p>
-        {hint && <p className="tabular truncate font-mono text-[10px] text-white/25">{hint}</p>}
+        <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-white/50">{label}</p>
+        {hint && <p className="tabular truncate font-mono text-[10px] text-white/45">{hint}</p>}
       </div>
       {children}
     </div>
@@ -511,7 +515,7 @@ function IconButton({
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[11px] uppercase tracking-wide text-white/35">{label}</p>
+      <p className="text-[11px] uppercase tracking-wide text-white/55">{label}</p>
       <p className="tabular mt-0.5 font-mono text-base text-white/90">{value}</p>
     </div>
   );
@@ -531,7 +535,7 @@ function StatSpark({
 }) {
   return (
     <div className="min-w-0">
-      <p className="text-[11px] uppercase tracking-wide text-white/35">{label}</p>
+      <p className="text-[11px] uppercase tracking-wide text-white/55">{label}</p>
       <p className="tabular mt-0.5 font-mono text-base text-white/90">{value}</p>
       <Sparkline values={series} stroke={stroke} width={104} height={22} className="mt-1.5" />
     </div>

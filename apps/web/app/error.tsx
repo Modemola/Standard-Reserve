@@ -39,7 +39,7 @@ export default function RouteError({
       {error.message ? (
         <p className="rounded-lg border border-contraction/25 bg-contraction/[0.07] px-3 py-2 text-left font-mono text-xs text-contraction/90">
           {error.message}
-          {error.digest ? <span className="block text-white/40">digest: {error.digest}</span> : null}
+          {error.digest ? <span className="block text-white/60">digest: {error.digest}</span> : null}
         </p>
       ) : null}
       <button

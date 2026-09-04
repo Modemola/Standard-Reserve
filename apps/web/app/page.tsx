@@ -52,7 +52,7 @@ export default function HomePage() {
 
         <div className="relative flex flex-col items-center text-center">
           <div
-            className="rise flex items-center gap-3 text-[10px] uppercase tracking-[0.32em] text-white/30"
+            className="rise flex items-center gap-3 text-[10px] uppercase tracking-[0.32em] text-white/50"
             style={{ animationDelay: "80ms" }}
           >
             <Rule />
@@ -105,7 +105,7 @@ export default function HomePage() {
             href="https://www.standardreserve.xyz/whitepaper/"
             target="_blank"
             rel="noreferrer"
-            className="mt-7 inline-flex items-center gap-1.5 text-xs text-white/35 transition-colors duration-150 hover:text-white/70"
+            className="mt-7 inline-flex items-center gap-1.5 text-xs text-white/55 transition-colors duration-150 hover:text-white/70"
           >
             Modeling The Standard Reserve&rsquo;s whitepaper
             <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
@@ -145,7 +145,7 @@ export default function HomePage() {
       {/* ── The four loops ─────────────────────────────────────── */}
       <section className="space-y-6">
         <div className="flex items-center gap-4">
-          <h2 className="font-sans text-xs uppercase tracking-[0.26em] text-white/40">
+          <h2 className="font-sans text-xs uppercase tracking-[0.26em] text-white/60">
             The four loops
           </h2>
           <div className="h-px flex-1 bg-gradient-to-r from-white/[0.12] to-transparent" />
@@ -166,7 +166,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer links ───────────────────────────────────────── */}
-      <section className="flex flex-wrap items-center justify-center gap-8 border-t border-white/[0.06] pt-8 text-xs text-white/35">
+      <section className="flex flex-wrap items-center justify-center gap-8 border-t border-white/[0.06] pt-8 text-xs text-white/55">
         <Link href="/law" className="inline-flex items-center gap-1.5 transition-colors duration-150 hover:text-white/70">
           Engine ↔ whitepaper mapping <ArrowRight className="h-3 w-3" aria-hidden="true" />
         </Link>

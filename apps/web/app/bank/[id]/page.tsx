@@ -113,7 +113,7 @@ export default function BankPage({ params }: { params: { id: string } }) {
           />
           <Card className="text-sm">
             <h3 className="mb-2 flex items-center gap-1.5 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">
-              <Gauge className="h-3.5 w-3.5 text-white/40" aria-hidden="true" />
+              <Gauge className="h-3.5 w-3.5 text-white/60" aria-hidden="true" />
               Exit pressure
             </h3>
             <p className="text-white/55">current fee rate</p>
@@ -141,7 +141,7 @@ export default function BankPage({ params }: { params: { id: string } }) {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[11px] uppercase tracking-wide text-white/35">{label}</p>
+      <p className="text-[11px] uppercase tracking-wide text-white/55">{label}</p>
       <p className="tabular mt-0.5 font-mono text-white/90">{value}</p>
     </div>
   );

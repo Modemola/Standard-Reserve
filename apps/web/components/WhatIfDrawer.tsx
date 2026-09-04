@@ -115,7 +115,7 @@ export function WhatIfDrawer({
         <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
         Commit on live sim
       </button>
-      <p className="mt-2 text-center text-[10px] text-white/35">
+      <p className="mt-2 text-center text-[10px] text-white/55">
         {nothingStaged
           ? "Move a slider to stage a hypothetical."
           : "Nothing here touches the live simulation until you commit."}
@@ -164,7 +164,7 @@ function Slider({
 function Stat({ label, value, testId }: { label: string; value: string; testId?: string }) {
   return (
     <div data-testid={testId}>
-      <p className="text-white/40">{label}</p>
+      <p className="text-white/60">{label}</p>
       <p className="tabular font-mono text-white/80">{value}</p>
     </div>
   );

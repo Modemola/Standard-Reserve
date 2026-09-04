@@ -69,7 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <SiteNav />
             <Ticker />
             <main className="mx-auto max-w-6xl px-4 py-10">{children}</main>
-            <footer className="mx-auto max-w-6xl px-4 pb-10 pt-6 text-xs leading-relaxed text-white/35">
+            <footer className="mx-auto max-w-6xl px-4 pb-10 pt-6 text-xs leading-relaxed text-white/55">
               <p>
                 <em>
                   STANDARD is an experimental onchain protocol. This app is unofficial. Not a bank.

@@ -27,7 +27,7 @@ export default function LawPage() {
               <tr key={row.engine} className="border-t border-white/[0.05]">
                 <td className="px-4 py-2.5 font-mono text-white/85">{row.engine}</td>
                 <td className="px-4 py-2.5 text-white/55">{row.wp}</td>
-                <td className="px-4 py-2.5 text-white/40">{row.notes}</td>
+                <td className="px-4 py-2.5 text-white/60">{row.notes}</td>
               </tr>
             ))}
           </tbody>
@@ -59,7 +59,7 @@ export default function LawPage() {
                 <tr key={row.solidity} className="border-t border-white/[0.05]">
                   <td className="px-4 py-2.5 font-mono text-white/85">{row.solidity}</td>
                   <td className="px-4 py-2.5 font-mono text-white/55">{row.engine}</td>
-                  <td className="px-4 py-2.5 text-white/40">{row.notes}</td>
+                  <td className="px-4 py-2.5 text-white/60">{row.notes}</td>
                 </tr>
               ))}
             </tbody>

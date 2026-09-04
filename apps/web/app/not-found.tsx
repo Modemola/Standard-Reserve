@@ -9,7 +9,7 @@ import { DEMO_CHARTER_ID } from "@/lib/demo-seed";
 export default function NotFound() {
   return (
     <Card className="mx-auto max-w-xl space-y-4 text-center">
-      <p className="font-mono text-xs uppercase tracking-[0.2em] text-white/40">404</p>
+      <p className="font-mono text-xs uppercase tracking-[0.2em] text-white/60">404</p>
       <h1 className="optical-title font-display text-2xl text-paper">No such page</h1>
       <p className="text-sm leading-relaxed text-white/60">
         This address isn&apos;t part of the simulator. Everything lives under the four

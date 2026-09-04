@@ -54,9 +54,9 @@ export function EpochRing({
         </g>
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">epoch</span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/55">epoch</span>
         <span className="tabular font-serif text-2xl font-medium leading-none text-paper/95">{epoch}</span>
-        <span className="tabular mt-1 font-mono text-[10px] text-white/40">{fmtDuration(remaining)} left</span>
+        <span className="tabular mt-1 font-mono text-[10px] text-white/60">{fmtDuration(remaining)} left</span>
       </div>
     </div>
   );

@@ -54,7 +54,7 @@ export function BranchRack({
                 <span>{fmtDuration(age)} old</span>
               </div>
               <p className="tabular mt-1 font-mono text-lg text-paper/95">{fmtToken(branch.ledger)}</p>
-              <p className="text-[11px] text-white/35">{pct.toFixed(2)}% of system</p>
+              <p className="text-[11px] text-white/55">{pct.toFixed(2)}% of system</p>
             </div>
             <button
               onClick={() => onRetire(branch.id)}
