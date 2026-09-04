@@ -109,3 +109,46 @@ test("ghost_purge: dormant charters are revoked and issuance is cut to the floor
   // Revocation burns the dormant charters' ledgers.
   expect(t.sCirc!).toBeLessThan(100_000_000);
 });
+
+test("sweep: the grid runs off the main thread and reproduces the CLI's findings", async ({
+  page,
+}) => {
+  // Two things at once, because they are the same guarantee. The sweep must
+  // run in a worker -- on the main thread this page would freeze for seconds
+  // and could not even paint its own progress bar -- and it must produce the
+  // identical grid to `pnpm sweep`, since both call one engine module.
+  //
+  // choppy at 60d x 5 seeds is the documented finding: only cutStep <= 0.1
+  // survives directionless churn, and only at mMax >= 1.0.
+  test.setTimeout(120_000);
+  await page.goto("/sweep");
+  await page.getByRole("button", { name: "choppy" }).click();
+  await page.locator("input[type=number]").first().fill("60");
+  await page.locator("input[type=number]").nth(1).fill("5");
+  await page.getByTestId("run-sweep").click();
+
+  // If the sweep blocked the main thread, this would time out rather than
+  // resolve -- the assertion is as much about responsiveness as about output.
+  await expect(page.locator("table")).toBeVisible({ timeout: 90_000 });
+  await expect(page.getByText(/10\/30 healthy/)).toBeVisible();
+
+  const grid = await page.evaluate(() =>
+    Array.from(document.querySelectorAll("table tbody tr")).map((tr) =>
+      Array.from(tr.querySelectorAll("button"))
+        .map((b) => b.textContent!.trim())
+        .join(" "),
+    ),
+  );
+  expect(grid).toEqual([
+    "ok dead dead dead dead",
+    "ok dead dead dead dead",
+    "ok ok dead dead dead",
+    "ok ok dead dead dead",
+    "ok ok dead dead dead",
+    "ok ok dead dead dead",
+  ]);
+
+  // Selecting a cell shows that run rather than a static blurb.
+  await page.locator("table tbody button").first().click();
+  await expect(page.getByText("mean m")).toBeVisible();
+});

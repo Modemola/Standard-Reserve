@@ -11,7 +11,7 @@ import { expect, test } from "@playwright/test";
  * present, so they need their own gate.
  */
 
-const ROUTES = ["/", "/bank/c-0042", "/lab", "/scenarios", "/law"];
+const ROUTES = ["/", "/bank/c-0042", "/lab", "/sweep", "/scenarios", "/law"];
 
 /** WCAG relative luminance, then the contrast ratio between two sRGB colours. */
 function contrastRatio(fg: [number, number, number], bg: [number, number, number]): number {

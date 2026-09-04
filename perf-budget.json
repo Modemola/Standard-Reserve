@@ -2,27 +2,31 @@
   "_comment": "Gzipped first-load JS and CSS per route, and raw public asset sizes, in bytes. Runs higher than `next build`'s First Load JS column on purpose -- see scripts/check-budget.mjs. Regenerate with `node scripts/check-budget.mjs --update`, and say in the commit message why the budget moved.",
   "routes": {
     "/_not-found": {
-      "js": 132096,
+      "js": 133120,
       "css": 10240
     },
     "/": {
-      "js": 138240,
+      "js": 139264,
       "css": 10240
     },
     "/scenarios": {
-      "js": 132096,
+      "js": 133120,
       "css": 10240
     },
     "/law": {
-      "js": 132096,
-      "css": 10240
-    },
-    "/bank/[id]": {
-      "js": 138240,
+      "js": 133120,
       "css": 10240
     },
     "/lab": {
-      "js": 141312,
+      "js": 144384,
+      "css": 10240
+    },
+    "/sweep": {
+      "js": 139264,
+      "css": 10240
+    },
+    "/bank/[id]": {
+      "js": 140288,
       "css": 10240
     }
   },

@@ -225,6 +225,9 @@ export interface SweepConfig {
   charters?: number;
   /** Seeds per cell. More seeds, less anecdote. Default 5. */
   seeds?: number;
+  /** Called after each cell. A full grid takes seconds, so any caller with a
+   *  UI needs to be able to say how far along it is. */
+  onProgress?: (done: number, total: number) => void;
 }
 
 export interface SweepResult {
@@ -363,8 +366,10 @@ export function runSweep(config: SweepConfig): SweepResult {
   const seeds = config.seeds ?? 5;
   const cells: Cell[] = [];
   let skipped = 0;
+  const combos = grid(config.axes);
+  let done = 0;
 
-  for (const overrides of grid(config.axes)) {
+  for (const overrides of combos) {
     const params = { ...config.base, ...overrides } as Params;
 
     // mLaunch is a starting condition, not the variable under test. Sweeping
@@ -406,6 +411,7 @@ export function runSweep(config: SweepConfig): SweepResult {
       sample: runs[0].metrics,
       meanM: runs.reduce((a, r) => a + r.metrics.meanM, 0) / seeds,
     });
+    config.onProgress?.((done += 1), combos.length);
   }
 
   return {

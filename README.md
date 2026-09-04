@@ -26,7 +26,7 @@ this repo as `unpublished_placeholder` and lives in
 ## Layout
 
 ```
-apps/web/         Next.js app — /, /lab, /bank/:id, /scenarios, /law
+apps/web/         Next.js app — /, /lab, /bank/:id, /sweep, /scenarios, /law
 packages/engine/  Pure TypeScript monetary engine (bigint, 1e18 fixed-point)
 packages/params/  Zod-validated params schema + default.json
 contracts/law/    Solidity twins of three formulas — audit narrative only,
@@ -108,6 +108,13 @@ Nothing is hardcoded into JSX — every policy number flows through
   vectors generated from the live TS engine.
 
 ## Parameter sweeps
+
+Live at [`/sweep`](https://standard-law.vercel.app/sweep) — pick a market, run
+the grid, click a cell to see its run. It executes in a Web Worker: a 30-cell
+grid is roughly four thousand simulated days, which on the main thread would
+freeze the tab hard enough that it could not paint its own progress bar. The
+page and the CLI call the same engine module and produce identical grids (an
+e2e test asserts exactly that).
 
 ```
 pnpm --filter @standard-law/engine run sweep            # all three workloads
