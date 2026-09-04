@@ -6,6 +6,7 @@ import {
   buyLicense,
   checkIn,
   createWorld,
+  quoteRetirement,
   reportDormant,
   retireBranch,
   seedGenesis,
@@ -32,6 +33,15 @@ function makeRng(seed: number) {
 
 const RUNS = 60;
 const OPS_PER_RUN = 40;
+
+/** Total live ledger held by one charter. */
+function liveLedger(world: World, charterId: string): bigint {
+  const charter = world.charters[charterId];
+  if (!charter) return 0n;
+  let total = 0n;
+  for (const b of charter.branches) if (b.alive) total += b.ledger;
+  return total;
+}
 
 function randomWalk(seed: number, onStep: (w: World, prev: World, op: string) => void): World {
   const rng = makeRng(seed);
@@ -128,6 +138,50 @@ describe("engine properties over random op sequences", () => {
         if (op !== "buyStd" && op !== "sellStd") return;
         expect(w.pool.eth * w.pool.std >= prev.pool.eth * prev.pool.std).toBe(true);
       });
+    }
+  });
+
+  it("charges exactly what the retirement quote promised", () => {
+    // The cockpit renders quoteRetirement in the exit ticket and then calls
+    // retireBranch when the reader confirms. If those two ever computed the
+    // fee differently the UI would show one number and the ledger would move
+    // by another -- the worst kind of divergence, because both sides look
+    // internally consistent. This is the contract that forbids it.
+    for (let seed = 1; seed <= RUNS; seed++) {
+      const rng = makeRng(seed);
+      let world = createWorld(DEFAULT_PARAMS, 0);
+      world = seedGenesis(world, 3);
+      const ids = Object.keys(world.charters);
+
+      // Move the world somewhere non-trivial first: the fee rate depends on
+      // the trailing withdrawal window and the total live ledger, so a quote
+      // taken at genesis would only ever exercise the floor.
+      world = tick(world, Math.floor(rng() * 400_000) + 1);
+      world = applySwap(world, "buyStd", BigInt(Math.floor(rng() * 5e18) + 1));
+      world = tick(world, Math.floor(rng() * 400_000) + 1);
+
+      for (const id of ids) {
+        for (const branch of world.charters[id].branches) {
+          if (!branch.alive) continue;
+          const quote = quoteRetirement(world, id, branch.id);
+          expect(quote).not.toBeNull();
+
+          const before = world;
+          world = retireBranch(world, id, branch.id);
+          if (world.lastError) continue; // rejected; nothing should have moved
+
+          // The user is minted exactly the quoted amount...
+          expect(world.M - before.M).toBe(quote!.mintToUser);
+          // ...the quote's own arithmetic is self-consistent...
+          expect(quote!.fee + quote!.mintToUser).toBe(quote!.ledger);
+          // ...and every unit of the retired ledger is accounted for: minted
+          // to the user, burned, or rebated to sibling branches. Nothing is
+          // created and nothing silently evaporates.
+          const burned = world.B - before.B;
+          const siblingGain = liveLedger(world, id) - liveLedger(before, id) + quote!.ledger;
+          expect(quote!.mintToUser + burned + siblingGain).toBe(quote!.ledger);
+        }
+      }
     }
   });
 
