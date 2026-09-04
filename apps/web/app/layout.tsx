@@ -63,9 +63,9 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     images: [
       {
-        url: "/hero-preview.png",
-        width: 2800,
-        height: 1480,
+        url: "/hero-preview.jpg",
+        width: 2100,
+        height: 1110,
         alt: "The Banker's Cockpit — regime badge, branch rack, auction clocks and exit pressure.",
       },
     ],
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Policy Twin — The Standard Reserve",
     description: DESCRIPTION,
-    images: ["/hero-preview.png"],
+    images: ["/hero-preview.jpg"],
   },
   robots: { index: true, follow: true },
 };

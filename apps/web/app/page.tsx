@@ -5,9 +5,9 @@ import { Card } from "@/components/Card";
 import { Guilloche } from "@/components/Guilloche";
 import { Motes } from "@/components/Motes";
 import { DEMO_CHARTER_ID } from "@/lib/demo-seed";
-// Static import (not a "/hero-preview.png" string): this is what lets next
-// read the real 2800x1480 up front and generate the blur placeholder.
-import heroPreview from "@/public/hero-preview.png";
+// Static import (not a "/hero-preview.jpg" string): this is what lets next
+// read the real 2100x1110 up front and generate the blur placeholder.
+import heroPreview from "@/public/hero-preview.jpg";
 
 const LOOPS = [
   {
@@ -126,7 +126,9 @@ export default function HomePage() {
               arrived. next/image serves a width-appropriate WebP/AVIF and
               reserves the box; priority takes it off the lazy path, since
               lazy-loading the thing the viewport is waiting for only delays
-              it. sizes caps the request at the container's real 1024px. */}
+              it. sizes caps the request at the container's real 1024px --
+              which is also why the source is 2100px rather than 2800: past
+              2x retina, nothing could ever show the extra detail. */}
           <Image
             src={heroPreview}
             alt="The Banker's Cockpit at /bank/c-0042 — regime badge, branch rack, auction clocks, and the what-if drawer"

@@ -141,7 +141,7 @@ export default function BankPage({ params }: { params: { id: string } }) {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[11px] uppercase tracking-wide text-white/55">{label}</p>
+      <p className="min-h-[2.7em] text-[11px] uppercase leading-[1.35] tracking-wide text-white/55">{label}</p>
       <p className="tabular mt-0.5 font-mono text-white/90">{value}</p>
     </div>
   );

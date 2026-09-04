@@ -87,12 +87,21 @@ Nothing is hardcoded into JSX — every policy number flows through
   an error. Not optional: it is the only gate that catches a conditional
   hook, which types, build and e2e all pass straight over.
 - `pnpm --filter web run build` — typechecks and builds the app.
-- `pnpm --filter web run e2e` — Playwright. `cockpit.spec.ts` drives the real
-  flows (flip the regime from a scenario, buy a license, retire a branch and
+- `pnpm perf` — performance budget (`scripts/check-budget.mjs`): gzipped
+  first-load JS/CSS per route and raw `public/` asset sizes, checked against
+  `perf-budget.json`. Weight only, deliberately — timing metrics swing with
+  CI runner load. Regenerate with `pnpm perf:update` after an intentional
+  change, and say in the commit message why the budget moved.
+- `pnpm --filter web run e2e` — Playwright, 25 flows. `cockpit.spec.ts` drives
+  the real interactions (flip the regime, buy a license, retire a branch and
   watch `S_max` fall, prove the what-if drawer never touches live state).
-  `a11y.spec.ts` measures rather than assumes: real WCAG contrast ratios on
-  every route, a visible focus ring at every keyboard stop, and exactly one
-  `aria-current` link per route.
+  `scenarios.spec.ts` runs all five bundled scenarios through the UI and
+  asserts the lesson each one claims to teach. `a11y.spec.ts` measures rather
+  than assumes: real WCAG contrast ratios on every route, a visible focus ring
+  at every keyboard stop, exactly one `aria-current` link per route.
+  `layout.spec.ts` guards stat baseline alignment and that both regimes paint
+  their own colour — including in the charts' SVG attributes, which is where
+  the palette silently forked once.
 - `cd contracts/law && forge test` — the Solidity twins, fuzzed against
   vectors generated from the live TS engine.
 

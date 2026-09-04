@@ -536,7 +536,7 @@ function IconButton({
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[11px] uppercase tracking-wide text-white/55">{label}</p>
+      <p className="min-h-[2.7em] text-[11px] uppercase leading-[1.35] tracking-wide text-white/55">{label}</p>
       <p className="tabular mt-0.5 font-mono text-base text-white/90">{value}</p>
     </div>
   );
@@ -556,7 +556,7 @@ function StatSpark({
 }) {
   return (
     <div className="min-w-0">
-      <p className="text-[11px] uppercase tracking-wide text-white/55">{label}</p>
+      <p className="min-h-[2.7em] text-[11px] uppercase leading-[1.35] tracking-wide text-white/55">{label}</p>
       <p className="tabular mt-0.5 font-mono text-base text-white/90">{value}</p>
       <Sparkline values={series} stroke={stroke} width={104} height={22} className="mt-1.5" />
     </div>
