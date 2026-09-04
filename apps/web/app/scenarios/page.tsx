@@ -7,7 +7,7 @@ export default function ScenariosPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-2xl font-semibold text-paper/95">Scenarios</h1>
+        <h1 className="font-serif text-2xl font-semibold text-paper/95">Scenarios</h1>
         <p className="mt-1 text-sm text-white/55">
           Bundled JSON worlds that exercise specific parts of the policy engine.
         </p>

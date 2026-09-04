@@ -20,7 +20,7 @@ export function SiteNav() {
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
         <Link
           href="/"
-          className="font-display text-sm font-medium tracking-[0.16em] text-paper/90"
+          className="font-serif text-sm font-medium tracking-[0.16em] text-paper/90"
           onClick={() => setOpen(false)}
         >
           STANDARD·LAW

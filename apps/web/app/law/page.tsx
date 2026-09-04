@@ -4,7 +4,7 @@ export default function LawPage() {
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="font-display text-2xl font-semibold text-paper/95">Law</h1>
+        <h1 className="font-serif text-2xl font-semibold text-paper/95">Law</h1>
         <p className="mt-1 max-w-2xl text-sm text-white/55">
           Every number the engine produces traces back to a whitepaper section here — nothing in
           this simulator is invented. Where the whitepaper leaves a constant unpublished, the
@@ -35,7 +35,7 @@ export default function LawPage() {
       </div>
 
       <div>
-        <h2 className="font-display text-sm font-medium tracking-wide text-white/85">
+        <h2 className="font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
           Phase E — Solidity twins (audit narrative)
         </h2>
         <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-white/45">

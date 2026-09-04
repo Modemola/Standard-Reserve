@@ -25,7 +25,7 @@ export function AuctionClock({
   return (
     <Card>
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="flex items-center gap-1.5 font-display text-sm font-medium tracking-wide text-white/75">
+        <h3 className="flex items-center gap-1.5 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">
           <Timer className="h-3.5 w-3.5 text-white/40" aria-hidden="true" />
           {title}
         </h3>

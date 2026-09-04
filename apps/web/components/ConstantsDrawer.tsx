@@ -9,7 +9,7 @@ export function ConstantsDrawer({ params }: { params: Params }) {
   const notes = Object.entries(params.meta.sourceNotes);
   return (
     <Card className="text-xs">
-      <h3 className="mb-3 font-display text-sm font-medium tracking-wide text-white/75">
+      <h3 className="mb-3 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">
         Constants (params.json)
       </h3>
       {notes.length > 0 && (

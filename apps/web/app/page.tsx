@@ -44,23 +44,36 @@ export default function HomePage() {
         <CornerFrame />
 
         <div className="relative flex flex-col items-center text-center">
-          <div className="flex items-center gap-3 text-[10px] uppercase tracking-[0.32em] text-white/30">
+          <div
+            className="rise flex items-center gap-3 text-[10px] uppercase tracking-[0.32em] text-white/30"
+            style={{ animationDelay: "80ms" }}
+          >
             <Rule />
             monetary physics engine
             <Rule />
           </div>
 
-          <h1 className="mt-6 bg-gradient-to-b from-white via-paper to-paper/70 bg-clip-text font-display text-6xl font-bold leading-[0.92] tracking-tight text-transparent drop-shadow-[0_0_40px_rgba(201,162,39,0.15)] sm:text-7xl lg:text-8xl">
-            Policy Twin
-          </h1>
+          {/* Two elements: `rise` and `foil` both set the animation
+              shorthand, so they cannot share a node. */}
+          <div className="rise mt-6" style={{ animationDelay: "180ms" }}>
+            <h1 className="foil optical-display bg-clip-text font-serif text-6xl font-bold leading-[0.92] tracking-tight text-transparent drop-shadow-[0_0_40px_rgba(201,162,39,0.18)] sm:text-7xl lg:text-8xl">
+              Policy Twin
+            </h1>
+          </div>
 
-          <p className="mt-7 max-w-xl text-balance leading-relaxed text-white/55">
+          <p
+            className="rise mt-7 max-w-xl text-balance leading-relaxed text-white/55"
+            style={{ animationDelay: "300ms" }}
+          >
             An unofficial simulator of The Standard Reserve&rsquo;s onchain central bank —
             deterministic, local-first, and built to make the monetary policy legible before you
             touch mainnet.
           </p>
 
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <div
+            className="rise mt-9 flex flex-wrap items-center justify-center gap-3"
+            style={{ animationDelay: "420ms" }}
+          >
             <Link
               href="/lab"
               className="group inline-flex items-center gap-2 rounded-lg border border-expansion/40 bg-expansion/10 px-6 py-3 text-sm font-medium text-expansion shadow-glow-expansion transition-all duration-200 hover:bg-expansion/[0.18] hover:shadow-[0_0_0_1px_rgba(201,162,39,0.4),0_0_32px_-4px_rgba(201,162,39,0.5)]"
@@ -115,7 +128,7 @@ export default function HomePage() {
       {/* ── The four loops ─────────────────────────────────────── */}
       <section className="space-y-6">
         <div className="flex items-center gap-4">
-          <h2 className="font-display text-xs uppercase tracking-[0.26em] text-white/40">
+          <h2 className="font-sans text-xs uppercase tracking-[0.26em] text-white/40">
             The four loops
           </h2>
           <div className="h-px flex-1 bg-gradient-to-r from-white/[0.12] to-transparent" />
@@ -126,7 +139,7 @@ export default function HomePage() {
               <span className="tabular absolute right-4 top-3 font-mono text-4xl font-bold text-white/[0.04] transition-colors duration-300 group-hover:text-expansion/[0.14]">
                 {loop.index}
               </span>
-              <h3 className="mb-1.5 font-display text-sm font-medium tracking-wide text-white/85">
+              <h3 className="mb-1.5 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
                 {loop.title}
               </h3>
               <p className="relative text-sm leading-relaxed text-white/50">{loop.body}</p>

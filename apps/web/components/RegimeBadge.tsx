@@ -10,7 +10,7 @@ export function RegimeBadge({ regime, size = "md" }: { regime: Regime; size?: "m
       data-testid="regime-badge"
       role="status"
       aria-label={`regime: ${regime}`}
-      className={`inline-flex items-center rounded-xl border font-display font-medium uppercase tracking-[0.08em] ${sizeClasses} ${
+      className={`inline-flex items-center rounded-xl border font-serif font-medium uppercase tracking-[0.08em] ${sizeClasses} ${
         isExpansion
           ? "border-expansion/30 bg-gradient-to-br from-expansion/[0.14] to-expansion/[0.04] text-expansion shadow-glow-expansion"
           : "border-contraction/30 bg-gradient-to-br from-contraction/[0.14] to-contraction/[0.04] text-contraction shadow-glow-contraction"

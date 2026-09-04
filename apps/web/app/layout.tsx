@@ -1,18 +1,31 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { Bodoni_Moda, Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import { SimProvider } from "@/lib/sim-context";
 import { ErrorToast } from "@/components/ErrorToast";
 import { SiteNav } from "@/components/SiteNav";
 import { Ticker } from "@/components/Ticker";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
-const spaceGrotesk = Space_Grotesk({
+/** UI text — Instrument Sans: cleaner and less ubiquitous than Inter, and the
+ *  companion face to the display serif below. */
+const instrumentSans = Instrument_Sans({
   subsets: ["latin"],
-  weight: ["500", "700"],
-  variable: "--font-display",
+  variable: "--font-sans",
   display: "swap",
 });
+
+/** Display — Bodoni Moda: a didone, the typographic register of banknotes,
+ *  share certificates and engraved financial instruments. Variable optical
+ *  size axis, so hairlines stay crisp at hero scale. Large sizes only. */
+const bodoni = Bodoni_Moda({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-serif",
+  display: "swap",
+});
+
+/** Data — every number in the engine. */
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
@@ -33,7 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
+      className={`${instrumentSans.variable} ${bodoni.variable} ${jetbrainsMono.variable}`}
     >
       <body className="min-h-screen bg-ink font-sans text-paper antialiased">
         <SimProvider>

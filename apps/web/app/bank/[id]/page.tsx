@@ -106,7 +106,7 @@ export default function BankPage({ params }: { params: { id: string } }) {
             disabled={world.params.charterDailyCap <= 0}
           />
           <Card className="text-sm">
-            <h3 className="mb-2 flex items-center gap-1.5 font-display text-sm font-medium tracking-wide text-white/75">
+            <h3 className="mb-2 flex items-center gap-1.5 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">
               <Gauge className="h-3.5 w-3.5 text-white/40" aria-hidden="true" />
               Exit pressure
             </h3>

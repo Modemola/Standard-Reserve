@@ -39,7 +39,16 @@ const LAYERS = [
   { path: rosette(170, 83, 64), opacity: 0.3, width: 0.35, spin: "animate-[spin_320s_linear_infinite]" },
 ];
 
-export function Guilloche({ className = "", uid = "g0" }: { className?: string; uid?: string }) {
+export function Guilloche({
+  className = "",
+  uid = "g0",
+  stroke = "#C9A227",
+}: {
+  className?: string;
+  uid?: string;
+  /** Tints with the regime on /lab; gold everywhere else. */
+  stroke?: string;
+}) {
   const maskId = `guilloche-mask-${uid}`;
   const gradId = `guilloche-grad-${uid}`;
 
@@ -62,7 +71,12 @@ export function Guilloche({ className = "", uid = "g0" }: { className?: string; 
           <rect x="-260" y="-260" width="520" height="520" fill={`url(#${gradId})`} />
         </mask>
       </defs>
-      <g mask={`url(#${maskId})`} fill="none" stroke="#C9A227">
+      <g
+        mask={`url(#${maskId})`}
+        fill="none"
+        stroke={stroke}
+        className="transition-[stroke] duration-700 ease-out"
+      >
         {LAYERS.map((layer, i) => (
           <g key={i} className={layer.spin} style={{ transformOrigin: "center" }}>
             <path d={layer.path} strokeWidth={layer.width} strokeOpacity={layer.opacity} />

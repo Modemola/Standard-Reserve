@@ -123,7 +123,7 @@ const tooltipProps = {
 function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="rounded-xl border border-white/[0.06] bg-surface p-5 shadow-card">
-      <h3 className="mb-3 font-display text-sm font-medium tracking-wide text-white/75">{title}</h3>
+      <h3 className="mb-3 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">{title}</h3>
       {children}
     </div>
   );

@@ -115,6 +115,7 @@ function LabInner() {
         <Card className="relative overflow-hidden">
           <Guilloche
             uid="lab"
+            stroke={regime === "expansion" ? "#C9A227" : "#C0392B"}
             className="pointer-events-none absolute -right-36 -top-40 h-[320px] w-[320px] opacity-40"
           />
           <div className="relative flex items-center gap-6">
@@ -190,7 +191,7 @@ function LabInner() {
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
           )}
           <div>
-            <p className="font-display font-medium uppercase tracking-widest">
+            <p className="font-sans text-[13px] font-semibold uppercase tracking-[0.16em]">
               {inv.ok ? "invariants OK" : "invariants FAIL"}
             </p>
             {!inv.ok && (
@@ -428,7 +429,7 @@ function inputClass(width: string): string {
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h3 className="font-display text-sm font-medium tracking-wide text-white/75">{children}</h3>;
+  return <h3 className="font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">{children}</h3>;
 }
 
 function InjectorGroup({ label, children }: { label: string; children: React.ReactNode }) {

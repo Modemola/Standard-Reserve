@@ -1,6 +1,7 @@
 "use client";
 
 import { invariantCheck, spotPriceEthPerStd, supplyCirc } from "@standard-law/engine";
+import { FlashOnChange } from "@/components/FlashOnChange";
 import { fmtEth, fmtToken } from "@/lib/format";
 import { useWorld } from "@/lib/sim-context";
 
@@ -48,7 +49,9 @@ function Cell({ label, value, className = "" }: { label: string; value: string; 
   return (
     <span className="flex shrink-0 items-baseline gap-1.5 border-l border-white/[0.07] px-3">
       <span className="uppercase tracking-[0.12em] text-white/30">{label}</span>
-      <span className={`tabular ${className || "text-white/70"}`}>{value}</span>
+      <FlashOnChange value={value} className={`tabular ${className || "text-white/70"}`}>
+        {value}
+      </FlashOnChange>
     </span>
   );
 }

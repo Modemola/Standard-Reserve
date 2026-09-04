@@ -61,7 +61,16 @@ export function Sparkline({
         </defs>
       )}
       {fill && <path d={area} fill={`url(#${gradId})`} />}
-      <path d={line} fill="none" stroke={stroke} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+      <path
+        d={line}
+        pathLength={1}
+        className="draw"
+        fill="none"
+        stroke={stroke}
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
