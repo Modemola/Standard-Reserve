@@ -3,11 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { DEMO_CHARTER_ID } from "@/lib/demo-seed";
 
 const NAV = [
   { href: "/", label: "Home" },
   { href: "/lab", label: "Lab" },
-  { href: "/bank/c-0042", label: "Bank" },
+  // Derived, not hardcoded: changing the demo charter must not silently
+  // leave this link pointing at a charter that no longer exists.
+  { href: `/bank/${DEMO_CHARTER_ID}`, label: "Bank" },
   { href: "/scenarios", label: "Scenarios" },
   { href: "/law", label: "Law" },
 ];

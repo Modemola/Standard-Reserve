@@ -254,6 +254,12 @@ export class SimStore {
           break;
       }
     }
+    // A scenario is a scripted replay, not something the user just did, and
+    // some scenarios deliberately script a rejection to make their point --
+    // ghost_purge checks a charter in so its later dormancy report *must*
+    // fail. Carrying that last rejection out of the replay surfaces a red
+    // toast that reads as "loading the scenario failed", which it did not.
+    world.lastError = undefined;
     this.world = world;
     for (const l of this.listeners) l();
   }

@@ -3,6 +3,7 @@ import { ArrowRight, ArrowUpRight, FlaskConical, Landmark } from "lucide-react";
 import { Card } from "@/components/Card";
 import { Guilloche } from "@/components/Guilloche";
 import { Motes } from "@/components/Motes";
+import { DEMO_CHARTER_ID } from "@/lib/demo-seed";
 
 const LOOPS = [
   {
@@ -31,9 +32,11 @@ export default function HomePage() {
   return (
     <div className="space-y-20">
       {/* ── Hero ───────────────────────────────────────────────── */}
-      <section className="relative isolate -mt-4 pb-4 pt-10 sm:pt-16">
+      {/* overflow-hidden: the rosette is deliberately wider than the column,
+          and without this it pushes the page horizontally on small screens. */}
+      <section className="relative isolate -mt-4 overflow-hidden pb-4 pt-10 sm:pt-16">
         <Motes className="-z-20 -inset-y-24" />
-        <Guilloche className="absolute left-1/2 top-[38%] -z-10 h-[680px] w-[680px] -translate-x-1/2 -translate-y-1/2 opacity-45" />
+        <Guilloche className="absolute left-1/2 top-[38%] -z-10 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 opacity-45 sm:h-[680px] sm:w-[680px]" />
         {/* Scrim: keeps the engraving legible as texture without letting it
             compete with the copy sitting on top of it. */}
         <div
@@ -86,11 +89,11 @@ export default function HomePage() {
               />
             </Link>
             <Link
-              href="/bank/c-0042"
+              href={`/bank/${DEMO_CHARTER_ID}`}
               className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-surface px-6 py-3 text-sm text-white/75 shadow-card transition-colors duration-200 hover:border-white/25 hover:text-paper"
             >
               <Landmark className="h-4 w-4" aria-hidden="true" />
-              Enter demo bank #0042
+              Enter demo bank #{DEMO_CHARTER_ID.replace(/^c-/, "")}
             </Link>
           </div>
 

@@ -57,6 +57,9 @@ export function WhatIfDrawer({
 
   const feeRateNow = computeFeeRate(world);
   const feeRatePreview = computeFeeRate(preview);
+  // With every slider at rest the commit would apply no actions at all —
+  // a button that silently does nothing.
+  const nothingStaged = flowEth === 0 && licensesToBuy === 0 && branchesToRetire === 0;
 
   return (
     <Card>
@@ -106,13 +109,16 @@ export function WhatIfDrawer({
 
       <button
         onClick={() => onCommit(applyActions)}
-        className="mt-5 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-expansion/40 bg-expansion/10 py-2.5 text-sm font-medium text-expansion shadow-glow-expansion transition-transform duration-150 hover:scale-[1.01] active:scale-[0.99]"
+        disabled={nothingStaged}
+        className="mt-5 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-expansion/40 bg-expansion/10 py-2.5 text-sm font-medium text-expansion shadow-glow-expansion transition-transform duration-150 hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:scale-100"
       >
         <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
         Commit on live sim
       </button>
       <p className="mt-2 text-center text-[10px] text-white/35">
-        Nothing here touches the live simulation until you commit.
+        {nothingStaged
+          ? "Move a slider to stage a hypothetical."
+          : "Nothing here touches the live simulation until you commit."}
       </p>
     </Card>
   );

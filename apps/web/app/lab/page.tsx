@@ -108,6 +108,9 @@ function LabInner() {
   const inv = invariantCheck(world);
   const epochElapsed = world.now - world.epochStartedAt;
   const epochRemaining = Math.max(world.params.epochSeconds - epochElapsed, 0);
+  const charters = Object.values(world.charters);
+  const totalCharterCount = charters.length;
+  const liveCharterCount = charters.filter((c) => c.alive).length;
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -131,7 +134,14 @@ function LabInner() {
                   {fmtDuration(epochRemaining)} remaining
                 </span>
               </div>
-              <div className="mt-5 grid grid-cols-3 gap-4 border-t border-white/[0.06] pt-4 text-sm">
+              <div className="mt-5 grid grid-cols-2 gap-4 border-t border-white/[0.06] pt-4 text-sm sm:grid-cols-4">
+                {/* This epoch's flow updates on every swap; F_n only moves at
+                    epoch close, so without it the Lab gave no feedback at all
+                    for the thing it exists to let you inject. */}
+                <Stat
+                  label="net flow (this epoch)"
+                  value={fmtEth(world.ethInEpoch - world.ethOutEpoch)}
+                />
                 <StatSpark
                   label="F_n (last epoch)"
                   value={fmtEth(world.F.at(-1) ?? 0n)}
@@ -263,7 +273,10 @@ function LabInner() {
             </div>
           </InjectorGroup>
 
-          <InjectorGroup label="Charters">
+          <InjectorGroup
+            label="Charters"
+            hint={`${liveCharterCount} live / ${totalCharterCount} total · daily cap ${world.params.charterDailyCap}`}
+          >
             <div className="flex gap-2">
               <input
                 value={seedCount}
@@ -432,10 +445,21 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h3 className="font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">{children}</h3>;
 }
 
-function InjectorGroup({ label, children }: { label: string; children: React.ReactNode }) {
+function InjectorGroup({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="space-y-2">
-      <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-white/30">{label}</p>
+      <div className="flex items-baseline justify-between gap-2">
+        <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-white/30">{label}</p>
+        {hint && <p className="tabular truncate font-mono text-[10px] text-white/25">{hint}</p>}
+      </div>
       {children}
     </div>
   );

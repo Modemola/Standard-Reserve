@@ -1,3 +1,7 @@
+"use client";
+
+import { useId } from "react";
+
 /** Inline ribbon chart — the "ribbons move" half of the spec's motion rule. */
 export function Sparkline({
   values,
@@ -14,6 +18,11 @@ export function Sparkline({
   fill?: boolean;
   className?: string;
 }) {
+  // Must be unique per instance: two ribbons with the same stroke and the
+  // same history length would otherwise emit identical gradient ids, which
+  // is invalid HTML and lets one shadow the other.
+  const gradId = `spark${useId().replace(/:/g, "")}`;
+
   // With fewer than two points there is no line to draw yet — show a dim
   // baseline so the slot reads as "no history yet" rather than broken.
   if (values.length < 2) {
@@ -48,7 +57,6 @@ export function Sparkline({
 
   const line = pts.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(2)} ${y.toFixed(2)}`).join("");
   const area = `${line}L${pts[pts.length - 1][0].toFixed(2)} ${height}L${pts[0][0].toFixed(2)} ${height}Z`;
-  const gradId = `spark-${stroke.replace("#", "")}-${values.length}`;
 
   return (
     <svg width={width} height={height} className={className} aria-hidden="true">
