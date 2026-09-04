@@ -26,12 +26,17 @@ this repo as `unpublished_placeholder` and lives in
 ## Layout
 
 ```
-apps/web/          Next.js app — /, /lab, /bank/:id, /scenarios, /law
-packages/engine/    Pure TypeScript monetary engine (bigint, 1e18 fixed-point)
-packages/params/    Zod-validated params schema + default.json
-scenarios/          Bundled JSON worlds (inflow_week, exodus, wash_same_epoch,
-                     license_mania, ghost_purge)
-docs/                Architecture spec + engine/whitepaper mapping
+apps/web/         Next.js app — /, /lab, /bank/:id, /scenarios, /law
+packages/engine/  Pure TypeScript monetary engine (bigint, 1e18 fixed-point)
+packages/params/  Zod-validated params schema + default.json
+contracts/law/    Solidity twins of three formulas — audit narrative only,
+                  never deployed; fuzzed against vectors from the TS engine
+scenarios/        Canonical JSON worlds (inflow_week, exodus, wash_same_epoch,
+                  license_mania, ghost_purge). scripts/sync-scenarios.mjs
+                  mirrors these into apps/web/public/ and CI checks the copy
+                  is in sync
+scripts/          Repo tooling (scenario sync)
+docs/             Architecture spec, engine/whitepaper mapping, checklist
 ```
 
 ## Setup
@@ -70,13 +75,26 @@ Nothing is hardcoded into JSX — every policy number flows through
 
 ## Testing
 
-- `pnpm test` — engine unit tests (supply identities, wash-trade neutrality,
-  branch/license caps, retirement, dormancy, POL monotonicity, issuance
-  budget cap; see `packages/engine/test/`).
+- `pnpm test` — engine suite (`packages/engine/test/`). Example-based tests
+  cover supply identities, wash-trade neutrality, branch/license caps,
+  retirement, dormancy, POL monotonicity and the issuance budget cap.
+  `properties.test.ts` adds a seeded fuzz layer over random op sequences,
+  asserting the invariants that must hold on *every* path: the supply
+  identity, `S_max` and POL monotonicity, no negative balances, a
+  non-decreasing constant product, honest tick durations, and agreement
+  between a retirement quote and what retirement actually charges.
+- `pnpm --filter web run lint` — ESLint, with `react-hooks/rules-of-hooks` as
+  an error. Not optional: it is the only gate that catches a conditional
+  hook, which types, build and e2e all pass straight over.
 - `pnpm --filter web run build` — typechecks and builds the app.
-- `pnpm --filter web run e2e` — Playwright: load a scenario in the Lab and
-  watch the regime flip; open `/bank/c-0042`, buy a license, retire a
-  branch, and confirm `S_max` falls (`apps/web/tests/cockpit.spec.ts`).
+- `pnpm --filter web run e2e` — Playwright. `cockpit.spec.ts` drives the real
+  flows (flip the regime from a scenario, buy a license, retire a branch and
+  watch `S_max` fall, prove the what-if drawer never touches live state).
+  `a11y.spec.ts` measures rather than assumes: real WCAG contrast ratios on
+  every route, a visible focus ring at every keyboard stop, and exactly one
+  `aria-current` link per route.
+- `cd contracts/law && forge test` — the Solidity twins, fuzzed against
+  vectors generated from the live TS engine.
 
 ## Deploying
 
