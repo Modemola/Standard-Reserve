@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { DEMO_CHARTER_ID } from "@/lib/demo-seed";
 
@@ -17,6 +18,18 @@ const NAV = [
 
 export function SiteNav() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  // The nav gave no indication of the current page -- every link rendered
+  // identically on all five routes, so neither a sighted reader nor a screen
+  // reader could tell where they were.
+  //
+  // Compare first path segments rather than the whole href: the Bank link
+  // carries a specific charter id, and /bank/<some other id> is still the
+  // Bank section. Home is the empty segment, so it only matches "/" and does
+  // not light up everywhere.
+  const segment = (path: string) => path.split("/")[1] ?? "";
+  const isCurrent = (href: string) => segment(href) === segment(pathname ?? "/");
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-ink/75 backdrop-blur-md">
@@ -32,8 +45,22 @@ export function SiteNav() {
         <ul className="hidden gap-6 text-sm md:flex">
           {NAV.map((n) => (
             <li key={n.href}>
-              <Link href={n.href} className="text-white/55 transition-colors duration-150 hover:text-paper">
+              <Link
+                href={n.href}
+                aria-current={isCurrent(n.href) ? "page" : undefined}
+                className={
+                  isCurrent(n.href)
+                    ? "text-paper transition-colors duration-150"
+                    : "text-white/55 transition-colors duration-150 hover:text-paper"
+                }
+              >
                 {n.label}
+                {/* Colour alone must not be the only signal (WCAG 1.4.1), so
+                    the current page also carries a rule under it. */}
+                <span
+                  aria-hidden="true"
+                  className={`mt-1 block h-px ${isCurrent(n.href) ? "bg-expansion/70" : "bg-transparent"}`}
+                />
               </Link>
             </li>
           ))}
@@ -57,7 +84,12 @@ export function SiteNav() {
               <Link
                 href={n.href}
                 onClick={() => setOpen(false)}
-                className="block py-2 text-white/60 transition-colors duration-150 hover:text-paper"
+                aria-current={isCurrent(n.href) ? "page" : undefined}
+                className={
+                  isCurrent(n.href)
+                    ? "block border-l-2 border-expansion/70 py-2 pl-2 text-paper"
+                    : "block border-l-2 border-transparent py-2 pl-2 text-white/60 transition-colors duration-150 hover:text-paper"
+                }
               >
                 {n.label}
               </Link>

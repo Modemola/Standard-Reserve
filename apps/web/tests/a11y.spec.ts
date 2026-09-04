@@ -55,6 +55,24 @@ test("every keyboard stop has a visible focus indicator", async ({ page }) => {
   expect(seen.some((n) => n.startsWith("INPUT"))).toBe(true);
 });
 
+test("the nav marks exactly one link as the current page", async ({ page }) => {
+  // Every link used to render identically on all five routes, so nothing --
+  // visual or assistive -- said where you were.
+  for (const route of [...ROUTES, "/bank/c-9999"]) {
+    await page.goto(route);
+    // toHaveCount, not allTextContents(): the latter is a one-shot read with
+    // no retry, so a slow hydration makes it observe zero links and fail for
+    // a reason that has nothing to do with the nav.
+    await expect(
+      page.locator("header a[aria-current='page']"),
+      `wrong aria-current on ${route}`,
+    ).toHaveCount(1);
+  }
+  // A charter other than the demo one is still the Bank section.
+  await page.goto("/bank/c-9999");
+  await expect(page.locator("header a[aria-current='page']")).toHaveText(/Bank/);
+});
+
 for (const route of ROUTES) {
   test(`text on ${route} meets WCAG AA contrast`, async ({ page }) => {
     await page.goto(route);
