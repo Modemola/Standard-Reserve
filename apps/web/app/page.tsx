@@ -105,7 +105,9 @@ export default function HomePage() {
             href="https://www.standardreserve.xyz/whitepaper/"
             target="_blank"
             rel="noreferrer"
-            className="mt-7 inline-flex items-center gap-1.5 text-xs text-white/55 transition-colors duration-150 hover:text-white/70"
+            // py-2.5 rather than a bare inline link: at 16px tall this was the smallest
+            // tap target on the landing page.
+            className="mt-5 inline-flex items-center gap-1.5 py-2.5 text-xs text-white/55 transition-colors duration-150 hover:text-white/70"
           >
             Modeling The Standard Reserve&rsquo;s whitepaper
             <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
@@ -175,13 +177,19 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer links ───────────────────────────────────────── */}
-      <section className="flex flex-wrap items-center justify-center gap-8 border-t border-white/[0.06] pt-8 text-xs text-white/55">
-        <Link href="/law" className="inline-flex items-center gap-1.5 transition-colors duration-150 hover:text-white/70">
+      {/* gap-x-8 gap-y-1 with py-2.5 on each link: these were 16px tall, the
+          last two sub-target controls on the site. The padding supplies the
+          vertical rhythm the gap used to, so nothing moves visually. */}
+      <section className="flex flex-wrap items-center justify-center gap-x-8 gap-y-1 border-t border-white/[0.06] pt-6 text-xs text-white/55">
+        <Link
+          href="/law"
+          className="inline-flex items-center gap-1.5 py-2.5 transition-colors duration-150 hover:text-white/70"
+        >
           Engine ↔ whitepaper mapping <ArrowRight className="h-3 w-3" aria-hidden="true" />
         </Link>
         <Link
           href="/scenarios"
-          className="inline-flex items-center gap-1.5 transition-colors duration-150 hover:text-white/70"
+          className="inline-flex items-center gap-1.5 py-2.5 transition-colors duration-150 hover:text-white/70"
         >
           Play a bundled scenario <ArrowRight className="h-3 w-3" aria-hidden="true" />
         </Link>

@@ -198,7 +198,11 @@ function Slider({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-black/30 accent-expansion"
+        // The track is 6px, which is what the element measured on a phone --
+        // an unusable target. `range-touch` (globals.css) keeps that hairline
+        // look but pads the control out to a 44px tall hit area and gives the
+        // thumb a real size, so a thumb can actually catch it.
+        className="range-touch w-full cursor-pointer appearance-none bg-transparent accent-expansion"
       />
     </div>
   );

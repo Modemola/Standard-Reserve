@@ -185,20 +185,29 @@ function LabInner() {
             stroke={regimeStroke(regime)}
             className="pointer-events-none absolute -right-36 -top-40 h-[320px] w-[320px] opacity-40"
           />
-          <div className="relative flex items-center gap-6">
+          {/* Stacked below sm. The epoch ring is a fixed ~140px, so on a
+              390px phone this row left the rest of the card about 210px: the
+              badge was shoved against the edge, "18h remaining" was clipped
+              mid-word, and "net flow (this epoch)" wrapped to three lines.
+              The ring reads perfectly well above the telemetry rather than
+              beside it. */}
+          <div className="relative flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-6">
             <EpochRing
               epoch={world.epoch}
               elapsed={epochElapsed}
               total={world.params.epochSeconds}
             />
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-3">
+            <div className="w-full min-w-0 flex-1">
+              {/* flex-wrap: the badge and the countdown cannot share a line on
+                  a narrow phone, and forcing them to is what clipped the
+                  countdown rather than wrapping it. */}
+              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
                 <RegimeBadge regime={regime} />
                 <span className="tabular font-mono text-xs text-white/55">
                   {fmtDuration(epochRemaining)} remaining
                 </span>
               </div>
-              <div className="mt-5 grid grid-cols-2 gap-4 border-t border-white/[0.06] pt-4 text-sm sm:grid-cols-4">
+              <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-5 border-t border-white/[0.06] pt-4 text-sm sm:grid-cols-4 sm:gap-y-4">
                 {/* This epoch's flow updates on every swap; F_n only moves at
                     epoch close, so without it the Lab gave no feedback at all
                     for the thing it exists to let you inject. */}
@@ -569,7 +578,11 @@ function IconButton({
       onClick={onClick}
       disabled={disabled}
       title={title}
-      className={`inline-flex items-center justify-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40 ${
+      // min-w-0 is what lets the truncating label below actually truncate.
+      // Without it a flex item refuses to shrink past its content, so at 320px
+      // these buttons pushed the whole page sideways instead of clipping their
+      // own text -- the label was set up to truncate and never got the chance.
+      className={`inline-flex min-w-0 items-center justify-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40 ${
         full ? "w-full" : wide ? "flex-1" : ""
       } ${dashed ? "border-dashed" : ""} ${toneClass}`}
     >

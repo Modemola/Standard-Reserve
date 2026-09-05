@@ -37,22 +37,25 @@ export function SiteNav() {
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
         <Link
           href="/"
-          className="font-serif text-sm font-medium tracking-[0.16em] text-paper/90"
+          className="-my-2.5 py-2.5 font-serif text-sm font-medium tracking-[0.16em] text-paper/90"
           onClick={() => setOpen(false)}
         >
           STANDARD·LAW
         </Link>
 
-        <ul className="hidden gap-6 text-sm md:flex">
+        <ul className="hidden gap-4 text-sm md:flex">
           {NAV.map((n) => (
             <li key={n.href}>
               <Link
                 href={n.href}
                 aria-current={isCurrent(n.href) ? "page" : undefined}
+                // -my-2.5 py-2.5: the desktop nav is what an iPad uses, and
+                // these links measured exactly 24x24 -- the WCAG floor, with
+                // nothing spare. The negative margin keeps the bar's height.
                 className={
                   isCurrent(n.href)
-                    ? "text-paper transition-colors duration-150"
-                    : "text-white/55 transition-colors duration-150 hover:text-paper"
+                    ? "-mx-2 -my-2.5 block px-2 py-2.5 text-paper transition-colors duration-150"
+                    : "-mx-2 -my-2.5 block px-2 py-2.5 text-white/55 transition-colors duration-150 hover:text-paper"
                 }
               >
                 {n.label}
@@ -72,7 +75,11 @@ export function SiteNav() {
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-label={open ? "Close menu" : "Open menu"}
-          className="text-white/70 transition-colors duration-150 hover:text-paper md:hidden"
+          // -m-2.5 p-2.5 grows the hit area to 44px without moving the icon: the
+          // glyph is 20px, which is under the 24px WCAG 2.5.8 floor and less
+          // than half the 44px iOS target, on the one control a phone user
+          // needs most.
+          className="-m-2.5 p-2.5 text-white/70 transition-colors duration-150 hover:text-paper md:hidden"
         >
           {open ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
         </button>

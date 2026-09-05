@@ -17,7 +17,16 @@ export function Ticker() {
 
   return (
     <div className="relative border-b border-white/[0.06] bg-black/25">
-      <div className="mx-auto flex max-w-6xl items-center gap-0 overflow-x-auto px-4 py-1.5 font-mono text-[11px]">
+      {/* The strip scrolls, but on a 390px phone it cut off mid-word at
+          "S_CI" with nothing to say more existed -- S_circ, F_n, spot and the
+          invariant pill were simply invisible. The fade is the affordance:
+          it reads as "continues" rather than "ends". pointer-events-none so
+          it never eats a swipe, and it is hidden once everything fits. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-ink to-transparent lg:hidden"
+      />
+      <div className="mx-auto flex max-w-6xl items-center gap-0 overflow-x-auto px-4 py-1.5 font-mono text-[11px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <span className="flex shrink-0 items-center gap-1.5 pr-3 text-white/55">
           <span className="relative flex h-1.5 w-1.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-expansion opacity-60" />

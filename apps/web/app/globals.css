@@ -163,6 +163,51 @@ textarea:focus-visible {
   animation: value-flash 0.9s ease-out;
 }
 
+
+/* Range inputs sized for fingers.
+ *
+ * The what-if sliders rendered as a 6px-tall strip: fine for a cursor,
+ * impossible for a thumb, and well under the 24px WCAG 2.5.8 floor. The hit
+ * area is the whole 44px box while the visible track stays a hairline, so the
+ * control is easy to grab without looking heavier. */
+.range-touch {
+  height: 44px;
+  padding: 0;
+}
+
+.range-touch::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.range-touch::-moz-range-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.range-touch::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 20px;
+  width: 20px;
+  margin-top: -7px; /* centre the thumb on the 6px track */
+  border-radius: 9999px;
+  background: #c9a227;
+  border: 2px solid #08090b;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+.range-touch::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 9999px;
+  background: #c9a227;
+  border: 2px solid #08090b;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
 @media (prefers-reduced-motion: reduce) {
   /* Blanket first, exceptions after.
    *
