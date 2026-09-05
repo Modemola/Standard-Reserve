@@ -35,6 +35,13 @@ export function BranchRack({
               <span>Buy license</span>
               <span className="tabular font-mono">{fmtToken(licensePriceNow)} STD</span>
               <span>remaining {licenseRemainingToday}/3</span>
+              {/* Spec §0: no wallet in v1, so there is no balance to debit.
+                  The price is burned into B exactly as the whitepaper says,
+                  but nothing checks that this charter could have paid it --
+                  a reader who assumes otherwise would misread every number
+                  downstream, so the slot says so rather than implying a
+                  purchase that was never funded. */}
+              <span className="text-[10px] text-white/60">sim: burned, not debited</span>
             </button>
           );
         }

@@ -18,7 +18,7 @@ const LOOPS = [
   {
     index: "02",
     title: "Expansion",
-    body: "Net ETH inflow raises the issuance multiplier m, up to mMax, streaming more $STANDARD to live branches.",
+    body: "Issuance follows the signal — the last two closed epochs. This epoch's own sign only routes fees. Sustained inflow raises m toward mMax; one good day does not.",
   },
   {
     index: "03",

@@ -67,10 +67,53 @@ const Charts = dynamic(() => import("@/components/Charts").then((m) => m.Charts)
 });
 
 export default function LabPage() {
+  // fallback={null} meant the server sent a <main> containing literally zero
+  // characters: a crawler, a link preview, and the first paint of a slow
+  // connection all saw an empty page where the Lab's whole point is on
+  // display. The fallback now describes the instrument in real markup, and
+  // is replaced by the live version the moment it hydrates.
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<LabSkeleton />}>
       <LabInner />
     </Suspense>
+  );
+}
+
+/** Server-rendered stand-in: real text, no client state. */
+function LabSkeleton() {
+  return (
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+      <section className="space-y-4 lg:col-span-7">
+        <Card>
+          <h1 className="optical-title font-display text-2xl text-paper">The Lab</h1>
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/60">
+            The god view of the simulation. Drive the monetary policy directly: swap ETH for
+            $STANDARD and back, advance the clock by an hour, a day or a whole epoch, spawn
+            genesis charters, force the charter auction open, and watch the regime, the issuance
+            multiplier m, the supply identities and the invariant pill respond in real time.
+          </p>
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/60">
+            Five scripted scenarios replay worlds that each teach one behaviour — a week of
+            inflow, an exodus, a wash trade, a licence mania and a ghost purge. Everything is
+            deterministic and runs entirely in your browser.
+          </p>
+          <p className="mt-4 border-t border-white/[0.06] pt-3 text-xs text-white/60">
+            Loading the live world…
+          </p>
+        </Card>
+      </section>
+      <section className="space-y-4 lg:col-span-5">
+        <Card>
+          <h2 className="font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">
+            Injectors
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-white/60">
+            Market, time, charters, scenarios and world export — the controls that let you put
+            the policy under load rather than read about it.
+          </p>
+        </Card>
+      </section>
+    </div>
   );
 }
 
@@ -202,7 +245,10 @@ function LabInner() {
             <Stat label="contraction ETH" value={fmtEth(world.vaults.contractionEth)} />
             <Stat label="POL ETH" value={fmtEth(world.polEth)} />
             <Stat label="POL STD" value={fmtToken(world.polStd)} />
-            <Stat label="pool spot" value={`${spotPriceEthPerStd(world.pool).toFixed(8)} ETH/STD`} />
+            <Stat
+              label="pool spot (sim units)"
+              value={`${spotPriceEthPerStd(world.pool).toFixed(8)} ETH/STD`}
+            />
           </div>
         </Card>
 

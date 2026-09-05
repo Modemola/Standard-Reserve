@@ -86,13 +86,18 @@ test("both regimes paint their own colour, everywhere", async ({ page }) => {
   // value when it changes (the ticker flashed rgb(232,202,104) mid-animation),
   // so the assertion has to wait for the colour to settle rather than catch
   // the flash and call it a palette bug.
-  await page.goto("/lab");
-  await expect(page.getByTestId("regime-badge")).toBeVisible();
-  await expect.poll(tickerRegime).toEqual({ text: "contraction", color: CONTRACTION });
-
+  // The demo world now opens in expansion, so contraction is reached by
+  // loading exodus rather than by doing nothing.
+  // Both halves of the palette, each asserted while its own regime is live.
   await loadExpansion(page);
   await expect.poll(tickerRegime).toEqual({ text: "expansion", color: EXPANSION });
   await expect(page.getByTestId("regime-badge")).toHaveCSS("color", EXPANSION);
+
+  await page.getByRole("combobox").selectOption("exodus");
+  await page.getByRole("button", { name: "load scenario" }).click();
+  await expect(page.getByTestId("regime-badge")).toHaveText(/contraction/i);
+  await expect.poll(tickerRegime).toEqual({ text: "contraction", color: CONTRACTION });
+  await expect(page.getByTestId("regime-badge")).toHaveCSS("color", CONTRACTION);
 
   // Charts must draw from the same palette, not their own copy of it.
   await expect(page.locator(".recharts-wrapper").first()).toBeVisible();

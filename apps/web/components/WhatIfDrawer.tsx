@@ -2,8 +2,10 @@
 
 import { useMemo, useState } from "react";
 import {
+  DAY_SECONDS,
   applySwap,
   buyLicense,
+  computeEpochIssuance,
   computeFeeRate,
   retireBranch,
   supplyCirc,
@@ -13,7 +15,34 @@ import {
 import type { World } from "@standard-law/engine";
 import { Sparkles } from "lucide-react";
 import { Card } from "@/components/Card";
-import { fmtPct, fmtToken } from "@/lib/format";
+import { fmtEth, fmtPct, fmtToken } from "@/lib/format";
+
+/**
+ * This charter's share of a day's issuance, in $STANDARD.
+ *
+ * Issuance is streamed equally across every live branch in the system, so a
+ * charter earns in proportion to how many of them are its own. Deliberately
+ * expressed per day in tokens, never as a rate or a percentage -- spec §0
+ * forbids the word APY in the UI, and quoting a yield percentage on a
+ * simulated placeholder economy would be exactly the claim the disclaimer
+ * says this app does not make.
+ */
+function yieldPerDay(world: World, charterId: string): bigint {
+  let live = 0;
+  let mine = 0;
+  for (const c of Object.values(world.charters)) {
+    if (!c.alive) continue;
+    for (const b of c.branches) {
+      if (!b.alive) continue;
+      live += 1;
+      if (c.id === charterId) mine += 1;
+    }
+  }
+  if (live === 0 || mine === 0) return 0n;
+  const perEpoch = computeEpochIssuance(world);
+  const perDay = (perEpoch * BigInt(DAY_SECONDS)) / BigInt(world.params.epochSeconds);
+  return (perDay * BigInt(mine)) / BigInt(live);
+}
 
 export function WhatIfDrawer({
   world,
@@ -57,6 +86,12 @@ export function WhatIfDrawer({
 
   const feeRateNow = computeFeeRate(world);
   const feeRatePreview = computeFeeRate(preview);
+  // Spec §"What-if drawer sliders": the ribbon is m, your yield/day, S_circ,
+  // gold, feeRate. Gold and yield/day were missing, which left it reading as
+  // a debug panel rather than something a banker could decide with -- they
+  // are the only two entries that answer "what does this do for me".
+  const yieldNow = yieldPerDay(world, charterId);
+  const yieldPreview = yieldPerDay(preview, charterId);
   // With every slider at rest the commit would apply no actions at all —
   // a button that silently does nothing.
   const nothingStaged = flowEth === 0 && licensesToBuy === 0 && branchesToRetire === 0;
@@ -98,6 +133,14 @@ export function WhatIfDrawer({
         <Stat
           label="S_circ now → preview"
           value={`${fmtToken(supplyCirc(world))} → ${fmtToken(supplyCirc(preview))}`}
+        />
+        <Stat
+          label="your yield/day now → preview"
+          value={`${fmtToken(yieldNow)} → ${fmtToken(yieldPreview)} STD`}
+        />
+        <Stat
+          label="expansion gold now → preview"
+          value={`${fmtEth(world.vaults.expansionGold)} → ${fmtEth(preview.vaults.expansionGold)} g`}
         />
         <Stat label="feeRate now → preview" value={`${fmtPct(feeRateNow)} → ${fmtPct(feeRatePreview)}`} />
         <Stat
