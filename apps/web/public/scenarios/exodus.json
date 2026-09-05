@@ -4,9 +4,32 @@
   "teach": "Fees flip this epoch; issuance cuts on close; exit fee rises.",
   "paramsOverlay": {},
   "actions": [
-    { "t": 0, "op": "seedGenesis", "count": 50 },
-    { "t": 0, "op": "tick", "dt": 3600 },
-    { "t": 3600, "op": "swap", "side": "sellStd", "amount": "5000000000000000000" },
-    { "t": 7200, "op": "retire", "charterId": "c-0001", "branchId": 0 }
+    {
+      "t": 0,
+      "op": "seedGenesis",
+      "count": 50
+    },
+    {
+      "t": 0,
+      "op": "tick",
+      "dt": 3600
+    },
+    {
+      "t": 3600,
+      "op": "swap",
+      "side": "sellStd",
+      "amount": "5000000000000000000"
+    },
+    {
+      "t": 7200,
+      "op": "retire",
+      "charterId": "c-0001",
+      "branchId": 0
+    },
+    {
+      "t": 7200,
+      "op": "tick",
+      "dt": 86400
+    }
   ]
 }

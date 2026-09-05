@@ -119,6 +119,14 @@ async function contrastFailures(page: import("@playwright/test").Page) {
         parseFloat(s.opacity) < 0.9
       )
         continue;
+      // WCAG 1.4.3 exempts text that is pure decoration, and aria-hidden is
+      // the machine-readable marker for exactly that — the ghost numerals
+      // behind the cards, for instance, which are duplicated as real headings
+      // beside them. This replaced a hardcoded `^0[1-4]$` allowlist that
+      // silently stopped covering anything the moment a fifth card appeared.
+      // Keying on aria-hidden is self-maintaining, and it cannot be abused to
+      // hide real content because doing that would be its own, larger bug.
+      if (el.closest('[aria-hidden="true"]')) continue;
       // Gradient-filled text (the foil hero headline) is painted by its
       // background through background-clip:text, so its computed `color`
       // is transparent by design. Measuring that reports 1:1 for glyphs
@@ -157,7 +165,7 @@ async function contrastFailures(page: import("@playwright/test").Page) {
       );
       return { ...f, ratio, need };
     })
-    .filter((f) => f.ratio < f.need && !/^0[1-4]$/.test(f.text))
+    .filter((f) => f.ratio < f.need)
     .map(
       (f) =>
         `"${f.text}" ${f.ratio.toFixed(2)}:1 (needs ${f.need}) at ${f.size}px`,

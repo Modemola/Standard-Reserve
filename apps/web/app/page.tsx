@@ -155,7 +155,14 @@ export default function HomePage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {LOOPS.map((loop) => (
             <Card key={loop.title} className="group relative overflow-hidden">
-              <span className="tabular absolute right-4 top-3 font-mono text-4xl font-bold text-white/[0.04] transition-colors duration-300 group-hover:text-expansion/[0.14]">
+              {/* Decorative duplicate of the heading beside it: a screen
+                  reader was announcing "01" before "Adoption", which is noise,
+                  and the contrast gate was only skipping it because of a
+                  hardcoded allowlist. aria-hidden fixes both. */}
+              <span
+                aria-hidden="true"
+                className="tabular absolute right-4 top-3 font-mono text-4xl font-bold text-white/[0.04] transition-colors duration-300 group-hover:text-expansion/[0.14]"
+              >
                 {loop.index}
               </span>
               <h3 className="mb-1.5 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
