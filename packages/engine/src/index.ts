@@ -15,3 +15,4 @@ export { supplyCirc, supplyMax } from "./invariants.js";
 // quoteLicense, invariantCheck, hashWorld, SimStore).
 export * from "./store.js";
 export * from "./sweep.js";
+export * from "./adversary.js";

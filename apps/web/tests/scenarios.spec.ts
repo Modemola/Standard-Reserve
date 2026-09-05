@@ -37,8 +37,13 @@ async function load(page: Page, id: string) {
   await page.getByRole("button", { name: "load scenario" }).click();
   // The replay is synchronous once the JSON lands; wait on an observable
   // consequence rather than a fixed sleep.
+  // 30s, not 10s. ghost_purge replays thirty-plus epochs of engine work in the
+  // browser; alone that lands in ~4s, but it is the heaviest scenario in the
+  // suite and a 10s budget gave it the thinnest margin of any gate here. It
+  // duly failed twice in loaded full-suite runs while passing in isolation,
+  // which is the signature of a budget set too close rather than of a defect.
   await expect
-    .poll(async () => (await ticker(page)).epoch, { timeout: 10_000 })
+    .poll(async () => (await ticker(page)).epoch, { timeout: 30_000 })
     .not.toBeNull();
   // No scenario may surface an error toast -- a malformed file or an op this
   // build does not recognise would show one, and the world would be wrong.

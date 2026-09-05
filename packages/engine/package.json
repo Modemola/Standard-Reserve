@@ -9,7 +9,8 @@
     "build": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "gen:law-vectors": "tsx scripts/generate-law-vectors.ts",
-    "sweep": "tsx scripts/sweep.ts"
+    "sweep": "tsx scripts/sweep.ts",
+    "attack": "tsx scripts/attack.ts"
   },
   "dependencies": {
     "@standard-law/params": "workspace:*"

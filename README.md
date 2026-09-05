@@ -78,8 +78,8 @@ Nothing is hardcoded into JSX — every policy number flows through
 - `pnpm test` — engine suite (`packages/engine/test/`). Example-based tests
   cover supply identities, wash-trade neutrality, branch/license caps,
   retirement, dormancy, POL monotonicity and the issuance budget cap.
-  `sweep.test.ts` guards the parameter-sweep instrument — that it measures
-  what it claims to, not merely that it runs.
+  `sweep.test.ts` and `adversary.test.ts` guard the two instruments — that
+  they measure what they claim to, not merely that they run.
   `properties.test.ts` adds a seeded fuzz layer over random op sequences,
   asserting the invariants that must hold on *every* path: the supply
   identity, `S_max` and POL monotonicity, no negative balances, a
@@ -94,7 +94,7 @@ Nothing is hardcoded into JSX — every policy number flows through
   `perf-budget.json`. Weight only, deliberately — timing metrics swing with
   CI runner load. Regenerate with `pnpm perf:update` after an intentional
   change, and say in the commit message why the budget moved.
-- `pnpm --filter web run e2e` — Playwright, 25 flows. `cockpit.spec.ts` drives
+- `pnpm --filter web run e2e` — Playwright, 29 flows. `cockpit.spec.ts` drives
   the real interactions (flip the regime, buy a license, retire a branch and
   watch `S_max` fall, prove the what-if drawer never touches live state).
   `scenarios.spec.ts` runs all five bundled scenarios through the UI and
@@ -106,6 +106,43 @@ Nothing is hardcoded into JSX — every policy number flows through
   the palette silently forked once.
 - `cd contracts/law && forge test` — the Solidity twins, fuzzed against
   vectors generated from the live TS engine.
+
+## Adversarial probes
+
+The sweep asks which parameter settings degenerate. This asks the other half of
+"is the policy sound": holding the parameters at their defaults, is there a
+*strategy* that profits at the protocol's expense?
+
+```
+pnpm --filter @standard-law/engine run attack           # all strategies
+pnpm --filter @standard-law/engine run attack --days 120
+```
+
+Every strategy is measured against a passive control in the same world, because
+issuance streams to every live branch whether you attack or not — only the
+difference from doing nothing is attributable. The harness also charges the
+adversary for licences, which the engine does not: v1 has no wallet (spec §0),
+so an uncorrected run would report "buy a licence, retire it, keep the mint" as
+free money when that is an artifact of the simplification.
+
+At default parameters none of the three strategies beats the control. The
+interesting part is *why* the pump fails: it does what it sets out to do —
+`m` peaks at its ceiling versus 0.75 for the control — but an 80 ETH round trip
+through a 100 ETH pool pays 47% in slippage, which swamps the issuance it
+unlocks. That defence is liquidity depth, not the `m` rule, and it weakens as
+the pool grows:
+
+| `genesisEth` | round-trip loss | issuance edge |
+|---|---|---|
+| 100 | 47.1% | 841,000 STD |
+| 1,000 | 12.9% | 841,000 STD |
+| 10,000 | 1.6% | 841,000 STD |
+| 100,000 | 0.2% | 841,000 STD |
+
+The cost of manufacturing the signal falls with depth; the reward does not.
+Whether that ever crosses into profit depends on the real pool depth and the
+real token price, neither of which is published — so this is a statement about
+the shape of the model, not a claim about the protocol.
 
 ## Parameter sweeps
 
