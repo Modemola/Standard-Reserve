@@ -23,7 +23,7 @@ No server/DB in this project — "backend" is the pure-TS simulation engine ever
 - [x] Dormancy check-in/report/revocation (`dormancy.ts`)
 - [x] Invariant checks (`invariants.ts`) + stable world hash (`hash.ts`)
 - [x] Public engine API + `SimStore` wrapper (`store.ts`)
-- [x] Vitest suite covering the §11 checklist — **58/58 passing**: the §11 example-based tests, 9 seeded property/fuzz tests over random op sequences, and 9 covering the sweep instrument (see §8)
+- [x] Vitest suite covering the §11 checklist — **67/67 passing**: the §11 example-based tests, 9 seeded property/fuzz tests over random op sequences, 9 covering the sweep instrument, and 9 covering the adversarial probes (see §8)
 - [x] Spec-vs-implementation correctness audit — 6 bugs found and fixed (charter auction 3x rollover, `dormancyBountyBps` wiring, resolution-fee rebate dust loss, stale-`m` license floor pricing, `closeEpochIfDue`/`checkIn` API consistency), each with a regression test proven to fail pre-fix
 - [x] Optional debug "break POL" toggle (dev-only) so the Lab invariant pill can be demoed going red (§11, explicitly optional) — verified: hidden in the production build (`NODE_ENV === "production"`, 0 matches in the built app), present under `next dev` and correctly flips `invariants OK` → `invariants FAIL` on click
 
@@ -73,7 +73,7 @@ Per spec §0 non-goals: **no real `$STANDARD` or charter NFTs get deployed, ever
 
 - [x] `pnpm test` green (engine)
 - [x] `pnpm --filter web run build` green, `pnpm --filter web run lint` green, `pnpm perf` within budget
-- [x] Playwright e2e suite (**29 flows**) passing against a running server — 8 cockpit/Lab behaviours, 10 accessibility gates (per-route WCAG contrast including the populated sweep grid, keyboard focus rings, `aria-current`, reduced motion), 4 layout/palette guards, and 7 scenario/sweep tests
+- [x] Playwright e2e suite (**64 flows**) passing against a running server — 8 cockpit/Lab behaviours, 10 accessibility gates (per-route WCAG contrast including the populated sweep grid, keyboard focus rings, `aria-current`, reduced motion), 4 layout/palette guards, 7 scenario/sweep tests, 26 responsive gates across four device classes, and 9 control-wiring gates
 - [x] Manual visual pass on `/`, `/lab`, `/bank/c-0042` (screenshots)
 - [x] `pnpm --filter web run e2e` wired into a CI check (`.github/workflows/ci.yml`: `test` job — install → scenario sync check → engine test → lint → web build → perf budget → Playwright install → e2e; `contracts` job — forge test + forge fmt --check; on push to `main` and on PRs). Confirmed actually green on GitHub itself for both jobs, not just locally — checked via the Actions API after each push.
 - [x] Final disclaimer/footer text spot-check across all routes — lives once in `apps/web/app/layout.tsx`'s shared footer, so every route (`/`, `/lab`, `/bank/:id`, `/scenarios`, `/law`) renders it identically; text matches spec verbatim
