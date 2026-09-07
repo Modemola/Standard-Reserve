@@ -94,7 +94,7 @@ Nothing is hardcoded into JSX — every policy number flows through
   `perf-budget.json`. Weight only, deliberately — timing metrics swing with
   CI runner load. Regenerate with `pnpm perf:update` after an intentional
   change, and say in the commit message why the budget moved.
-- `pnpm --filter web run e2e` — Playwright, 55 flows. `cockpit.spec.ts` drives
+- `pnpm --filter web run e2e` — Playwright, 64 flows. `cockpit.spec.ts` drives
   the real interactions (flip the regime, buy a license, retire a branch and
   watch `S_max` fall, prove the what-if drawer never touches live state).
   `scenarios.spec.ts` runs all five bundled scenarios through the UI and
@@ -108,7 +108,10 @@ Nothing is hardcoded into JSX — every policy number flows through
   scrolling sideways, content clipped by an ancestor that cannot scroll, and
   touch targets under the 24px WCAG minimum. The middle one matters — a
   single-width check is structurally blind to it, which is how /law shipped
-  with its notes column unreachable on every phone.
+  with its notes column unreachable on every phone. `wiring.spec.ts` clicks
+  every control on every route and asserts the page observably responds —
+  the gate for a handler that was never attached, which renders perfectly and
+  passes every other check.
 - `cd contracts/law && forge test` — the Solidity twins, fuzzed against
   vectors generated from the live TS engine.
 
