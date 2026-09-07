@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { RotateCcw } from "lucide-react";
 import { Card } from "@/components/Card";
+import { Logo } from "@/components/Logo";
 
 /**
  * Route-level error boundary.
@@ -29,6 +30,7 @@ export default function RouteError({
 
   return (
     <Card className="mx-auto max-w-xl space-y-4 text-center">
+      <Logo size={56} uid="error" className="mx-auto" title="Standard Law" />
       <h1 className="optical-title font-display text-2xl text-paper">
         The simulation hit an error
       </h1>

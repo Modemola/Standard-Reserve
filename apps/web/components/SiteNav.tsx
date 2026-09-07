@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { DEMO_CHARTER_ID } from "@/lib/demo-seed";
+import { Logo } from "@/components/Logo";
 
 const NAV = [
   { href: "/", label: "Home" },
@@ -37,9 +38,12 @@ export function SiteNav() {
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
         <Link
           href="/"
-          className="-my-2.5 py-2.5 font-serif text-sm font-medium tracking-[0.16em] text-paper/90"
+          className="-my-2.5 flex items-center gap-2.5 py-2.5 font-serif text-sm font-medium tracking-[0.16em] text-paper/90"
           onClick={() => setOpen(false)}
         >
+          {/* Decorative here: the wordmark beside it already says the name,
+              so announcing the seal too would just repeat it. */}
+          <Logo size={26} uid="nav" className="shrink-0" />
           STANDARD·LAW
         </Link>
 
