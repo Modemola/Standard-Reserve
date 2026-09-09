@@ -1,0 +1,24 @@
+{
+  "id": "A14_spot_oracle_toy",
+  "wp": "§11",
+  "title": "Move the gold oracle ten-fold",
+  "teach": "ethPerGoldGram is a placeholder oracle with no source behind it. Overlaying a ten-fold jump changes nothing today, because v1's expansion vault holds ETH and never converts to gold — which is itself the finding: the oracle is declared but unwired, so nobody should read the gold column as a reserve claim yet.",
+  "severity": "incentive",
+  "seed": "default",
+  "paramsOverlay": {
+    "ethPerGoldGram": "2000000000000000000"
+  },
+  "actions": [
+    { "t": 0, "op": "swap", "side": "buyStd", "amount": "15000000000000000000" },
+    { "t": 0, "op": "tick", "dt": 86400, "note": "expansion close funds the expansion vault" },
+    { "t": 86400, "op": "swap", "side": "buyStd", "amount": "15000000000000000000" },
+    { "t": 86400, "op": "tick", "dt": 86400 }
+  ],
+  "expect": {
+    "invariantsOk": true,
+    "vaultGoldMustNotDecrease": true,
+    "polMustNotDecrease": true,
+    "notesYellow": "Placeholder oracle. The expansion vault holds ETH and never converts to gold in v1, so a 10x move in ethPerGoldGram has no effect on any balance. Treat the gold column as unimplemented, not as a reserve.",
+    "yellowWhen": "always"
+  }
+}

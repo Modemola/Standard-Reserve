@@ -34,6 +34,9 @@ export const RawParamsSchema = z.object({
   withdrawWindowSeconds: z.number().int().positive(),
   // Not on the public site; required by WP §7.1's "keep a min floor param" note.
   licenseMinFloorStd: bigintString,
+  // Desk-only display tolerance: how close to P_floor counts as "at the floor"
+  // when solving for the wait time. Relative, so it holds at any price scale.
+  floorEpsilon: z.number().min(0).max(1),
 });
 
 export type RawParams = z.infer<typeof RawParamsSchema>;
@@ -66,6 +69,7 @@ export interface Params {
   exitDenomMin: bigint;
   withdrawWindowSeconds: number;
   licenseMinFloorStd: bigint;
+  floorEpsilon: number;
 }
 
 const BIGINT_FIELDS = [

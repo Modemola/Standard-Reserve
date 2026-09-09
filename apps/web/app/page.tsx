@@ -29,7 +29,7 @@ export default function HomePage() {
           deterministic, local-first, and built to make the monetary policy legible before you
           touch mainnet.
         </p>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <Link
             href="/lab"
             className="rounded border border-expansion/40 bg-expansion/10 px-4 py-2 text-sm text-expansion"
@@ -41,6 +41,18 @@ export default function HomePage() {
             className="rounded border border-white/15 px-4 py-2 text-sm text-white/80"
           >
             Enter demo bank #0042
+          </Link>
+          <Link
+            href="/sentinel"
+            className="rounded border border-white/15 px-4 py-2 text-sm text-white/80"
+          >
+            Open Sentinel
+          </Link>
+          <Link
+            href="/desk"
+            className="rounded border border-white/15 px-4 py-2 text-sm text-white/80"
+          >
+            Open Desk
           </Link>
         </div>
       </section>

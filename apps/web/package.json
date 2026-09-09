@@ -4,15 +4,20 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "node scripts/sync-fixtures.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/sync-fixtures.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "sync:fixtures": "node scripts/sync-fixtures.mjs"
   },
   "dependencies": {
+    "@standard-law/desk": "workspace:*",
     "@standard-law/engine": "workspace:*",
     "@standard-law/params": "workspace:*",
+    "@standard-law/sentinel": "workspace:*",
     "next": "^14.2.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

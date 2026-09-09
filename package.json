@@ -6,9 +6,10 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "pnpm --filter @standard-law/engine test",
+    "test": "pnpm -r run test",
     "dev": "pnpm --filter web dev",
-    "build": "pnpm -r build"
+    "build": "pnpm -r build",
+    "sentinel:run": "pnpm --filter @standard-law/sentinel exec tsx src/cli.ts"
   },
   "devDependencies": {
     "typescript": "^5.6.3"

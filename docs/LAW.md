@@ -65,3 +65,52 @@ Every numeric placeholder used above is declared in
 `packages/params/default.json` under `meta.sourceNotes` and marked
 `unpublished_placeholder` (or an explicit implementation-default note) —
 see `docs/ARCHITECTURE.md` §6.
+
+---
+
+## Phase 2 — Sentinel attacks
+
+Each fixture in `/attacks` leans on one of the rules above. HELD means the rule
+stopped it; CHEAP means it was allowed and the incentive is worth naming.
+Run them with `pnpm sentinel:run`, or on `/sentinel`.
+
+| Attack | WP | What it leans on |
+|---|---|---|
+| `A1_wash_volume` | §4 (4.1) | Volume is not flow: a round trip nets to zero and still takes the cut |
+| `A2_one_block_pump` | §5 | Signal reads F_{n-1}+F_{n-2}, never the epoch being pumped |
+| `A3_split_across_epochs` | §5 | Raises are a sign test, not a size test *(CHEAP)* |
+| `A4_contraction_bait` | §11 (11.1) | Every buyback hour capped at min(10% vault, 0.2% pool) |
+| `A5_fee_switch_jitter` | §4 (4.1) | Zero is the only regime threshold — no deadband *(CHEAP)* |
+| `A6_license_sniper` | §7-8 | 3 licences per charter per day; 10 branches; inventory does not roll |
+| `A7_license_inventory` | §7 | Licence payments burn; no ledger is debited to pay for one |
+| `A8_exit_run` | §9 | The run tax climbs with the crowd, and no exit is ever paused |
+| `A9_self_rebate` | §9 | Rebate reaches the stayers only; the last branch burns the charter |
+| `A10_ghost_grief` | dormancy | 30-day window is exact; bounty is capped; charter is revoked |
+| `A11_false_checkin_grief` | dormancy | Check-in resets the heartbeat, so an active bank cannot be reported |
+| `A12_pol_rug` | §11 | POL only grows — the engine has no withdrawal path at all |
+| `A13_issuance_budget` | §3 | Base issuance stops at the 900M credit cap; fees keep flowing |
+| `A14_spot_oracle_toy` | §11 | `ethPerGoldGram` is declared but unwired *(CHEAP)* |
+
+## Phase 2 — Open Market Desk quotes
+
+Every Desk quote is a pure function of a cloned world, so reading a price can
+never change one.
+
+| Quote | WP | Notes |
+|---|---|---|
+| `flipQuote` | §4, sign(F_n) | `packages/desk/src/flip.ts` — zero net is already contraction, so flipping to expansion costs one wei more than closing the gap |
+| `licensePlans` | §7 (7.1), P(t) | `packages/desk/src/licensePlans.ts` — now / wait / floor, each simulated on a clone; legality comes from the engine's own `buyLicense` so it cannot drift from the Cockpit |
+| `charterBoard` | §8, 3× / cap 0 | `packages/desk/src/charterBoard.ts` — a closed book returns no price field at all |
+| `exitImpact` | §9 (9.1) | `packages/desk/src/exitImpact.ts` — the run tax now, plus the crowded-door version |
+
+## Additional Phase 2 simplifications
+
+- **`floorEpsilon`** is an implementation default, not a policy constant. It is
+  a *relative* tolerance (1%) for how close to `P_floor` the Desk's "floor" row
+  counts as being at the floor. It prices a display row and nothing else.
+- **The engine trace** (`tick(world, dt, trace?)`) is passive instrumentation.
+  It records each hourly buyback so Sentinel can audit the per-tick bound; it
+  is not part of `World` and does not affect `hashWorld`.
+- **`SimStore.tape`** derives every row by diffing the World before and after a
+  mutation. The `op` label is cosmetic — the figures cannot be faked by a
+  mislabelled call site.

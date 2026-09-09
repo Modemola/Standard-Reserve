@@ -15,6 +15,26 @@ export const LAW_MAPPING = [
   },
 ] as const;
 
+// Phase 2 — Sentinel attack fixtures, mapped to the rule each one leans on.
+export const LAW_MAPPING_SENTINEL = [
+  { engine: "A1 wash / F_n", wp: "§4 (4.1)", notes: "volume is not flow: a round trip nets to zero" },
+  { engine: "A2 issuance lag", wp: "§5", notes: "signal is built from F_{n-1}+F_{n-2}, not the epoch being pumped" },
+  { engine: "A4 spend_tick", wp: "§11 (11.1)", notes: "every buyback hour capped at min(10% vault, 0.2% pool)" },
+  { engine: "A6 / A7 licences", wp: "§7-8", notes: "3/day per charter, 10 branches, payment burns" },
+  { engine: "A8 / A9 exits", wp: "§9", notes: "run tax rises with the crowd; rebate reaches the stayers only" },
+  { engine: "A10 / A11 dormancy", wp: "dormancy section", notes: "30-day window; check-in resets the heartbeat" },
+  { engine: "A12 POL", wp: "§11", notes: "POL only grows — the engine has no withdrawal path" },
+  { engine: "A13 budget", wp: "§3", notes: "base issuance stops at the 900M credit cap; fees keep flowing" },
+] as const;
+
+// Phase 2 — Open Market Desk quotes, all pure functions over a cloned World.
+export const LAW_MAPPING_DESK = [
+  { engine: "flipQuote", wp: "§4 sign(F_n)", notes: "desk/flip.ts — ETH needed to change the epoch's sign" },
+  { engine: "licensePlans", wp: "§7 (7.1) P(t)", notes: "desk/licensePlans.ts — now / wait / floor, priced on clones" },
+  { engine: "charterBoard", wp: "§8 3x / cap 0", notes: "desk/charterBoard.ts — a closed book shows no price at all" },
+  { engine: "exitImpact", wp: "§9 (9.1)", notes: "desk/exitImpact.ts — run tax now, and with a crowded door" },
+] as const;
+
 // Phase E — audit-narrative Solidity twins of three of the above pure
 // formulas. Never deployed (see docs/ARCHITECTURE.md §0 non-goals).
 export const LAW_MAPPING_SOLIDITY = [

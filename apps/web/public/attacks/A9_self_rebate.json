@@ -1,0 +1,23 @@
+{
+  "id": "A9_self_rebate",
+  "wp": "§9",
+  "title": "Retire into your own rebate",
+  "teach": "Half of an exit fee is rebated to the branches that stayed — so the obvious trick is to retire one branch and collect your own rebate on the others. The rebate only ever reaches branches other than the one being retired, and a charter's last branch takes the charter down with it.",
+  "severity": "invariant",
+  "seed": "default",
+  "paramsOverlay": {},
+  "actions": [
+    { "t": 0, "op": "buyLicense", "charterId": "c-0001" },
+    { "t": 0, "op": "buyLicense", "charterId": "c-0001" },
+    { "t": 0, "op": "tick", "dt": 172800, "note": "accrue on all three branches" },
+    { "t": 172800, "op": "retire", "charterId": "c-0001", "branchId": 0, "note": "rebate lands on branches 1 and 2" },
+    { "t": 172800, "op": "retire", "charterId": "c-0002", "branchId": 0, "note": "c-0002 only had the genesis branch" }
+  ],
+  "expect": {
+    "invariantsOk": true,
+    "charterGone": "c-0002",
+    "charterAlive": "c-0001",
+    "lastActionSucceeds": true,
+    "sMaxMustDecrease": true
+  }
+}

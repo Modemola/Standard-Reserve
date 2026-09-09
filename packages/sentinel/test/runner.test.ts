@@ -1,0 +1,87 @@
+// The harness itself. A verdict table nobody has ever seen go red is not
+// evidence of anything, so these tests deliberately break fixtures and assert
+// that Sentinel notices — and that a yellow finding never fails CI.
+import { describe, expect, it } from "vitest";
+import { loadFixtures } from "../src/runAll.js";
+import { runAttack } from "../src/runAttack.js";
+import { reportMarkdown, shouldFail } from "../src/report.js";
+import type { AttackFixture } from "../src/schema.js";
+
+const byId = (id: string): AttackFixture => loadFixtures().find((f) => f.id === id)!;
+
+describe("verdict routing", () => {
+  it("reports broken when an invariant fixture misses its expectation", () => {
+    const f = byId("A1_wash_volume");
+    const rigged: AttackFixture = {
+      ...f,
+      expect: { ...f.expect, regimeAfter: "expansion" },
+    };
+    const v = runAttack(rigged);
+    expect(v.status).toBe("broken");
+    expect(v.unexpected.join(" ")).toContain("regimeAfter");
+  });
+
+  it("catches a violated per-tick buyback bound", () => {
+    const f = byId("A4_contraction_bait");
+    const rigged: AttackFixture = {
+      ...f,
+      expect: { ...f.expect, maxSpendFractionOfVaultPerTick: 0.0001 },
+    };
+    const v = runAttack(rigged);
+    expect(v.status).toBe("broken");
+    expect(v.unexpected.join(" ")).toContain("buyback");
+  });
+
+  it("catches a buyback bound that would otherwise pass vacuously", () => {
+    const f = byId("A1_wash_volume");
+    const rigged: AttackFixture = {
+      ...f,
+      // Swaps only, no time advance: the buyback loop never fires, so a
+      // per-tick bound would "hold" without a single tick behind it.
+      actions: f.actions.filter((a) => a.op !== "tick"),
+      expect: { invariantsOk: true, maxSpendFractionOfVaultPerTick: 0.1, minBuybackTicks: 1 },
+    };
+    const v = runAttack(rigged);
+    expect(v.status).toBe("broken");
+    expect(v.unexpected.join(" ")).toContain("vacuously");
+  });
+
+  it("downgrades an incentive miss to cheap instead of broken", () => {
+    const f = byId("A1_wash_volume");
+    const rigged: AttackFixture = {
+      ...f,
+      severity: "incentive",
+      expect: { ...f.expect, regimeAfter: "expansion" },
+    };
+    const v = runAttack(rigged);
+    expect(v.status).toBe("cheap");
+    expect(shouldFail([v])).toBe(false);
+  });
+
+  it("still fails CI when an incentive fixture breaks a real invariant", () => {
+    const v = { ...runAttack(byId("A1_wash_volume")), severity: "incentive" as const, broken: ["S_circ drifted"] };
+    expect(shouldFail([v])).toBe(true);
+  });
+
+  it("surfaces an engine throw as broken rather than swallowing it", () => {
+    const f = byId("A1_wash_volume");
+    const rigged: AttackFixture = {
+      ...f,
+      // branchId far outside the rack; the engine must not be flattered by it
+      actions: [...f.actions, { t: 0, op: "retire", charterId: "c-0001", branchId: 99 }],
+      expect: { ...f.expect, lastActionSucceeds: true },
+    };
+    const v = runAttack(rigged);
+    expect(v.status).toBe("broken");
+  });
+});
+
+describe("report", () => {
+  it("renders one row per attack with its verdict", () => {
+    const verdicts = loadFixtures().map(runAttack);
+    const md = reportMarkdown(verdicts, new Date("2026-01-01T00:00:00Z"));
+    for (const v of verdicts) expect(md).toContain(v.id);
+    expect(md).toContain("| Attack | WP | Verdict | What happened |");
+    expect(md).toContain("simulation only");
+  });
+});

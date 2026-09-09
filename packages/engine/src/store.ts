@@ -22,6 +22,9 @@ import {
 } from "./exits.js";
 import { invariantCheck as invariantCheckImpl } from "./invariants.js";
 import { hashWorld as hashWorldImpl } from "./hash.js";
+import { appendTape, tapeRowFrom } from "./tape.js";
+import type { TapeRow } from "./tape.js";
+import type { EngineTrace } from "./trace.js";
 import type { Auction, LicenseQuote, Params, Quote, Scenario, World } from "./types.js";
 
 const MAX_TICK_STEPS = 5_000;
@@ -80,7 +83,7 @@ export function seedGenesis(world0: World, count: number, ownerKeyPrefix = "owne
   return world;
 }
 
-export function tick(world0: World, dtSec: number): World {
+export function tick(world0: World, dtSec: number, trace?: EngineTrace): World {
   const world = clone(world0);
   let remaining = Math.max(0, Math.floor(dtSec));
   let steps = 0;
@@ -91,7 +94,7 @@ export function tick(world0: World, dtSec: number): World {
     world.now += segment;
     streamIssuance(world, segment);
     remaining -= segment;
-    advancePolicy(world);
+    advancePolicy(world, trace);
     steps += 1;
   }
   world.lastError = undefined;
@@ -203,15 +206,33 @@ type Listener = () => void;
 
 export class SimStore {
   world: World;
+  /** Bounded log of every mutation that went through this store (cap TAPE_CAP). */
+  tape: TapeRow[] = [];
   private listeners = new Set<Listener>();
 
   constructor(world: World) {
     this.world = world;
   }
 
-  apply(fn: (world: World) => World): void {
-    this.world = fn(this.world);
+  /**
+   * Run a mutation against the live World and record it on the tape.
+   * `op` is a display label only — the tape's numbers come from diffing the
+   * before/after World, so an unlabelled call still records correct figures.
+   */
+  apply(fn: (world: World) => World, op = "apply"): void {
+    const before = this.world;
+    this.world = fn(before);
+    this.tape = appendTape(this.tape, tapeRowFrom(before, this.world, op));
     for (const l of this.listeners) l();
+  }
+
+  /**
+   * Replace the live World wholesale — used by "Replay in Lab", which loads
+   * the after-world of a Sentinel run. Kept type-agnostic so the engine never
+   * has to know about Sentinel's Verdict shape.
+   */
+  applyWorld(world: World, op = "replay"): void {
+    this.apply(() => world, op);
   }
 
   subscribe(cb: Listener): () => void {
@@ -221,40 +242,51 @@ export class SimStore {
 
   loadScenario(scenario: Scenario, baseParams: Params): void {
     let world = createWorld(baseParams, 0);
+    let tape: TapeRow[] = [];
+    const step = (next: World, op: string) => {
+      tape = appendTape(tape, tapeRowFrom(world, next, op));
+      world = next;
+    };
     for (const action of scenario.actions) {
-      if (action.t > world.now) world = tick(world, action.t - world.now);
+      if (action.t > world.now) step(tick(world, action.t - world.now), "tick");
       switch (action.op) {
         case "seedGenesis":
-          world = seedGenesis(world, Number(action.count ?? 0));
+          step(seedGenesis(world, Number(action.count ?? 0)), "seedGenesis");
           break;
         case "tick":
-          world = tick(world, Number(action.dt ?? 0));
+          step(tick(world, Number(action.dt ?? 0)), "tick");
           break;
         case "swap":
-          world = applySwap(
-            world,
-            action.side as "buyStd" | "sellStd",
-            BigInt(action.amount as string),
+          step(
+            applySwap(world, action.side as "buyStd" | "sellStd", BigInt(action.amount as string)),
+            String(action.side),
           );
           break;
         case "buyLicense":
-          world = buyLicense(world, String(action.charterId));
+          step(buyLicense(world, String(action.charterId)), "buyLicense");
           break;
         case "buyCharter":
-          world = buyCharter(world, String(action.ownerKey), BigInt(action.payEth as string));
+          step(
+            buyCharter(world, String(action.ownerKey), BigInt(action.payEth as string)),
+            "buyCharter",
+          );
           break;
         case "retire":
-          world = retireBranch(world, String(action.charterId), Number(action.branchId));
+          step(retireBranch(world, String(action.charterId), Number(action.branchId)), "retire");
           break;
         case "checkIn":
-          world = checkIn(world, String(action.charterId));
+          step(checkIn(world, String(action.charterId)), "checkIn");
           break;
         case "reportDormant":
-          world = reportDormant(world, String(action.charterId), String(action.reporterKey));
+          step(
+            reportDormant(world, String(action.charterId), String(action.reporterKey)),
+            "reportDormant",
+          );
           break;
       }
     }
     this.world = world;
+    this.tape = tape;
     for (const l of this.listeners) l();
   }
 

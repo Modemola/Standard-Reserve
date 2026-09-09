@@ -9,6 +9,11 @@ const config: Config = {
         paper: "#F4F2EC",
         expansion: "#C9A227", // muted gold
         contraction: "#C0392B", // cold red
+        // Sentinel verdicts. Held reads as "the rule stopped it", cheap as
+        // "allowed but worth noting", broken as "an invariant failed".
+        held: "#4E9A6A",
+        cheap: "#D6A032",
+        broken: "#C0392B"
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],

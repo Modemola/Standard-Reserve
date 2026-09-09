@@ -1,0 +1,21 @@
+{
+  "id": "A2_one_block_pump",
+  "wp": "§5",
+  "title": "One-block pump at the epoch bell",
+  "teach": "Two quiet epochs, then a giant buy in the last minute before the close. The epoch does close expansion, so fees route that way — but the multiplier reads the two previously closed epochs, not this one. The pump cannot buy a raise; at most it skips one cut.",
+  "severity": "invariant",
+  "seed": "default",
+  "paramsOverlay": {},
+  "actions": [
+    { "t": 0, "op": "tick", "dt": 172800, "note": "two quiet epochs, both close at F = 0" },
+    { "t": 259140, "op": "swap", "side": "buyStd", "amount": "50000000000000000000", "note": "50 ETH with one minute left on the clock" },
+    { "t": 259140, "op": "tick", "dt": 60, "note": "ring the bell" }
+  ],
+  "expect": {
+    "invariantsOk": true,
+    "regimeAfter": "expansion",
+    "mMustNotIncrease": true,
+    "mAtMost": 0.5,
+    "polMustNotDecrease": true
+  }
+}

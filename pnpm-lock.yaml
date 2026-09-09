@@ -14,12 +14,18 @@ importers:
 
   apps/web:
     dependencies:
+      '@standard-law/desk':
+        specifier: workspace:*
+        version: link:../../packages/desk
       '@standard-law/engine':
         specifier: workspace:*
         version: link:../../packages/engine
       '@standard-law/params':
         specifier: workspace:*
         version: link:../../packages/params
+      '@standard-law/sentinel':
+        specifier: workspace:*
+        version: link:../../packages/sentinel
       next:
         specifier: ^14.2.15
         version: 14.2.35(@playwright/test@1.62.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -58,6 +64,25 @@ importers:
         specifier: ^5.6.3
         version: 5.9.3
 
+  packages/desk:
+    dependencies:
+      '@standard-law/engine':
+        specifier: workspace:*
+        version: link:../engine
+      '@standard-law/params':
+        specifier: workspace:*
+        version: link:../params
+    devDependencies:
+      '@types/node':
+        specifier: ^22.9.0
+        version: 22.20.1
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.4
+        version: 2.1.9(@types/node@22.20.1)
+
   packages/engine:
     dependencies:
       '@standard-law/params':
@@ -86,6 +111,31 @@ importers:
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
+
+  packages/sentinel:
+    dependencies:
+      '@standard-law/engine':
+        specifier: workspace:*
+        version: link:../engine
+      '@standard-law/params':
+        specifier: workspace:*
+        version: link:../params
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^22.9.0
+        version: 22.20.1
+      tsx:
+        specifier: ^4.19.2
+        version: 4.23.13
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.4
+        version: 2.1.9(@types/node@22.20.1)
 
 packages:
 

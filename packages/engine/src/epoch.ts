@@ -3,6 +3,7 @@
 import { HOUR_SECONDS } from "./constants.js";
 import { buyStd } from "./pool.js";
 import { rollAuctionsIfNeeded } from "./auctions.js";
+import type { EngineTrace } from "./trace.js";
 import type { Regime, World } from "./types.js";
 
 const MAX_CATCHUP_STEPS = 2_000;
@@ -85,23 +86,32 @@ export function contractionSpend(vaultEth: bigint, poolEthReserve: bigint): bigi
   return tenPctVault < twentyBpsPool ? tenPctVault : twentyBpsPool;
 }
 
-function contractionBuybackOnce(world: World): void {
+function contractionBuybackOnce(world: World, trace?: EngineTrace): void {
   const vault = world.vaults.contractionEth;
   if (vault <= 0n || world.pool.eth <= 0n) return;
-  const spend = contractionSpend(vault, world.pool.eth);
+  const poolEthBefore = world.pool.eth;
+  const spend = contractionSpend(vault, poolEthBefore);
   if (spend <= 0n) return;
 
   const { pool, amountOut } = buyStd(world.pool, spend, 0);
   world.pool = pool;
   world.vaults.contractionEth -= spend;
   world.B += amountOut; // buyback burns 100% of the $STANDARD purchased
+
+  trace?.buybacks.push({
+    t: world.lastBuybackAt + HOUR_SECONDS,
+    vaultBefore: vault,
+    poolEthBefore,
+    spend,
+    burned: amountOut,
+  });
 }
 
 /** Run the hourly contraction buyback for every whole hour elapsed since the last run. */
-export function runContractionBuyback(world: World): World {
+export function runContractionBuyback(world: World, trace?: EngineTrace): World {
   let steps = 0;
   while (world.now - world.lastBuybackAt >= HOUR_SECONDS && steps < MAX_CATCHUP_STEPS) {
-    contractionBuybackOnce(world);
+    contractionBuybackOnce(world, trace);
     world.lastBuybackAt += HOUR_SECONDS;
     steps += 1;
   }
@@ -115,10 +125,10 @@ export function runContractionBuyback(world: World): World {
  * that m. Rolling auctions before the epoch closes would price tomorrow's
  * floor off yesterday's (stale) multiplier.
  */
-export function advancePolicy(world: World): World {
+export function advancePolicy(world: World, trace?: EngineTrace): World {
   world.day = Math.floor(world.now / 86_400);
   closeEpochIfDue(world);
   rollAuctionsIfNeeded(world);
-  runContractionBuyback(world);
+  runContractionBuyback(world, trace);
   return world;
 }

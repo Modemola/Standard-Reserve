@@ -23,8 +23,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Engine test suite (Phase A gate)
+      - name: Unit suites (engine, sentinel, desk)
         run: pnpm test
+
+      - name: Sentinel attack suite (invariant attacks gate the merge)
+        run: pnpm sentinel:run
 
       - name: Build web app
         run: pnpm --filter web run build
