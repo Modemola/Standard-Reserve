@@ -1,8 +1,8 @@
 # Build checklist
 
-Master list, ordered start to finish, per [`docs/ARCHITECTURE.md`](ARCHITECTURE.md). Tick items off in place (`[ ]` → `[x]`) as we land them — this file is the source of truth for what's left, not memory or chat history.
+Master list, ordered start to finish, per [`docs/ARCHITECTURE.md`](ARCHITECTURE.md) and, from §9 on, [`docs/ARCHITECTURE-SENTINEL-DESK.md`](ARCHITECTURE-SENTINEL-DESK.md). Tick items off in place (`[ ]` → `[x]`) as we land them — this file is the source of truth for what's left, not memory or chat history.
 
-**Status: every item is checked off** except the §6 boundary note (not a task — a standing reminder of what stays out of scope). Phases A–E are built, tested, and verified live (screenshots, e2e, CI green on GitHub for both jobs). Nothing here means "done forever" — reopen an item (`[x]` → `[ ]`) if a regression or new requirement calls for it.
+**Status: every item is checked off** except the §6 boundary note (not a task — a standing reminder of what stays out of scope) and the CI confirmation in §9.4, which is blocked on a PR existing for the Phase 2 branch. Phases A–E and Phase 2 (Sentinel + Desk) are built, tested, and verified live (screenshots, e2e; CI green on GitHub for Phases A–E). Nothing here means "done forever" — reopen an item (`[x]` → `[ ]`) if a regression or new requirement calls for it.
 
 ## 0. Foundation
 
@@ -23,7 +23,7 @@ No server/DB in this project — "backend" is the pure-TS simulation engine ever
 - [x] Dormancy check-in/report/revocation (`dormancy.ts`)
 - [x] Invariant checks (`invariants.ts`) + stable world hash (`hash.ts`)
 - [x] Public engine API + `SimStore` wrapper (`store.ts`)
-- [x] Vitest suite covering the §11 checklist — **26/26 passing**
+- [x] Vitest suite covering the §11 checklist — **27/27 passing**
 - [x] Spec-vs-implementation correctness audit — 6 bugs found and fixed (charter auction 3x rollover, `dormancyBountyBps` wiring, resolution-fee rebate dust loss, stale-`m` license floor pricing, `closeEpochIfDue`/`checkIn` API consistency), each with a regression test proven to fail pre-fix
 - [x] Optional debug "break POL" toggle (dev-only) so the Lab invariant pill can be demoed going red (§11, explicitly optional) — verified: hidden in the production build (`NODE_ENV === "production"`, 0 matches in the built app), present under `next dev` and correctly flips `invariants OK` → `invariants FAIL` on click
 
@@ -90,3 +90,60 @@ Not in the original architecture doc — found while deliberately looking for ro
 - [x] **Third instance — `reportDormant` was only ever exercised by one fixed scenario script**, never a live control, despite the Lab's stated purpose being to let auditors interactively exercise mechanics (§1: "god mode ... see invariants"). Weaker case than the two above (no orphaned UI or doc promise pointed at it), but dormancy is inherently a third-party action against *another* charter, not the cockpit's own, so it belongs in the Lab like `buyCharter`. Added charter-id + reporter-key inputs and a button, defaulting to `c-0042` for immediate testability.
 - [x] **Real bug found while writing the test for the item above**: `world.lastError` is never cleared by `tick`, `closeEpochIfDue`, `seedGenesis`, or `checkIn` — all of which always succeed and never set it themselves. Since `ErrorToast` re-triggers on any `World` reference change (not just when the error text changes), a rejection's message would silently reappear on the *next unrelated successful action* (confirmed live: reject `report dormant`, wait for the toast to auto-dismiss, click `+1h` — the stale "not yet dormant" message pops back up as if `+1h` itself had failed). Fixed by explicitly clearing `lastError` in all four functions, matching how every rejectable action already manages it on its own success path. Covered by both an engine-level Vitest test (`packages/engine/test/store.test.ts`, confirmed to fail pre-fix) and a live Playwright check.
 - [x] **`fetchScenario` in `lib/scenarios.ts` was built with correct error handling (`res.ok` check, descriptive throw) and never used** — the Lab's own `loadScenarioById` reimplemented a worse version inline (`fetch(...).json()`, no `.ok` check, no try/catch at either of its two call sites: the URL-param effect and the dropdown button), so a failed or aborted fetch — bad network, a bad `?scenario=` query param slipping past the allowlist check, a deploy asset mismatch — did nothing visible at all. Fixed by actually calling `fetchScenario` and routing failures through the same `lastError` → `ErrorToast` path every other rejected action uses (a new app-level, non-engine error code, `scenario_load_failed`, added to the toast's message dictionary with a note explaining it isn't from the engine). Verified live with Playwright route interception forcing the fetch to fail; covered by a permanent test using the same technique.
+
+## 9. Phase 2 — Hook Sentinel + Open Market Desk
+
+Per [`docs/ARCHITECTURE-SENTINEL-DESK.md`](ARCHITECTURE-SENTINEL-DESK.md). Same engine, same `World`, same `SimStore` — no second AMM, no second `m` rule, no copied `World` type.
+
+### 9.0 Spec gaps closed before starting
+
+The Phase 2 spec assumed three things the repo did not yet have. Each was resolved in the smallest way that fits what was already here, rather than by bending the engine around the new packages.
+
+- [x] **Per-tick buyback visibility.** A4/A12 assert that *every hourly* contraction buyback stays inside `min(10% vault, 0.2% pool)`, but a single `tick(86400)` replays 24 buyback hours internally, so the per-hour figures were invisible from outside. `tick(world, dt, trace?)` now threads an optional `EngineTrace` down to `runContractionBuyback`, recording `{t, vaultBefore, poolEthBefore, spend, burned}` per hour. Deliberately *not* World state, so `hashWorld` and every previously recorded hash are unchanged — verified by the existing scenario-hash tests still passing untouched. This is the hook §14.3 anticipated, and it avoids the alternative that section forbids (faking a vault inside the Desk).
+- [x] **`params.floorEpsilon`.** The Desk's "floor" plan row needs a tolerance for how close to `P_floor` counts as *at* the floor. Added as a **relative** tolerance (`0.01`), so it holds at any price scale, and tagged in `meta.sourceNotes` as an implementation default exactly like `licenseMinFloorStd` — it prices a display row, not policy.
+- [x] **`/bank/0042` → `/bank/c-0042`.** Added as a declarative `next.config.mjs` redirect. **Caught a real bug in my own first attempt**: the pattern landed as a single-backslash escape, which JavaScript silently collapses to a literal `d` — the route was `(d+)` and would never have matched a digit, failing in exactly the way the redirect was meant to prevent. Found on a byte-level check of the written file rather than by eye, then verified behaviourally (`307 → /bank/c-0042 →` cockpit renders), not just by reading the config back.
+- [x] **The open design question — how the tape gets written.** §9 says "every existing mutation appends a tape row", but `SimStore.apply` takes a bare `(world) => world` and has no idea what it just ran. Resolved as `apply(fn, op?)` where the row's *numbers* are derived by diffing the World before and after and only the label comes from the caller — so an unlabelled or mislabelled call site still records correct figures. `TapeRow` lives in `packages/engine`, since both `SimStore` and `packages/desk` consume it and the engine is the only package both can depend on.
+
+### 9.1 Sentinel (`packages/sentinel`, zero React)
+
+- [x] Fixture/verdict schema with zod (`schema.ts`), shared by the CLI and the browser so the UI cannot run a fixture the CLI would reject
+- [x] `runAttack` — replays a fixture through exported engine functions only; never reimplements pool, fee or auction math. Where it needs an exact swap size it **binary-searches the engine's own `sellStd`** rather than deriving one.
+- [x] An engine throw is recorded as `broken` with its message, never swallowed into a pass
+- [x] `runAll` / `reportMarkdown` / `reportConsole` + `pnpm sentinel:run` → `artifacts/sentinel-report.md` (gitignored)
+- [x] All 14 fixtures written (`A1`..`A14`) — **11 HELD, 3 CHEAP, 0 BROKEN**
+- [x] Attack ids sort naturally (A1, A2, … A10, A14). A plain string sort put A10 *before* A1, which made the verdict table read like it was missing rows.
+- [x] **Vacuity guards, added after nearly shipping a test that proved nothing.** All four P0 fixtures went green on the very first run, so each was checked for whether it actually exercised its claim. A4's "every buyback hour respects the cap" is trivially true when *no* hour runs — so `minBuybackTicks` was added and set to 24, and the fixture still holds. (The check also turned up that A1 runs 24 buyback hours of its own, and that a first draft of a standalone A4 probe ran zero because its sell was too small to force contraction — the probe was wrong, not the engine.) `sMaxMustDecrease` plays the same role for burns, since `S_max = HARD_CAP - B` only falls when something really burned.
+- [x] Vitest for the four P0 attacks, plus `S2.test.ts` pinning the claims the JSON can only assert coarsely — A9's rebate landing exactly on the stayers, A13 genuinely reaching `ISSUANCE_BUDGET` rather than passing under it
+- [x] **Negative controls** (`runner.test.ts`): rigged fixtures prove the harness reports `broken` on a missed expectation, a violated buyback bound, and a vacuous bound; that an incentive miss degrades to `cheap` rather than `broken`; and that `shouldFail` still fails CI when an incentive fixture breaks a real invariant. A verdict table nobody has seen go red is not evidence of anything.
+- [x] CI gate proven end-to-end, not just as a unit: a rigged copy of the catalogue in a scratch directory drives the CLI to `BROKEN` → exit 1, while the shipped catalogue exits 0
+
+### 9.2 Desk (`packages/desk`, zero React)
+
+- [x] `flipQuote` — ETH to change the sign of `F_n`; zero net is already contraction, so flipping to expansion costs one wei more than closing the gap
+- [x] `licensePlans` — three rows (now / wait / floor), each simulated on a clone. **Legality comes from the engine's own `buyLicense`**, so the Desk can never drift from the rule the Cockpit enforces, and a sold-out day reports the engine's reason instead of interpolating a fill that could not happen.
+- [x] `exitImpact` + `feeRateWithCrowd` — the run tax now and with a crowded door, quoted on a clone
+- [x] `charterBoard` — a closed book returns **no price field at all**, so the UI cannot render a tradable quote by accident
+- [x] `poolTape` / `poolPrints` over the shared Store ring buffer
+- [x] 18 unit tests covering the three exit criteria the spec names (cap 0 ⇒ closed; sold out ⇒ floor plan unavailable; `F_n > 0` ⇒ `ethToFlipToExpansion = 0`), plus clone isolation: every Desk quote leaves the live world byte-identical, engine actions share no nested references with their input, and a what-if clone can be mutated as deeply as you like without touching live state
+- [x] **Removed a tautological assertion before it shipped** — a draft test asserted that burn plus rebate equalled an algebraically identical restatement of itself, which is true by construction and tests nothing. Replaced with the real invariant: `burn + rebate` equals the fee, and `mintToUser + fee` equals the ledger.
+
+### 9.3 Frontend
+
+- [x] `/sentinel` — attack list with verdict pills, before/after snapshot grid, tape table, broken/unexpected lists, yellow note for CHEAP, Run all / Run this / Replay in Lab / Download verdict.json
+- [x] Attacks run one per frame so a long suite cannot freeze the tab; auto-runs on arrival and stops auto-running if a full run is ever measured slower than 2s
+- [x] `/desk` — 2×2: flip widget, shared pool tape with a labelled `SIM` commit ticket, licence solver, exit tape with ledger/crowd sliders, charter tombstone
+- [x] Nav, landing CTAs, `/law` rows for both the attack catalogue and the Desk quotes
+- [x] `scripts/sync-fixtures.mjs` on `predev`/`prebuild` keeps `/public` in step with the repo-root `attacks/` and `scenarios/` — this also closes the pre-existing drift hazard where `public/scenarios` were hand-copied duplicates
+- [x] 8 new Playwright flows (16 total, no Phase 1 regressions): the catalogue really runs and shows `0 broken`; a CHEAP note renders and does not read as broken; Replay in Lab loads the after-world; the flip number measures ≥44px at 1280px ("cannot be missed" held to something checkable); three priced plans; the tombstone renders with no price element present; a Desk commit prints to the shared tape; the crowd slider moves the quoted rate while leaving the live one alone
+- [x] `PLAYWRIGHT_BASE_URL` support so e2e can reuse an already-running app instead of spawning its own
+
+### 9.4 Wiring and docs
+
+- [x] Root `pnpm test` now covers engine + sentinel + desk (**70 tests**); `pnpm sentinel:run` added
+- [x] CI: unit suites step broadened, plus a dedicated Sentinel step that gates the merge on broken invariants and never on yellow findings
+- [x] `docs/ARCHITECTURE-SENTINEL-DESK.md`, `docs/LAW.md` Phase 2 tables, README Phase 2 section + 20-second demo script
+- [ ] **CI confirmed green on GitHub for the Phase 2 commit.** Not yet possible: PR #1 was merged and closed at `e889c38`, and the workflow only triggers on `push` to `main` or on `pull_request` — so the Phase 2 commit on this branch has had no CI run at all. Every CI step has been run locally in the exact order the workflow runs them (both root scripts included, and the sentinel gate proven to exit 1 on a break), but per this repo's own standard that is not the same as green on GitHub. Needs a PR opened against `main` for this branch.
+
+### 9.5 Optional Phase E+ — deliberately not taken
+
+- [x] Assessed and declined, with a reason rather than silence. The gate ("only after Sentinel A1/A2/A4/A12 are green") is now open, but nothing in Phase 2 warrants a Solidity twin: `flipQuote` is a sign test and a one-wei increment, `exitImpact` reuses the resolution-fee quadratic that `LawMath.sol` already twins, and `secondsUntilFloor` is a **display** helper — twinning it would add ceremony without adding audit value. Reopen this if a Phase 2 formula ever becomes policy rather than presentation.
