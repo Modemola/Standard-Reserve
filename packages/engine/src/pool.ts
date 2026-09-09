@@ -14,6 +14,17 @@ export function initPool(genesisStd: bigint, genesisEth: bigint): Pool {
   return { eth: genesisEth, std: genesisStd };
 }
 
+/**
+ * Divide rounding up. The reserve left in the pool is always computed with
+ * this, never with bigint's truncating `/`: flooring the remaining reserve
+ * hands the rounding dust to the trader and lets the constant product erode
+ * a little on every single swap. Rounding the *remaining* side up keeps
+ * k non-decreasing, which is the invariant an AMM actually rests on.
+ */
+function ceilDiv(a: bigint, b: bigint): bigint {
+  return (a + b - 1n) / b;
+}
+
 export function spotPriceEthPerStd(pool: Pool): number {
   if (pool.std === 0n) return 0;
   return Number(pool.eth) / Number(pool.std);
@@ -25,7 +36,7 @@ export function buyStd(pool: Pool, ethIn: bigint, feeBps: number): SwapResult {
   const fee = (ethIn * BigInt(feeBps)) / BPS_DENOM;
   const ethInNet = ethIn - fee;
   const newEth = pool.eth + ethInNet;
-  const newStd = (pool.eth * pool.std) / newEth;
+  const newStd = ceilDiv(pool.eth * pool.std, newEth);
   const stdOut = pool.std - newStd;
   return { pool: { eth: newEth, std: newStd }, amountOut: stdOut, fee };
 }
@@ -34,7 +45,7 @@ export function buyStd(pool: Pool, ethIn: bigint, feeBps: number): SwapResult {
 export function sellStd(pool: Pool, stdIn: bigint, feeBps: number): SwapResult {
   if (stdIn <= 0n) return { pool, amountOut: 0n, fee: 0n };
   const newStd = pool.std + stdIn;
-  const newEth = (pool.eth * pool.std) / newStd;
+  const newEth = ceilDiv(pool.eth * pool.std, newStd);
   const ethOutGross = pool.eth - newEth;
   const fee = (ethOutGross * BigInt(feeBps)) / BPS_DENOM;
   const ethOut = ethOutGross - fee;

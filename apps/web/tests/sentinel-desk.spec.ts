@@ -30,8 +30,13 @@ test("sentinel: replay in lab loads the attack's after-world into the live sim",
   await page.getByTestId("replay-in-lab").click();
 
   await page.waitForURL("**/lab**", { timeout: 15_000 });
-  // A4 ends two epochs in, so the Lab must not still be showing a fresh world.
-  await expect(page.getByText(/epoch [1-9]/)).toBeVisible();
+
+  // The demo world is itself several epochs in, so "epoch > 0" would pass
+  // whether or not the replay landed. A4 seeds 50 genesis charters; the demo
+  // world seeds 200, so the charter count is what actually distinguishes the
+  // attack's after-world from the one that was already loaded.
+  await expect(page.locator("body")).toContainText("50 live / 50 total");
+  await expect(page.locator("body")).toContainText(/epoch\s*[1-9]/);
 });
 
 test("desk: the flip number is the loudest thing on the page", async ({ page }) => {

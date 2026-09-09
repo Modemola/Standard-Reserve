@@ -3,7 +3,7 @@
 // that Sentinel notices — and that a yellow finding never fails CI.
 import { describe, expect, it } from "vitest";
 import { loadFixtures } from "../src/runAll.js";
-import { runAttack } from "../src/runAttack.js";
+import { runFixture } from "../src/runFixture.js";
 import { reportMarkdown, shouldFail } from "../src/report.js";
 import type { AttackFixture } from "../src/schema.js";
 
@@ -16,7 +16,7 @@ describe("verdict routing", () => {
       ...f,
       expect: { ...f.expect, regimeAfter: "expansion" },
     };
-    const v = runAttack(rigged);
+    const v = runFixture(rigged);
     expect(v.status).toBe("broken");
     expect(v.unexpected.join(" ")).toContain("regimeAfter");
   });
@@ -27,7 +27,7 @@ describe("verdict routing", () => {
       ...f,
       expect: { ...f.expect, maxSpendFractionOfVaultPerTick: 0.0001 },
     };
-    const v = runAttack(rigged);
+    const v = runFixture(rigged);
     expect(v.status).toBe("broken");
     expect(v.unexpected.join(" ")).toContain("buyback");
   });
@@ -41,7 +41,7 @@ describe("verdict routing", () => {
       actions: f.actions.filter((a) => a.op !== "tick"),
       expect: { invariantsOk: true, maxSpendFractionOfVaultPerTick: 0.1, minBuybackTicks: 1 },
     };
-    const v = runAttack(rigged);
+    const v = runFixture(rigged);
     expect(v.status).toBe("broken");
     expect(v.unexpected.join(" ")).toContain("vacuously");
   });
@@ -53,13 +53,13 @@ describe("verdict routing", () => {
       severity: "incentive",
       expect: { ...f.expect, regimeAfter: "expansion" },
     };
-    const v = runAttack(rigged);
+    const v = runFixture(rigged);
     expect(v.status).toBe("cheap");
     expect(shouldFail([v])).toBe(false);
   });
 
   it("still fails CI when an incentive fixture breaks a real invariant", () => {
-    const v = { ...runAttack(byId("A1_wash_volume")), severity: "incentive" as const, broken: ["S_circ drifted"] };
+    const v = { ...runFixture(byId("A1_wash_volume")), severity: "incentive" as const, broken: ["S_circ drifted"] };
     expect(shouldFail([v])).toBe(true);
   });
 
@@ -71,14 +71,14 @@ describe("verdict routing", () => {
       actions: [...f.actions, { t: 0, op: "retire", charterId: "c-0001", branchId: 99 }],
       expect: { ...f.expect, lastActionSucceeds: true },
     };
-    const v = runAttack(rigged);
+    const v = runFixture(rigged);
     expect(v.status).toBe("broken");
   });
 });
 
 describe("report", () => {
   it("renders one row per attack with its verdict", () => {
-    const verdicts = loadFixtures().map(runAttack);
+    const verdicts = loadFixtures().map(runFixture);
     const md = reportMarkdown(verdicts, new Date("2026-01-01T00:00:00Z"));
     for (const v of verdicts) expect(md).toContain(v.id);
     expect(md).toContain("| Attack | WP | Verdict | What happened |");

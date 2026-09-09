@@ -16,7 +16,7 @@ export function LicenseSolver({ rows, charterId }: { rows: LicensePlanRow[]; cha
       </h3>
       <div className="overflow-x-auto">
         <table data-testid="license-solver" className="w-full text-left text-xs">
-          <thead className="text-white/40">
+          <thead className="text-white/55">
             <tr>
               <th className="py-1 font-medium">plan</th>
               <th className="py-1 font-medium">wait</th>
@@ -44,7 +44,7 @@ export function LicenseSolver({ rows, charterId }: { rows: LicensePlanRow[]; cha
                   {r.available ? (
                     <span className="text-held">open</span>
                   ) : (
-                    <span className="text-white/40">{r.reason ?? "unavailable"}</span>
+                    <span className="text-white/55">{r.reason ?? "unavailable"}</span>
                   )}
                 </td>
               </tr>
@@ -58,7 +58,7 @@ export function LicenseSolver({ rows, charterId }: { rows: LicensePlanRow[]; cha
       >
         Send to cockpit
       </Link>
-      <p className="mt-2 text-[11px] text-white/35">
+      <p className="mt-2 text-[11px] text-white/55">
         Plans are priced on a clone. Nothing here buys anything — the cockpit does that.
       </p>
     </div>

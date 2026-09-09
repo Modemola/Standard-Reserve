@@ -404,7 +404,7 @@ function pendingVerdict(fixture: AttackFixture): Verdict {
   };
 }
 
-export function runAttack(fixture: AttackFixture): Verdict {
+export function runFixture(fixture: AttackFixture): Verdict {
   if (!fixture.implemented) return pendingVerdict(fixture);
 
   const world0 = buildWorld(fixture);
@@ -460,6 +460,6 @@ export function runAttack(fixture: AttackFixture): Verdict {
 }
 
 /** The after-world of a fixture, for "Replay in Lab". */
-export function runAttackWorld(fixture: AttackFixture): World {
+export function runFixtureWorld(fixture: AttackFixture): World {
   return replay(fixture, buildWorld(fixture)).world;
 }

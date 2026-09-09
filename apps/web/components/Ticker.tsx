@@ -1,0 +1,66 @@
+"use client";
+
+import { invariantCheck, spotPriceEthPerStd, supplyCirc } from "@standard-law/engine";
+import { FlashOnChange } from "@/components/FlashOnChange";
+import { fmtEth, fmtToken } from "@/lib/format";
+import { useWorld } from "@/lib/sim-context";
+
+/**
+ * Persistent status strip — the machine is always running, on every route.
+ * Deliberately does not reuse RegimeBadge (its data-testid must stay unique).
+ */
+export function Ticker() {
+  const world = useWorld();
+  const regime = world.F.length > 0 && (world.F.at(-1) ?? 0n) > 0n ? "expansion" : "contraction";
+  const isExpansion = regime === "expansion";
+  const inv = invariantCheck(world);
+
+  return (
+    <div className="relative border-b border-white/[0.06] bg-black/25">
+      {/* The strip scrolls, but on a 390px phone it cut off mid-word at
+          "S_CI" with nothing to say more existed -- S_circ, F_n, spot and the
+          invariant pill were simply invisible. The fade is the affordance:
+          it reads as "continues" rather than "ends". pointer-events-none so
+          it never eats a swipe, and it is hidden once everything fits. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-ink to-transparent lg:hidden"
+      />
+      <div className="mx-auto flex max-w-6xl items-center gap-0 overflow-x-auto px-4 py-1.5 font-mono text-[11px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <span className="flex shrink-0 items-center gap-1.5 pr-3 text-white/55">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-expansion opacity-60" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-expansion" />
+          </span>
+          LIVE
+        </span>
+        <Cell label="epoch" value={String(world.epoch)} />
+        <Cell
+          label="regime"
+          value={regime}
+          className={isExpansion ? "text-expansion" : "text-contraction"}
+        />
+        <Cell label="m" value={world.m.toFixed(2)} />
+        <Cell label="S_circ" value={fmtToken(supplyCirc(world))} />
+        <Cell label="F_n" value={fmtEth(world.F.at(-1) ?? 0n)} />
+        <Cell label="spot" value={`${spotPriceEthPerStd(world.pool).toFixed(8)}`} />
+        <Cell
+          label="inv"
+          value={inv.ok ? "ok" : "fail"}
+          className={inv.ok ? "text-expansion/80" : "text-contraction"}
+        />
+      </div>
+    </div>
+  );
+}
+
+function Cell({ label, value, className = "" }: { label: string; value: string; className?: string }) {
+  return (
+    <span className="flex shrink-0 items-baseline gap-1.5 border-l border-white/[0.07] px-3">
+      <span className="uppercase tracking-[0.12em] text-white/50">{label}</span>
+      <FlashOnChange value={value} className={`tabular ${className || "text-white/70"}`}>
+        {value}
+      </FlashOnChange>
+    </span>
+  );
+}

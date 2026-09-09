@@ -1,53 +1,119 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Bodoni_Moda, Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import { SimProvider } from "@/lib/sim-context";
 import { ErrorToast } from "@/components/ErrorToast";
+import { SiteNav } from "@/components/SiteNav";
+import { Ticker } from "@/components/Ticker";
 import "./globals.css";
 
+/** UI text — Instrument Sans: cleaner and less ubiquitous than Inter, and the
+ *  companion face to the display serif below. */
+const instrumentSans = Instrument_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+/** Display — Bodoni Moda: a didone, the typographic register of banknotes,
+ *  share certificates and engraved financial instruments. Variable optical
+ *  size axis, so hairlines stay crisp at hero scale. Large sizes only. */
+const bodoni = Bodoni_Moda({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-serif",
+  display: "swap",
+  // Bodoni Moda is not in Next's font-metrics table, so it cannot compute a
+  // size-adjust for the fallback and logs "Failed to find font override
+  // values" on every build. Name the fallback explicitly and opt out of the
+  // automatic adjustment rather than leaving a build error nobody can act on.
+  fallback: ["Georgia", "Times New Roman", "serif"],
+  adjustFontFallback: false,
+});
+
+/** Data — every number in the engine. */
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
+const DESCRIPTION =
+  "An unofficial, deterministic simulator of The Standard Reserve's onchain monetary policy — auctions, issuance, epochs and exits, all runnable in the browser.";
+
 export const metadata: Metadata = {
-  title: "Policy Twin — The Standard Reserve",
-  description: "An unofficial simulator of The Standard Reserve's onchain monetary policy.",
+  // metadataBase makes the relative og:image below resolve to an absolute
+  // URL, which every social crawler requires. Without it Next warns at build
+  // time and the card renders with no image at all.
+  metadataBase: new URL("https://standard-law.vercel.app"),
+  // The template is what gives each route its own tab title. Every page used
+  // to render the same string, so four open tabs were indistinguishable and
+  // every shared link previewed identically.
+  title: {
+    default: "Policy Twin — The Standard Reserve",
+    template: "%s — Policy Twin",
+  },
+  description: DESCRIPTION,
+  applicationName: "Policy Twin",
+  openGraph: {
+    type: "website",
+    siteName: "Policy Twin",
+    title: "Policy Twin — The Standard Reserve",
+    description: DESCRIPTION,
+    images: [
+      {
+        url: "/hero-preview.jpg",
+        width: 2100,
+        height: 1110,
+        alt: "The Banker's Cockpit — regime badge, branch rack, auction clocks and exit pressure.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Policy Twin — The Standard Reserve",
+    description: DESCRIPTION,
+    images: ["/hero-preview.jpg"],
+  },
+  robots: { index: true, follow: true },
 };
 
-const NAV = [
-  { href: "/", label: "Home" },
-  { href: "/lab", label: "Lab" },
-  { href: "/bank/c-0042", label: "Bank" },
-  { href: "/sentinel", label: "Sentinel" },
-  { href: "/desk", label: "Desk" },
-  { href: "/scenarios", label: "Scenarios" },
-  { href: "/law", label: "Law" },
-];
+/** Paper grain — keeps the near-black from reading as flat plastic. */
+const GRAIN =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E\")";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-ink text-paper font-sans antialiased">
+    <html
+      lang="en"
+      className={`${instrumentSans.variable} ${bodoni.variable} ${jetbrainsMono.variable}`}
+    >
+      <body className="min-h-screen bg-ink font-sans text-paper antialiased">
         <SimProvider>
-          <header className="border-b border-white/10">
-            <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-              <span className="font-mono text-sm tracking-wide text-white/60">standard-law</span>
-              <ul className="flex gap-4 text-sm">
-                {NAV.map((n) => (
-                  <li key={n.href}>
-                    <Link href={n.href} className="text-white/70 hover:text-paper">
-                      {n.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </header>
-          <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
-          <footer className="mx-auto max-w-6xl px-4 pb-10 pt-6 text-xs leading-relaxed text-white/40">
-            <p>
-              <em>
-                STANDARD is an experimental onchain protocol. This app is unofficial. Not a bank.
-                Not investment advice. Not affiliated with The Standard Reserve team unless they
-                say otherwise.
-              </em>
-            </p>
-          </footer>
+          <div
+            aria-hidden="true"
+            className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_50%_-10%,rgba(201,162,39,0.07),transparent_55%)]"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none fixed inset-0 z-0 opacity-[0.05] mix-blend-overlay"
+            style={{ backgroundImage: GRAIN }}
+          />
+          <div className="relative z-10">
+            <SiteNav />
+            <Ticker />
+            <main className="mx-auto max-w-6xl px-4 py-10">{children}</main>
+            <footer className="mx-auto max-w-6xl px-4 pb-10 pt-6 text-xs leading-relaxed text-white/55">
+              <p>
+                <em>
+                  STANDARD is an experimental onchain protocol. This app is unofficial. Not a bank.
+                  Not investment advice. Not affiliated with The Standard Reserve team unless they
+                  say otherwise.
+                </em>
+              </p>
+            </footer>
+          </div>
           <ErrorToast />
         </SimProvider>
       </body>

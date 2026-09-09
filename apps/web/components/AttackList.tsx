@@ -28,7 +28,7 @@ export function AttackList({
             >
               <span className="min-w-0">
                 <span className="block truncate font-mono text-xs text-white/80">{f.id}</span>
-                <span className="block truncate text-[11px] text-white/40">{f.title}</span>
+                <span className="block truncate text-[11px] text-white/55">{f.title}</span>
               </span>
               <VerdictPill status={v ? v.status : "pending"} />
             </button>

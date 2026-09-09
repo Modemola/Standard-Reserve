@@ -4,20 +4,21 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "predev": "node scripts/sync-fixtures.mjs",
+    "predev": "node ../../scripts/sync-scenarios.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/sync-fixtures.mjs",
+    "prebuild": "node ../../scripts/sync-scenarios.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "e2e": "playwright test",
-    "sync:fixtures": "node scripts/sync-fixtures.mjs"
+    "sync:fixtures": "node ../../scripts/sync-scenarios.mjs"
   },
   "dependencies": {
     "@standard-law/desk": "workspace:*",
     "@standard-law/engine": "workspace:*",
     "@standard-law/params": "workspace:*",
     "@standard-law/sentinel": "workspace:*",
+    "lucide-react": "^1.40.0",
     "next": "^14.2.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -29,6 +30,8 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.35",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14",
     "typescript": "^5.6.3"

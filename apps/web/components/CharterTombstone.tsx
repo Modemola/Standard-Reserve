@@ -12,11 +12,11 @@ export function CharterTombstone({ board }: { board: CharterBoard }) {
         data-testid="charter-tombstone"
         className="flex h-full flex-col items-center justify-center rounded-lg border border-white/10 bg-white/[0.02] p-6 text-center"
       >
-        <p className="font-mono text-3xl uppercase tracking-[0.3em] text-white/35">unopened</p>
-        <p className="mt-3 text-xs text-white/45">
+        <p className="font-mono text-3xl uppercase tracking-[0.3em] text-white/55">unopened</p>
+        <p className="mt-3 text-xs text-white/55">
           Charter auctions are closed. Policy cap is 0, so there is no market and no price.
         </p>
-        <p className="mt-1 text-[11px] text-white/30">
+        <p className="mt-1 text-[11px] text-white/55">
           Raise charterDailyCap in the Lab to open the book.
         </p>
       </div>
@@ -33,13 +33,13 @@ export function CharterTombstone({ board }: { board: CharterBoard }) {
       </p>
       <dl className="mt-3 grid grid-cols-2 gap-2 text-xs">
         <div>
-          <dt className="text-white/40">sold today</dt>
+          <dt className="text-white/55">sold today</dt>
           <dd className="tabular font-mono text-white/75">
             {board.sold}/{board.cap}
           </dd>
         </div>
         <div>
-          <dt className="text-white/40">floor</dt>
+          <dt className="text-white/55">floor</dt>
           <dd className="tabular font-mono text-white/75">{fmtEth(board.pFloor ?? 0n)}</dd>
         </div>
       </dl>

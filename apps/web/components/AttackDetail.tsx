@@ -20,7 +20,7 @@ function SnapshotGrid({ before, after }: { before: Snapshot; after: Snapshot }) 
   ];
   return (
     <table className="w-full text-left text-xs">
-      <thead className="text-white/40">
+      <thead className="text-white/55">
         <tr>
           <th className="py-1 font-medium">field</th>
           <th className="py-1 text-right font-medium">before</th>
@@ -31,8 +31,8 @@ function SnapshotGrid({ before, after }: { before: Snapshot; after: Snapshot }) 
         {rows.map(([label, b, a]) => (
           <tr key={label} className="border-t border-white/5">
             <td className="py-1 text-white/55">{label}</td>
-            <td className="py-1 text-right text-white/45">{b}</td>
-            <td className={`py-1 text-right ${a !== b ? "text-paper" : "text-white/45"}`}>{a}</td>
+            <td className="py-1 text-right text-white/55">{b}</td>
+            <td className={`py-1 text-right ${a !== b ? "text-paper" : "text-white/55"}`}>{a}</td>
           </tr>
         ))}
       </tbody>
@@ -61,8 +61,8 @@ export function AttackDetail({
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="font-mono text-sm text-white/85">{fixture.id}</h2>
           <VerdictPill status={verdict ? verdict.status : "pending"} size="lg" />
-          <span className="font-mono text-xs text-white/40">{fixture.wp}</span>
-          <span className="rounded border border-white/10 px-2 py-0.5 text-[11px] text-white/40">
+          <span className="font-mono text-xs text-white/55">{fixture.wp}</span>
+          <span className="rounded border border-white/10 px-2 py-0.5 text-[11px] text-white/55">
             {fixture.severity}
           </span>
         </div>
@@ -140,7 +140,7 @@ export function AttackDetail({
             <TapeTable rows={verdict.tape} emptyNote="This attack moved nothing." />
           </div>
 
-          <p className="font-mono text-[11px] text-white/30">
+          <p className="font-mono text-[11px] text-white/55">
             world hash after: {verdict.worldHashAfter || "—"}
           </p>
         </>

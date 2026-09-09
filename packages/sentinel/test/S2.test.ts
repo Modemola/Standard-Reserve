@@ -13,7 +13,7 @@ import {
   tick,
 } from "@standard-law/engine";
 import { loadFixtures } from "../src/runAll.js";
-import { runAttack } from "../src/runAttack.js";
+import { runFixture } from "../src/runFixture.js";
 
 const byId = (id: string) => loadFixtures().find((f) => f.id === id)!;
 
@@ -44,7 +44,7 @@ describe("A9 self-rebate", () => {
 
 describe("A13 issuance budget", () => {
   it("actually runs the budget dry rather than passing under it", () => {
-    const v = runAttack(byId("A13_issuance_budget"));
+    const v = runFixture(byId("A13_issuance_budget"));
     expect(v.status).toBe("held");
 
     // Rebuild far enough to read the counter itself.
@@ -78,7 +78,7 @@ describe("A6 licence caps", () => {
   });
 
   it("stops the rack at maxBranches", () => {
-    const v = runAttack(byId("A6_license_sniper"));
+    const v = runFixture(byId("A6_license_sniper"));
     expect(v.status).toBe("held");
     expect(v.after.N).toBeGreaterThan(v.before.N); // licences really were bought
   });

@@ -9,7 +9,7 @@ import {
   tick,
 } from "@standard-law/engine";
 import { loadFixtures } from "../src/runAll.js";
-import { runAttack, solveSellForEthOut } from "../src/runAttack.js";
+import { runFixture, solveSellForEthOut } from "../src/runFixture.js";
 
 const fixture = () => loadFixtures().find((f) => f.id === "A4_contraction_bait")!;
 
@@ -27,7 +27,7 @@ function baitedWorld() {
 
 describe("A4 contraction bait", () => {
   it("holds: the vault drains on a leash", () => {
-    const v = runAttack(fixture());
+    const v = runFixture(fixture());
     expect(v.status, JSON.stringify([...v.broken, ...v.unexpected])).toBe("held");
   });
 
@@ -49,7 +49,7 @@ describe("A4 contraction bait", () => {
   it("never sells gold to fund a buyback", () => {
     const { w } = baitedWorld();
     expect(w.vaults.expansionGold).toBe(0n);
-    const v = runAttack(fixture());
+    const v = runFixture(fixture());
     expect(BigInt(v.after.expansionGold)).toBeGreaterThanOrEqual(BigInt(v.before.expansionGold));
   });
 });

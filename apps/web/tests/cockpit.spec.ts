@@ -2,6 +2,14 @@ import { expect, test } from "@playwright/test";
 
 test("lab: loading exodus flips the regime to contraction", async ({ page }) => {
   await page.goto("/lab");
+
+  // Assert the *starting* state first. Without this the test was vacuous: the
+  // demo world's last closed epoch had F_n = 0, which is contraction by spec,
+  // so "flips to contraction" asserted something that was already true and
+  // would have passed even if the scenario loader did nothing at all. This is
+  // the Phase B exit criterion, so it needs to actually exercise the flip.
+  await expect(page.getByTestId("regime-badge")).toHaveText(/expansion/i);
+
   await page.getByRole("combobox").selectOption("exodus");
   await page.getByRole("button", { name: "load scenario" }).click();
   await expect(page.getByTestId("regime-badge")).toHaveText(/contraction/i);

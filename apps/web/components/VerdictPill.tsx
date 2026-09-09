@@ -4,7 +4,7 @@ const STYLE: Record<VerdictStatus, string> = {
   held: "border-held/40 bg-held/10 text-held",
   cheap: "border-cheap/40 bg-cheap/10 text-cheap",
   broken: "border-broken/50 bg-broken/15 text-broken",
-  pending: "border-white/15 bg-white/5 text-white/40",
+  pending: "border-white/15 bg-white/5 text-white/55",
 };
 
 export function VerdictPill({ status, size = "sm" }: { status: VerdictStatus; size?: "sm" | "lg" }) {

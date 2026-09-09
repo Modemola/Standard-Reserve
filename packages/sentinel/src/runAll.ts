@@ -1,9 +1,9 @@
 // Load every fixture in /attacks and run it. Node-only (uses fs); the browser
-// fetches fixtures itself and calls runAttack directly.
+// fetches fixtures itself and calls runFixture directly.
 import { readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { runAttack } from "./runAttack.js";
+import { runFixture } from "./runFixture.js";
 import { compareAttackIds } from "./order.js";
 import { parseFixture } from "./schema.js";
 import type { AttackFixture, Verdict } from "./schema.js";
@@ -21,5 +21,5 @@ export function loadFixtures(dir = attacksDir()): AttackFixture[] {
 }
 
 export function runAll(dir = attacksDir()): Verdict[] {
-  return loadFixtures(dir).map(runAttack);
+  return loadFixtures(dir).map(runFixture);
 }

@@ -28,19 +28,19 @@ export function FlipWidget({ quote }: { quote: FlipQuote }) {
       </p>
       <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-white/10 pt-3 text-xs">
         <div>
-          <dt className="text-white/40">regime now</dt>
+          <dt className="text-white/55">regime now</dt>
           <dd data-testid="flip-regime-now" className="font-mono text-white/80">
             {quote.regimeNow}
           </dd>
         </div>
         <div>
-          <dt className="text-white/40">if epoch ended now</dt>
+          <dt className="text-white/55">if epoch ended now</dt>
           <dd data-testid="flip-regime-live" className="font-mono text-white/80">
             {quote.regimeIfEpochEndedNow}
           </dd>
         </div>
         <div className="col-span-2">
-          <dt className="text-white/40">F_n this epoch</dt>
+          <dt className="text-white/55">F_n this epoch</dt>
           <dd className="tabular font-mono text-white/80">{fmtEth(quote.Fn)} ETH</dd>
         </div>
       </dl>

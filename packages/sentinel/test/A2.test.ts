@@ -7,7 +7,7 @@ import {
   tick,
 } from "@standard-law/engine";
 import { loadFixtures } from "../src/runAll.js";
-import { runAttack } from "../src/runAttack.js";
+import { runFixture } from "../src/runFixture.js";
 
 const fixture = () => loadFixtures().find((f) => f.id === "A2_one_block_pump")!;
 
@@ -24,12 +24,12 @@ function runPumpScenario(withPump: boolean) {
 
 describe("A2 one-block pump", () => {
   it("holds: the pump cannot buy a raise", () => {
-    const v = runAttack(fixture());
+    const v = runFixture(fixture());
     expect(v.status, JSON.stringify([...v.broken, ...v.unexpected])).toBe("held");
   });
 
   it("the pump does flip the epoch to expansion — it is a real, large buy", () => {
-    const v = runAttack(fixture());
+    const v = runFixture(fixture());
     expect(v.after.regime).toBe("expansion");
     const pump = v.tape.find((r) => r.op === "buyStd");
     expect(BigInt(pump?.ethIn ?? "0")).toBe(50n * 10n ** 18n);

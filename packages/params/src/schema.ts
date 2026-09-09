@@ -37,7 +37,56 @@ export const RawParamsSchema = z.object({
   // Desk-only display tolerance: how close to P_floor counts as "at the floor"
   // when solving for the wait time. Relative, so it holds at any price scale.
   floorEpsilon: z.number().min(0).max(1),
-});
+})
+  /**
+   * Cross-field checks. Per-field types alone let genuinely broken configs
+   * through, and because README tells people to edit default.json by hand,
+   * a bad edit otherwise produces silent nonsense rather than an error:
+   *
+   *   mMin > mMax        updateM's clamps pin m at a nonsensical value and
+   *                      issuance is quietly wrong for the whole run
+   *   feeFloor > feeCeil feeRateFromP collapses to the *lower* bound, and
+   *                      LawMath.sol underflows on feeCeil - feeFloor
+   *   genesisEth = 0     the pool opens with no ETH, so the constant
+   *                      product is 0 and the AMM is broken from genesis
+   */
+  .superRefine((p, ctx) => {
+    if (p.mMin > p.mMax) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["mMin"],
+        message: `mMin (${p.mMin}) must be <= mMax (${p.mMax})`,
+      });
+    }
+    if (p.mLaunch < p.mMin || p.mLaunch > p.mMax) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["mLaunch"],
+        message: `mLaunch (${p.mLaunch}) must sit within [mMin, mMax] = [${p.mMin}, ${p.mMax}]`,
+      });
+    }
+    if (p.feeFloor > p.feeCeil) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["feeFloor"],
+        message: `feeFloor (${p.feeFloor}) must be <= feeCeil (${p.feeCeil})`,
+      });
+    }
+    if (BigInt(p.genesisEth) <= 0n) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["genesisEth"],
+        message: "genesisEth must be > 0; the genesis pool needs ETH on one side to have a price",
+      });
+    }
+    if (BigInt(p.exitDenomMin) <= 0n) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["exitDenomMin"],
+        message: "exitDenomMin must be > 0; it is the denominator floor in the resolution fee",
+      });
+    }
+  });
 
 export type RawParams = z.infer<typeof RawParamsSchema>;
 

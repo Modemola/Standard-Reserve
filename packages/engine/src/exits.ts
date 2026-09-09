@@ -45,7 +45,6 @@ export function quoteRetirement(world: World, charterId: string, branchId: numbe
     feeRate,
     fee,
     mintToUser: branch.ledger - fee,
-    lockedAt: world.now,
   };
 }
 

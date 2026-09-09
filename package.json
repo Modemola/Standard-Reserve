@@ -9,6 +9,10 @@
     "test": "pnpm -r run test",
     "dev": "pnpm --filter web dev",
     "build": "pnpm -r build",
+    "perf": "node scripts/check-budget.mjs",
+    "perf:update": "node scripts/check-budget.mjs --update",
+    "sweep": "pnpm --filter @standard-law/engine run sweep",
+    "attack": "pnpm --filter @standard-law/engine run attack",
     "sentinel:run": "pnpm --filter @standard-law/sentinel exec tsx src/cli.ts"
   },
   "devDependencies": {

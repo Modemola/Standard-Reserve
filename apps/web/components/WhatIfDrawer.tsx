@@ -2,8 +2,10 @@
 
 import { useMemo, useState } from "react";
 import {
+  DAY_SECONDS,
   applySwap,
   buyLicense,
+  computeEpochIssuance,
   computeFeeRate,
   retireBranch,
   supplyCirc,
@@ -11,7 +13,36 @@ import {
   tick,
 } from "@standard-law/engine";
 import type { World } from "@standard-law/engine";
-import { fmtPct, fmtToken } from "@/lib/format";
+import { Sparkles } from "lucide-react";
+import { Card } from "@/components/Card";
+import { fmtEth, fmtPct, fmtToken } from "@/lib/format";
+
+/**
+ * This charter's share of a day's issuance, in $STANDARD.
+ *
+ * Issuance is streamed equally across every live branch in the system, so a
+ * charter earns in proportion to how many of them are its own. Deliberately
+ * expressed per day in tokens, never as a rate or a percentage -- spec §0
+ * forbids the word APY in the UI, and quoting a yield percentage on a
+ * simulated placeholder economy would be exactly the claim the disclaimer
+ * says this app does not make.
+ */
+function yieldPerDay(world: World, charterId: string): bigint {
+  let live = 0;
+  let mine = 0;
+  for (const c of Object.values(world.charters)) {
+    if (!c.alive) continue;
+    for (const b of c.branches) {
+      if (!b.alive) continue;
+      live += 1;
+      if (c.id === charterId) mine += 1;
+    }
+  }
+  if (live === 0 || mine === 0) return 0n;
+  const perEpoch = computeEpochIssuance(world);
+  const perDay = (perEpoch * BigInt(DAY_SECONDS)) / BigInt(world.params.epochSeconds);
+  return (perDay * BigInt(mine)) / BigInt(live);
+}
 
 export function WhatIfDrawer({
   world,
@@ -55,10 +86,19 @@ export function WhatIfDrawer({
 
   const feeRateNow = computeFeeRate(world);
   const feeRatePreview = computeFeeRate(preview);
+  // Spec §"What-if drawer sliders": the ribbon is m, your yield/day, S_circ,
+  // gold, feeRate. Gold and yield/day were missing, which left it reading as
+  // a debug panel rather than something a banker could decide with -- they
+  // are the only two entries that answer "what does this do for me".
+  const yieldNow = yieldPerDay(world, charterId);
+  const yieldPreview = yieldPerDay(preview, charterId);
+  // With every slider at rest the commit would apply no actions at all —
+  // a button that silently does nothing.
+  const nothingStaged = flowEth === 0 && licensesToBuy === 0 && branchesToRetire === 0;
 
   return (
-    <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-      <h3 className="mb-3 text-sm font-medium text-white/70">What-if</h3>
+    <Card>
+      <h3 className="mb-4 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">What-if</h3>
 
       <Slider
         label="Remaining-epoch ETH flow"
@@ -88,11 +128,19 @@ export function WhatIfDrawer({
         display={`${branchesToRetire}`}
       />
 
-      <div className="mt-4 grid grid-cols-2 gap-3 border-t border-white/10 pt-4 text-xs">
+      <div className="mt-5 grid grid-cols-2 gap-3 border-t border-white/[0.06] pt-4 text-xs">
         <Stat label="m now → preview" value={`${world.m.toFixed(2)} → ${preview.m.toFixed(2)}`} />
         <Stat
           label="S_circ now → preview"
           value={`${fmtToken(supplyCirc(world))} → ${fmtToken(supplyCirc(preview))}`}
+        />
+        <Stat
+          label="your yield/day now → preview"
+          value={`${fmtToken(yieldNow)} → ${fmtToken(yieldPreview)} STD`}
+        />
+        <Stat
+          label="expansion gold now → preview"
+          value={`${fmtEth(world.vaults.expansionGold)} → ${fmtEth(preview.vaults.expansionGold)} g`}
         />
         <Stat label="feeRate now → preview" value={`${fmtPct(feeRateNow)} → ${fmtPct(feeRatePreview)}`} />
         <Stat
@@ -104,14 +152,18 @@ export function WhatIfDrawer({
 
       <button
         onClick={() => onCommit(applyActions)}
-        className="mt-4 w-full rounded border border-expansion/40 bg-expansion/10 py-2 text-sm text-expansion"
+        disabled={nothingStaged}
+        className="mt-5 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-expansion/40 bg-expansion/10 py-2.5 text-sm font-medium text-expansion shadow-glow-expansion transition-transform duration-150 hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:scale-100"
       >
+        <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
         Commit on live sim
       </button>
-      <p className="mt-2 text-center text-[10px] text-white/40">
-        Nothing here touches the live simulation until you commit.
+      <p className="mt-2 text-center text-[10px] text-white/55">
+        {nothingStaged
+          ? "Move a slider to stage a hypothetical."
+          : "Nothing here touches the live simulation until you commit."}
       </p>
-    </div>
+    </Card>
   );
 }
 
@@ -133,10 +185,10 @@ function Slider({
   display: string;
 }) {
   return (
-    <div className="mb-3">
-      <div className="mb-1 flex justify-between text-xs text-white/60">
+    <div className="mb-4">
+      <div className="mb-1.5 flex justify-between text-xs text-white/55">
         <span>{label}</span>
-        <span className="tabular font-mono">{display}</span>
+        <span className="tabular font-mono text-white/80">{display}</span>
       </div>
       <input
         type="range"
@@ -146,7 +198,11 @@ function Slider({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-expansion"
+        // The track is 6px, which is what the element measured on a phone --
+        // an unusable target. `range-touch` (globals.css) keeps that hairline
+        // look but pads the control out to a 44px tall hit area and gives the
+        // thumb a real size, so a thumb can actually catch it.
+        className="range-touch w-full cursor-pointer appearance-none bg-transparent accent-expansion"
       />
     </div>
   );
@@ -155,7 +211,7 @@ function Slider({
 function Stat({ label, value, testId }: { label: string; value: string; testId?: string }) {
   return (
     <div data-testid={testId}>
-      <p className="text-white/40">{label}</p>
+      <p className="text-white/60">{label}</p>
       <p className="tabular font-mono text-white/80">{value}</p>
     </div>
   );

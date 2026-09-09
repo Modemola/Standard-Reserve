@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { runAttack, runAttackWorld } from "@standard-law/sentinel";
+import { runFixture, runFixtureWorld } from "@standard-law/sentinel";
 import type { AttackFixture, Verdict } from "@standard-law/sentinel";
 import { AttackDetail } from "@/components/AttackDetail";
 import { AttackList } from "@/components/AttackList";
@@ -41,7 +41,7 @@ export default function SentinelPage() {
     for (const f of list) {
       await new Promise((r) => setTimeout(r, 0));
       try {
-        const v = runAttack(f);
+        const v = runFixture(f);
         setVerdicts((prev) => ({ ...prev, [v.id]: v }));
       } catch (e) {
         setError(`${f.id}: ${e instanceof Error ? e.message : String(e)}`);
@@ -89,7 +89,7 @@ export default function SentinelPage() {
   function replayInLab() {
     if (!selected) return;
     try {
-      store.applyWorld(runAttackWorld(selected), `replay:${selected.id}`);
+      store.applyWorld(runFixtureWorld(selected), `replay:${selected.id}`);
       setToast(`Loaded ${selected.id} into the live sim`);
       setTimeout(() => router.push(`/lab?sentinel=${selected.id}`), 400);
     } catch (e) {
@@ -148,7 +148,7 @@ export default function SentinelPage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         <section className="lg:col-span-5">
           {fixtures.length === 0 && !error ? (
-            <p className="rounded border border-white/10 p-4 text-sm text-white/40">
+            <p className="rounded border border-white/10 p-4 text-sm text-white/55">
               Loading attack catalogue…
             </p>
           ) : (

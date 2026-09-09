@@ -113,3 +113,28 @@ pnpm test            # engine + sentinel + desk unit suites
 pnpm sentinel:run    # verdict table -> artifacts/sentinel-report.md, exit 1 on BROKEN
 pnpm --filter web dev
 ```
+
+## How this sits next to the adversarial probes
+
+`packages/engine/src/adversary.ts` (`pnpm attack`) already asks a different
+question — not "does the rule hold" but "does a strategy profit". Its headline
+is that **the pump works**: a sustained pump drives `m` to its ceiling and
+harvests materially more issuance than a passive control, and what stops it
+paying is a ~47% round-trip slippage cost through a 100 ETH pool — a defence
+that weakens as the pool deepens.
+
+That is not in tension with `A2_one_block_pump` coming back HELD, and the two
+should be read together:
+
+- **A2 is the single-epoch case.** One last-minute buy cannot earn a raise,
+  because the raise path reads the two *previously closed* epochs. The most it
+  buys is skipping one cut.
+- **A3 is the mechanism that does work**, marked CHEAP precisely because it
+  does: consecutive positive closes walk `m` up regardless of size.
+- **The adversary probes price it.** Sentinel answers "is the rule enforced";
+  the probes answer "is enforcing it enough". A3's yellow note and A2's teach
+  text both point at `pnpm attack` so nobody reads a HELD verdict as "pumping
+  is impossible".
+
+The honest summary is that the multiplier rule is enforced exactly as written,
+and that being enforced is not the same as being sufficient.

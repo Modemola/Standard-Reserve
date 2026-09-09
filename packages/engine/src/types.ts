@@ -80,6 +80,19 @@ export interface World {
   lastError?: string;
 }
 
+/**
+ * A retirement quote. Every field here is what the cockpit renders in the
+ * exit ticket, and retireBranch computes the real move from this same
+ * function, so the two cannot disagree (locked down by a property test).
+ *
+ * There is deliberately no `lockedAt`. The field used to exist and nothing
+ * ever read it -- the name promised a time-locked quote the engine does not
+ * implement, since retireBranch recomputes rather than honouring a quote
+ * issued earlier. A type that describes behaviour the code does not have is
+ * worse than no field at all. If quotes ever need to survive a round trip
+ * (a network boundary, a signed intent), add the staleness window and the
+ * honouring logic together -- not the timestamp on its own.
+ */
 export interface Quote {
   charterId: string;
   branchId: number;
@@ -87,7 +100,6 @@ export interface Quote {
   feeRate: number;
   fee: bigint;
   mintToUser: bigint;
-  lockedAt: number;
 }
 
 export interface LicenseQuote {

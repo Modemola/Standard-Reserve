@@ -31,3 +31,5 @@ export { rollAuctionsIfNeeded } from "./auctions.js";
 // retireBranch, checkIn, reportDormant, closeEpochIfDue, quoteRetirement,
 // quoteLicense, invariantCheck, hashWorld, SimStore).
 export * from "./store.js";
+export * from "./sweep.js";
+export * from "./adversary.js";

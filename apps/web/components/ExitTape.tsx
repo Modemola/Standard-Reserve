@@ -39,7 +39,7 @@ export function ExitTape({
       </h3>
 
       {!impact ? (
-        <p className="text-xs text-white/40">No live branch to quote.</p>
+        <p className="text-xs text-white/55">No live branch to quote.</p>
       ) : (
         <>
           <p className="tabular font-mono text-3xl text-contraction" data-testid="exit-fee-now">
@@ -49,19 +49,19 @@ export function ExitTape({
 
           <dl className="mt-3 grid grid-cols-2 gap-2 text-xs">
             <div>
-              <dt className="text-white/40">W (7d withdrawn)</dt>
+              <dt className="text-white/55">W (7d withdrawn)</dt>
               <dd className="tabular font-mono text-white/75">{fmtToken(impact.W)}</dd>
             </div>
             <div>
-              <dt className="text-white/40">D (still at the bank)</dt>
+              <dt className="text-white/55">D (still at the bank)</dt>
               <dd className="tabular font-mono text-white/75">{fmtToken(impact.D)}</dd>
             </div>
             <div>
-              <dt className="text-white/40">mint to you</dt>
+              <dt className="text-white/55">mint to you</dt>
               <dd className="tabular font-mono text-white/75">{fmtToken(impact.mintToUser)}</dd>
             </div>
             <div>
-              <dt className="text-white/40">if the door crowds</dt>
+              <dt className="text-white/55">if the door crowds</dt>
               <dd className="tabular font-mono text-cheap" data-testid="exit-fee-crowded">
                 {fmtPct(impact.feeRateIfRetireLvl)}
               </dd>
@@ -100,7 +100,7 @@ export function ExitTape({
           display={String(crowd)}
         />
       </div>
-      <p className="mt-2 text-[11px] text-white/35">
+      <p className="mt-2 text-[11px] text-white/55">
         Sliders quote against a clone. The live simulation is untouched until you commit in the
         cockpit.
       </p>

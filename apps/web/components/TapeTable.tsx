@@ -5,7 +5,7 @@ import { fmtEth } from "@/lib/format";
 export function TapeTable({ rows, emptyNote }: { rows: TapeRow[]; emptyNote?: string }) {
   if (rows.length === 0) {
     return (
-      <p className="rounded border border-white/10 bg-white/[0.02] p-3 text-xs text-white/40">
+      <p className="rounded border border-white/10 bg-white/[0.02] p-3 text-xs text-white/55">
         {emptyNote ?? "No prints yet."}
       </p>
     );
@@ -13,7 +13,7 @@ export function TapeTable({ rows, emptyNote }: { rows: TapeRow[]; emptyNote?: st
   return (
     <div className="max-h-64 overflow-auto rounded border border-white/10">
       <table className="w-full text-left text-xs">
-        <thead className="sticky top-0 bg-ink text-white/45">
+        <thead className="sticky top-0 bg-ink text-white/55">
           <tr>
             <th className="px-2 py-1 font-medium">t</th>
             <th className="px-2 py-1 font-medium">op</th>
@@ -37,7 +37,7 @@ export function TapeTable({ rows, emptyNote }: { rows: TapeRow[]; emptyNote?: st
               >
                 {r.Fn ? fmtEth(BigInt(r.Fn)) : "—"}
               </td>
-              <td className="px-2 py-1 text-white/35">{r.note ?? ""}</td>
+              <td className="px-2 py-1 text-white/55">{r.note ?? ""}</td>
             </tr>
           ))}
         </tbody>

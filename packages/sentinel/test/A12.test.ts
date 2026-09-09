@@ -10,7 +10,7 @@ import {
 } from "@standard-law/engine";
 import type { World } from "@standard-law/engine";
 import { loadFixtures } from "../src/runAll.js";
-import { runAttack } from "../src/runAttack.js";
+import { runFixture } from "../src/runFixture.js";
 
 const fixture = () => loadFixtures().find((f) => f.id === "A12_pol_rug")!;
 
@@ -24,12 +24,12 @@ function lcg(seed: number) {
 
 describe("A12 POL rug", () => {
   it("holds: the scripted path never pulls POL down", () => {
-    const v = runAttack(fixture());
+    const v = runFixture(fixture());
     expect(v.status, JSON.stringify([...v.broken, ...v.unexpected])).toBe("held");
   });
 
   it("the scripted path actually grows POL — the pass is not vacuous", () => {
-    const v = runAttack(fixture());
+    const v = runFixture(fixture());
     expect(BigInt(v.after.polEth)).toBeGreaterThan(BigInt(v.before.polEth));
     expect(BigInt(v.after.polStd)).toBeGreaterThan(BigInt(v.before.polStd));
   });

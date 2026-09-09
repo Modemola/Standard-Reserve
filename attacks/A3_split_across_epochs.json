@@ -2,22 +2,51 @@
   "id": "A3_split_across_epochs",
   "wp": "§5",
   "title": "Split a small buy across consecutive epochs",
-  "teach": "Raises are earned by two consecutive positive closes, and the rule does not care how large those closes were. Three small buys on three consecutive days are enough to walk the multiplier up — cheap, but working exactly as written.",
+  "teach": "Raises are earned by two consecutive positive closes, and the rule does not care how large those closes were. Three small buys on three consecutive days walk the multiplier up. This is the mechanism a sustained pump exploits, and the adversarial probes (packages/engine/src/adversary.ts, `pnpm attack`) price it: the strategy really does drive m to its ceiling, and what stops it being profitable is pool slippage, not the raise rule.",
   "severity": "incentive",
   "seed": "default",
   "paramsOverlay": {},
   "actions": [
-    { "t": 0, "op": "swap", "side": "buyStd", "amount": "100000000000000000", "note": "0.1 ETH" },
-    { "t": 0, "op": "tick", "dt": 86400 },
-    { "t": 86400, "op": "swap", "side": "buyStd", "amount": "100000000000000000" },
-    { "t": 86400, "op": "tick", "dt": 86400 },
-    { "t": 172800, "op": "swap", "side": "buyStd", "amount": "100000000000000000" },
-    { "t": 172800, "op": "tick", "dt": 86400, "note": "signal is now positive: m earns a raise" }
+    {
+      "t": 0,
+      "op": "swap",
+      "side": "buyStd",
+      "amount": "100000000000000000",
+      "note": "0.1 ETH"
+    },
+    {
+      "t": 0,
+      "op": "tick",
+      "dt": 86400
+    },
+    {
+      "t": 86400,
+      "op": "swap",
+      "side": "buyStd",
+      "amount": "100000000000000000"
+    },
+    {
+      "t": 86400,
+      "op": "tick",
+      "dt": 86400
+    },
+    {
+      "t": 172800,
+      "op": "swap",
+      "side": "buyStd",
+      "amount": "100000000000000000"
+    },
+    {
+      "t": 172800,
+      "op": "tick",
+      "dt": 86400,
+      "note": "signal is now positive: m earns a raise"
+    }
   ],
   "expect": {
     "invariantsOk": true,
     "polMustNotDecrease": true,
-    "notesYellow": "0.3 ETH of net inflow, spread over three closes, walked the multiplier up. The rule is a sign test, not a size test.",
+    "notesYellow": "0.3 ETH of net inflow, spread over three closes, walked the multiplier up. The rule is a sign test, not a size test — so the defence against a larger version of this is the cost of moving the pool, which falls as the pool deepens. See `pnpm attack`.",
     "yellowWhen": "mIncreased"
   }
 }

@@ -66,7 +66,7 @@ export default function DeskPage() {
               <h3 className="text-xs font-medium uppercase tracking-widest text-white/50">
                 Pool tape
               </h3>
-              <span className="rounded border border-white/15 px-1.5 py-0.5 text-[10px] tracking-widest text-white/40">
+              <span className="rounded border border-white/15 px-1.5 py-0.5 text-[10px] tracking-widest text-white/55">
                 SIM
               </span>
             </div>
@@ -95,7 +95,7 @@ export default function DeskPage() {
                 Commit sell (STD in)
               </button>
             </div>
-            <p className="mt-2 text-[11px] text-white/35">
+            <p className="mt-2 text-[11px] text-white/55">
               Commit writes to the live simulation, exactly like the Lab injectors.
             </p>
           </div>
@@ -105,7 +105,7 @@ export default function DeskPage() {
           {charterId ? (
             <LicenseSolver rows={plans} charterId={charterId} />
           ) : (
-            <p className="rounded-lg border border-white/10 p-4 text-sm text-white/40">
+            <p className="rounded-lg border border-white/10 p-4 text-sm text-white/55">
               No live charter in this world.
             </p>
           )}
