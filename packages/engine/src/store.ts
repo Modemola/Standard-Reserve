@@ -200,13 +200,40 @@ export function quoteRetirement(world: World, charterId: string, branchId: numbe
   return quoteRetirementImpl(world, charterId, branchId);
 }
 
-export function quoteLicense(world: World): LicenseQuote {
+/**
+ * Licences a charter may still buy today, accounting for the day rolling
+ * over since it last bought one. Exported because the cockpit needs exactly
+ * this number and had been deriving it inline.
+ */
+export function licensesRemainingToday(world: World, charterId: string): number {
+  const cap = world.params.maxLicensesPerCharterPerDay;
+  const charter = world.charters[charterId];
+  if (!charter || !charter.alive) return 0;
+  // A counter from an earlier day does not apply to today.
+  if (charter.licensesBoughtDay !== world.day) return cap;
+  return Math.max(cap - charter.licensesBoughtToday, 0);
+}
+
+/**
+ * `yourRemainingToday` needs to know whose licences are being counted, so pass
+ * the charter. Without one it reports the per-charter cap -- the most anybody
+ * could buy today -- which is the only honest answer when no charter is named.
+ *
+ * It used to return that cap unconditionally *with* a charter in hand too, so
+ * the field read "3 left" no matter how many had already been bought. Nothing
+ * caught it because the one caller that needed the number quietly computed its
+ * own, correctly, and never read this one.
+ */
+export function quoteLicense(world: World, charterId?: string): LicenseQuote {
   const a = world.licenseAuction;
   return {
     pNow: quoteLicensePrice(world),
     pFloor: a.pFloor,
     remaining: Math.max(a.cap - a.sold, 0),
-    yourRemainingToday: world.params.maxLicensesPerCharterPerDay,
+    yourRemainingToday:
+      charterId === undefined
+        ? world.params.maxLicensesPerCharterPerDay
+        : licensesRemainingToday(world, charterId),
   };
 }
 

@@ -3,6 +3,8 @@
 import dynamic from "next/dynamic";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { runFixtureWorld } from "@standard-law/sentinel";
+import { fetchFixture } from "@/lib/attacks";
 import {
   DEFAULT_PARAMS,
   ISSUANCE_BUDGET,
@@ -132,6 +134,9 @@ function LabInner() {
   const [dormantReporterKey, setDormantReporterKey] = useState("reporter-1");
   const [dailyCap, setDailyCap] = useState(String(world.params.charterDailyCap));
   const [scenarioId, setScenarioId] = useState<string>(SCENARIO_IDS[0]);
+  // Which Sentinel attack, if any, this world came from — so the page says
+  // what you are looking at rather than leaving it to the URL.
+  const [replayed, setReplayed] = useState<string | null>(null);
 
   async function loadScenarioById(id: string) {
     try {
@@ -146,12 +151,33 @@ function LabInner() {
     }
   }
 
+  /**
+   * Loads the after-world of a Sentinel attack.
+   *
+   * The URL is the source of truth here, not a label. Sentinel used to apply
+   * the world itself and then navigate to /lab?sentinel=<id>, which left the
+   * parameter decorative: sharing or reloading that link gave you the demo
+   * world under a URL claiming otherwise. Doing the load here makes the link
+   * mean what it says.
+   */
+  async function loadAttackById(id: string) {
+    try {
+      const fixture = await fetchFixture(id);
+      store.applyWorld(runFixtureWorld(fixture), `replay:${id}`);
+      setReplayed(id);
+    } catch {
+      store.apply((w) => ({ ...w, lastError: "attack_load_failed" }));
+    }
+  }
+
   useEffect(() => {
     const fromUrl = searchParams.get("scenario");
     if (fromUrl && SCENARIO_IDS.includes(fromUrl as (typeof SCENARIO_IDS)[number])) {
       setScenarioId(fromUrl);
       void loadScenarioById(fromUrl);
     }
+    const attack = searchParams.get("sentinel");
+    if (attack) void loadAttackById(attack);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
@@ -178,6 +204,17 @@ function LabInner() {
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+      {replayed && (
+        <div
+          data-testid="replay-banner"
+          className="lg:col-span-12 rounded-lg border border-expansion/40 bg-expansion/10 px-4 py-2 text-xs text-expansion"
+          role="status"
+        >
+          Showing the world left behind by{" "}
+          <span className="font-mono">{replayed}</span> — not the demo world. Reset the world to
+          get back.
+        </div>
+      )}
       <section className="space-y-4 lg:col-span-7">
         <Card className="relative overflow-hidden">
           <Guilloche

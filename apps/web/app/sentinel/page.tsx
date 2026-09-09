@@ -2,19 +2,17 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { runFixture, runFixtureWorld } from "@standard-law/sentinel";
+import { runFixture } from "@standard-law/sentinel";
 import type { AttackFixture, Verdict } from "@standard-law/sentinel";
 import { AttackDetail } from "@/components/AttackDetail";
 import { AttackList } from "@/components/AttackList";
 import { fetchAllFixtures } from "@/lib/attacks";
-import { useSimStore } from "@/lib/sim-context";
 
 /** Once a full run is measured slower than this, stop auto-running on arrival. */
 const AUTORUN_BUDGET_MS = 2000;
 const SLOW_KEY = "sentinel:slow";
 
 export default function SentinelPage() {
-  const store = useSimStore();
   const router = useRouter();
 
   const [fixtures, setFixtures] = useState<AttackFixture[]>([]);
@@ -27,7 +25,6 @@ export default function SentinelPage() {
   // timing is worth seeing anyway.
   const [lastRun, setLastRun] = useState<{ n: number; count: number; ms: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
   const autoRan = useRef(false);
 
   useEffect(() => {
@@ -92,15 +89,17 @@ export default function SentinelPage() {
     };
   }, [verdicts, fixtures.length]);
 
+  /**
+   * Navigate and let the Lab load it from the URL.
+   *
+   * This used to apply the world here and then push the link, which made the
+   * ?sentinel= parameter decorative — reloading or sharing that URL landed on
+   * the demo world with the URL still naming an attack. One path, and the link
+   * survives a reload.
+   */
   function replayInLab() {
     if (!selected) return;
-    try {
-      store.applyWorld(runFixtureWorld(selected), `replay:${selected.id}`);
-      setToast(`Loaded ${selected.id} into the live sim`);
-      setTimeout(() => router.push(`/lab?sentinel=${selected.id}`), 400);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    }
+    router.push(`/lab?sentinel=${selected.id}`);
   }
 
   function download() {
@@ -152,11 +151,6 @@ export default function SentinelPage() {
       {error && (
         <p className="rounded border border-broken/40 bg-broken/10 p-3 text-xs text-broken">
           {error}
-        </p>
-      )}
-      {toast && (
-        <p className="rounded border border-expansion/40 bg-expansion/10 p-3 text-xs text-expansion">
-          {toast}
         </p>
       )}
 

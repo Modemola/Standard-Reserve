@@ -58,7 +58,7 @@ export default function BankPage({ params }: { params: { id: string } }) {
   const idleFor = world.now - charter.lastInteraction;
   const timeToDormancy = Math.max(world.params.dormancySeconds - idleFor, 0);
   const feeRate = computeFeeRate(world);
-  const licenseQuote = quoteLicense(world);
+  const licenseQuote = quoteLicense(world, charter.id);
 
   const retireQuote = retiring !== null ? quoteRetirement(world, charter.id, retiring) : null;
 
@@ -92,11 +92,7 @@ export default function BankPage({ params }: { params: { id: string } }) {
             now={world.now}
             systemLedgerTotal={systemLedgerTotal}
             licensePriceNow={licenseQuote.pNow}
-            licenseRemainingToday={
-              charter.licensesBoughtDay === world.day
-                ? world.params.maxLicensesPerCharterPerDay - charter.licensesBoughtToday
-                : world.params.maxLicensesPerCharterPerDay
-            }
+            licenseRemainingToday={licenseQuote.yourRemainingToday}
             onBuyLicense={() => store.apply((w) => buyLicense(w, charter.id))}
             onRetire={(branchId) => setRetiring(branchId)}
           />

@@ -29,14 +29,36 @@ test("sentinel: replay in lab loads the attack's after-world into the live sim",
   await page.getByTestId("attack-A4_contraction_bait").click();
   await page.getByTestId("replay-in-lab").click();
 
-  await page.waitForURL("**/lab**", { timeout: 15_000 });
+  await page.waitForURL("**/lab?sentinel=A4_contraction_bait", { timeout: 15_000 });
 
   // The demo world is itself several epochs in, so "epoch > 0" would pass
   // whether or not the replay landed. A4 seeds 50 genesis charters; the demo
   // world seeds 200, so the charter count is what actually distinguishes the
   // attack's after-world from the one that was already loaded.
+  await expect(page.getByTestId("replay-banner")).toContainText("A4_contraction_bait");
   await expect(page.locator("body")).toContainText("50 live / 50 total");
   await expect(page.locator("body")).toContainText(/epoch\s*[1-9]/);
+});
+
+test("sentinel: the replay link survives a reload and can be shared", async ({ page }) => {
+  // The whole point of putting the attack in the URL. This used to fail: the
+  // Sentinel page applied the world itself and only then navigated, so the
+  // parameter was decorative and a reload dropped you back on the demo world
+  // with the URL still naming an attack.
+  await page.goto("/lab?sentinel=A4_contraction_bait");
+
+  await expect(page.getByTestId("replay-banner")).toContainText("A4_contraction_bait");
+  await expect(page.locator("body")).toContainText("50 live / 50 total");
+
+  await page.reload();
+  await expect(page.getByTestId("replay-banner")).toContainText("A4_contraction_bait");
+  await expect(page.locator("body")).toContainText("50 live / 50 total");
+});
+
+test("lab: an unknown attack id surfaces an error rather than failing silently", async ({ page }) => {
+  await page.goto("/lab?sentinel=A99_does_not_exist");
+  await expect(page.getByTestId("error-toast")).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId("replay-banner")).toHaveCount(0);
 });
 
 test("desk: the flip number is the loudest thing on the page", async ({ page }) => {
