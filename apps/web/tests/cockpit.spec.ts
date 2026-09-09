@@ -143,9 +143,20 @@ test("lab: a failed scenario fetch surfaces an error toast instead of doing noth
 
   await page.route("**/scenarios/*.json", (route) => route.abort("failed"));
   await page.getByRole("combobox").selectOption("inflow_week");
-  await page.getByRole("button", { name: "load scenario" }).click();
 
-  await expect(page.getByTestId("error-toast")).toHaveText(
-    "Couldn't load that scenario. Check your connection and try again.",
+  // Armed before the click, and matching the text inside the wait.
+  //
+  // The toast dismisses itself after 4s, so asserting on it *after* the
+  // trigger races that timer: if a poll lands after the dismissal the toast
+  // is simply gone and the failure reads as "it never appeared", which sends
+  // you looking for a bug in the error path rather than in the test. Watching
+  // from before the trigger closes that window. Seen fail once in a loaded
+  // full-suite run while passing 10/10 in isolation.
+  const toastShown = page.waitForFunction(() =>
+    document
+      .querySelector('[data-testid="error-toast"]')
+      ?.textContent?.includes("Couldn't load that scenario. Check your connection and try again."),
   );
+  await page.getByRole("button", { name: "load scenario" }).click();
+  await toastShown;
 });

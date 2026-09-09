@@ -133,13 +133,16 @@ function Slider({
       </div>
       <input
         type="range"
-        aria-label={label}
+        aria-label={`${label}: ${display}`}
         min={min}
         max={max}
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-contraction"
+        // range-touch, not a bare range: an unstyled range renders a 16px
+        // strip here, under the 24px WCAG 2.5.8 target floor and impossible
+        // to grab with a thumb. Same utility the what-if sliders use.
+        className="range-touch w-full cursor-pointer appearance-none bg-transparent accent-contraction"
       />
     </div>
   );

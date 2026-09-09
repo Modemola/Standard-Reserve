@@ -21,6 +21,11 @@ export default function SentinelPage() {
   const [verdicts, setVerdicts] = useState<Record<string, Verdict>>({});
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // Attacks are deterministic, so a second run produces byte-identical
+  // verdicts and the page would not visibly change -- pressing "Run all"
+  // looked broken. Recording each run makes the click observable, and the
+  // timing is worth seeing anyway.
+  const [lastRun, setLastRun] = useState<{ n: number; count: number; ms: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const autoRan = useRef(false);
@@ -48,6 +53,7 @@ export default function SentinelPage() {
       }
     }
     const elapsed = performance.now() - started;
+    setLastRun((prev) => ({ n: (prev?.n ?? 0) + 1, count: list.length, ms: Math.round(elapsed) }));
     if (list.length > 1 && elapsed > AUTORUN_BUDGET_MS) {
       try {
         sessionStorage.setItem(SLOW_KEY, "1");
@@ -123,6 +129,15 @@ export default function SentinelPage() {
             {counts.held} held · {counts.cheap} cheap · {counts.broken} broken ·{" "}
             {counts.total} total
           </span>
+          {lastRun && (
+            <span
+              data-testid="last-run"
+              className="tabular font-mono text-xs text-white/55"
+              aria-live="polite"
+            >
+              run #{lastRun.n}: {lastRun.count} in {lastRun.ms}ms
+            </span>
+          )}
           <button
             onClick={() => void runMany(fixtures)}
             disabled={busy || fixtures.length === 0}

@@ -16,7 +16,7 @@ import { expect, test, type Page } from "@playwright/test";
  *   3. controls are too small to hit with a thumb.
  */
 
-const ROUTES = ["/", "/lab", "/bank/c-0042", "/sweep", "/scenarios", "/law"];
+const ROUTES = ["/", "/lab", "/bank/c-0042", "/desk", "/sweep", "/sentinel", "/scenarios", "/law"];
 
 const DEVICES = [
   { w: 320, h: 568, name: "small phone" },
