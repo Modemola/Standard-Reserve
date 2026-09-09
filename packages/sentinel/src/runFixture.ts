@@ -169,6 +169,8 @@ interface RunOutput {
   lastError?: string;
   /** Every rejection reason the engine produced, in order. */
   rejections: string[];
+  /** The world as it stood immediately before the final action ran. */
+  beforeLastAction: World;
 }
 
 function replay(fixture: AttackFixture, world0: World): RunOutput {
@@ -180,6 +182,7 @@ function replay(fixture: AttackFixture, world0: World): RunOutput {
   let regimeFlips = 0;
   let lastRegime = regimeIfEpochEndedNow(world);
   const rejections: string[] = [];
+  let beforeLastAction = world0;
 
   for (const action of fixture.actions) {
     if (action.t > world.now) {
@@ -188,6 +191,7 @@ function replay(fixture: AttackFixture, world0: World): RunOutput {
       tape.push(tapeRowFrom(beforeTick, world, "tick"));
     }
     const before = world;
+    beforeLastAction = before;
     const [next, label] = applyAction(world, action, trace);
     world = next;
     if (world.lastError) rejections.push(world.lastError);
@@ -210,6 +214,7 @@ function replay(fixture: AttackFixture, world0: World): RunOutput {
     regimeFlips,
     lastError: world.lastError,
     rejections,
+    beforeLastAction,
   };
 }
 
@@ -342,10 +347,12 @@ function checkExpectations(fixture: AttackFixture, run: RunOutput, before: World
     const c = w.charters[e.charterAlive];
     if (!c || !c.alive) miss.push(`charterAlive: ${e.charterAlive} is gone`);
   }
-  if (e.ledgerUnchangedFor !== undefined) {
-    const id = e.ledgerUnchangedFor;
-    if (ledgerOf(w, id) !== ledgerOf(before, id)) {
-      miss.push(`ledgerUnchangedFor ${id}: ${ledgerOf(before, id)} -> ${ledgerOf(w, id)}`);
+  if (e.ledgerUnchangedByLastAction !== undefined) {
+    const id = e.ledgerUnchangedByLastAction;
+    const was = ledgerOf(run.beforeLastAction, id);
+    const now = ledgerOf(w, id);
+    if (was !== now) {
+      miss.push(`ledgerUnchangedByLastAction ${id}: the final action moved it ${was} -> ${now}`);
     }
   }
   if (e.maxLiveBranchesFor !== undefined) {

@@ -7,13 +7,27 @@
   "seed": "default",
   "paramsOverlay": {},
   "actions": [
-    { "t": 2505600, "op": "checkIn", "charterId": "c-0001", "note": "day 29: still alive" },
-    { "t": 2678400, "op": "reportDormant", "charterId": "c-0001", "reporterKey": "griefer", "note": "day 31, but only day 2 of the heartbeat" }
+    {
+      "t": 2505600,
+      "op": "checkIn",
+      "charterId": "c-0001",
+      "note": "day 29: still alive"
+    },
+    {
+      "t": 2678400,
+      "op": "reportDormant",
+      "charterId": "c-0001",
+      "reporterKey": "griefer",
+      "note": "day 31, but only day 2 of the heartbeat"
+    }
   ],
   "expect": {
     "invariantsOk": true,
-    "rejectionsInclude": ["not_yet_dormant"],
+    "rejectionsInclude": [
+      "not_yet_dormant"
+    ],
     "lastErrorContains": "not_yet_dormant",
-    "charterAlive": "c-0001"
+    "charterAlive": "c-0001",
+    "ledgerUnchangedByLastAction": "c-0001"
   }
 }

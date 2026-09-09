@@ -49,7 +49,6 @@ export const AttackExpectSchema = z.object({
   invariantsOk: z.boolean().optional(),
   regimeAfter: z.enum(["expansion", "contraction"]).optional(),
   mMustNotIncrease: z.boolean().optional(),
-  mMayChange: z.boolean().optional(),
   /**
    * Dust cap on |F_n| for every epoch this attack touched — each epoch closed
    * during the run plus the one still in progress. Stated as a cap rather than
@@ -83,7 +82,14 @@ export const AttackExpectSchema = z.object({
   feeRateAtMost: z.number().optional(),
   charterGone: z.string().optional(),
   charterAlive: z.string().optional(),
-  ledgerUnchangedFor: z.string().optional(),
+  /**
+   * This charter's ledger must be identical either side of the *final*
+   * action. Scoped to the last action rather than the whole run because any
+   * tick accrues issuance, which made a whole-run comparison unusable for the
+   * two claims that need it: that buying a licence debits no ledger, and that
+   * a refused dormancy report leaves its target untouched.
+   */
+  ledgerUnchangedByLastAction: z.string().optional(),
   maxLiveBranchesFor: z.string().optional(),
   issuanceCreditsAtMost: bigintString.optional(),
   baseIssuanceStopped: z.boolean().optional(),

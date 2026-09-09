@@ -76,6 +76,44 @@ describe("verdict routing", () => {
   });
 });
 
+describe("ledgerUnchangedByLastAction", () => {
+  it("passes when the final action really leaves the ledger alone", () => {
+    // A7's own claim: a licence payment burns, it does not debit anyone.
+    const v = runFixture(byId("A7_license_inventory"));
+    expect(v.status, JSON.stringify([...v.broken, ...v.unexpected])).toBe("held");
+  });
+
+  it("fails when the final action moves the ledger", () => {
+    const f = byId("A7_license_inventory");
+    const rigged: AttackFixture = {
+      ...f,
+      // A tick accrues issuance onto every live branch, so the ledger cannot
+      // be unchanged across it. If this still passed, the check would be
+      // measuring nothing.
+      actions: [...f.actions, { t: 43_200, op: "tick", dt: 3600 }],
+      expect: { invariantsOk: true, ledgerUnchangedByLastAction: "c-0001" },
+    };
+    const v = runFixture(rigged);
+    expect(v.status).toBe("broken");
+    expect(v.unexpected.join(" ")).toContain("ledgerUnchangedByLastAction");
+  });
+});
+
+describe("pending fixtures", () => {
+  it("lists an unimplemented fixture without running or grading it", () => {
+    // Spec §6: every fixture is listed on /sentinel even before it is built.
+    const f = byId("A1_wash_volume");
+    const v = runFixture({ ...f, implemented: false });
+    expect(v.status).toBe("pending");
+    expect(v.tape).toEqual([]);
+    expect(v.broken).toEqual([]);
+    expect(v.unexpected).toEqual([]);
+    expect(v.worldHashAfter).toBe("");
+    // Pending is not a pass and not a failure: it must not gate CI either way.
+    expect(shouldFail([v])).toBe(false);
+  });
+});
+
 describe("report", () => {
   it("renders one row per attack with its verdict", () => {
     const verdicts = loadFixtures().map(runFixture);

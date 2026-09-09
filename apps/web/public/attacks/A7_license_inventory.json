@@ -7,13 +7,23 @@
   "seed": "default",
   "paramsOverlay": {},
   "actions": [
-    { "t": 0, "op": "tick", "dt": 43200, "note": "let c-0001 accrue some ledger first" },
-    { "t": 43200, "op": "buyLicense", "charterId": "c-0001" }
+    {
+      "t": 0,
+      "op": "tick",
+      "dt": 43200,
+      "note": "let c-0001 accrue some ledger first"
+    },
+    {
+      "t": 43200,
+      "op": "buyLicense",
+      "charterId": "c-0001"
+    }
   ],
   "expect": {
     "invariantsOk": true,
     "sMaxMustDecrease": true,
     "lastActionSucceeds": true,
-    "polMustNotDecrease": true
+    "polMustNotDecrease": true,
+    "ledgerUnchangedByLastAction": "c-0001"
   }
 }
