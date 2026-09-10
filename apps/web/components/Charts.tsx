@@ -89,7 +89,18 @@ export function Charts({ history }: { history: EpochSnapshot[] }) {
         </ResponsiveContainer>
       </ChartCard>
 
-      <ChartCard title="Expansion vault gold (grams)">
+      {/*
+       * Flat at zero, and says so rather than letting a reader take it for a
+       * reserve that is being accumulated. The engine only ever initialises
+       * expansionGold and reads it -- nothing writes it, because WP 4.3 makes
+       * the conversion optional ("optionally convert to goldGrams via
+       * params.ethPerGold placeholder oracle") and v1 does not implement it.
+       * Sentinel's A14 reports the same thing as a CHEAP finding.
+       */}
+      <ChartCard
+        title="Expansion vault gold (grams)"
+        note="Not implemented in v1: the expansion vault holds ETH and never converts, so this stays at zero. ethPerGoldGram is a declared placeholder with nothing wired to it — not a reserve claim."
+      >
         <ResponsiveContainer width="100%" height={200}>
           <AreaChart data={goldData}>
             <defs>
@@ -123,10 +134,21 @@ const tooltipProps = {
   cursor: { fill: "rgba(244,242,236,0.03)" },
 };
 
-function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
+function ChartCard({
+  title,
+  note,
+  children,
+}: {
+  title: string;
+  /** Shown under the title. For saying why a chart looks the way it does. */
+  note?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="rounded-xl border border-white/[0.06] bg-surface p-5 shadow-card">
-      <h3 className="mb-3 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">{title}</h3>
+      <h3 className="mb-1 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">{title}</h3>
+      {note ? <p className="mb-3 text-[11px] leading-relaxed text-white/55">{note}</p> : null}
+      {!note ? <div className="mb-3" /> : null}
       {children}
     </div>
   );

@@ -287,7 +287,7 @@ function LabInner() {
           <SectionTitle>Vaults &amp; POL</SectionTitle>
           <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
             <Stat label="expansion ETH" value={fmtEth(world.vaults.expansionEth)} />
-            <Stat label="expansion gold" value={fmtWad(world.vaults.expansionGold, 3)} />
+            <Stat label="expansion gold (unwired)" value={fmtWad(world.vaults.expansionGold, 3)} />
             <Stat label="contraction ETH" value={fmtEth(world.vaults.contractionEth)} />
             <Stat label="POL ETH" value={fmtEth(world.polEth)} />
             <Stat label="POL STD" value={fmtToken(world.polStd)} />
