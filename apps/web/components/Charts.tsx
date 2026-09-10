@@ -94,7 +94,8 @@ export function Charts({ history }: { history: EpochSnapshot[] }) {
        * reserve that is being accumulated. The engine only ever initialises
        * expansionGold and reads it -- nothing writes it, because WP 4.3 makes
        * the conversion optional ("optionally convert to goldGrams via
-       * params.ethPerGold placeholder oracle") and v1 does not implement it.
+       * params.ethPerGold placeholder oracle" -- shipped as ethPerGoldGram)
+       * and v1 does not implement it.
        * Sentinel's A14 reports the same thing as a CHEAP finding.
        */}
       <ChartCard

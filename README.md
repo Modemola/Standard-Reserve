@@ -115,9 +115,10 @@ Nothing is hardcoded into JSX — every policy number flows through
 ## Testing
 
 - `pnpm test` — unit suites across every package. The engine suite is
-  described below; Sentinel adds the four P0 attacks plus negative controls
-  that prove the harness reports BROKEN when a fixture really does break, and
-  the Desk suite covers its quote functions and clone isolation.
+  described below; Sentinel covers the four P0 attacks, the three findings the
+  catalogue marks CHEAP (A3, A5, A14), and negative controls that prove the
+  harness reports BROKEN when a fixture really does break. The Desk suite
+  covers its quote functions and clone isolation.
 - `pnpm sentinel:run` — replays every attack fixture against the engine and
   writes `artifacts/sentinel-report.md`; non-zero exit on BROKEN, never on a
   yellow CHEAP finding.
