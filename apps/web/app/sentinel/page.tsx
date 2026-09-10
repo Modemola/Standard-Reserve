@@ -201,7 +201,7 @@ export default function SentinelPage() {
             onClick={() => void runMany(fixtures)}
             disabled={busy || fixtures.length === 0}
             data-testid="run-all"
-            className="rounded border border-expansion/40 bg-expansion/10 px-3 py-1.5 text-sm text-expansion disabled:opacity-40"
+            className="whitespace-nowrap rounded border border-expansion/40 bg-expansion/10 px-3 py-1.5 text-sm text-expansion disabled:opacity-40"
           >
             {busy ? "Running…" : "Run all"}
           </button>

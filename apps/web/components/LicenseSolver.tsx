@@ -17,13 +17,24 @@ export function LicenseSolver({ rows, charterId }: { rows: LicensePlanRow[]; cha
       <div className="overflow-x-auto">
         <table data-testid="license-solver" className="w-full text-left text-xs">
           <thead className="text-white/55">
+            {/*
+              * status sits fourth, not last.
+              *
+              * Six columns do not fit a 390px phone, and the table scrolls
+              * rather than clipping -- so the responsive gate passes it, since
+              * the content is reachable. But the column that fell off the edge
+              * was `status`, which is the one that says whether you can buy at
+              * all, and it was hidden by default while "share after" and
+              * "burn" stayed in view. Nothing is hidden here; the decision
+              * columns simply come first and the detail scrolls.
+              */}
             <tr>
               <th className="py-1 pr-4 font-medium">plan</th>
               <th className="py-1 pr-4 font-medium">wait</th>
               <th className="py-1 pl-4 text-right font-medium">P</th>
+              <th className="py-1 pl-4 pr-4 font-medium">status</th>
               <th className="py-1 pl-4 text-right font-medium">share after</th>
               <th className="py-1 pl-4 text-right font-medium">burn</th>
-              <th className="py-1 pr-4 font-medium">status</th>
             </tr>
           </thead>
           <tbody className="tabular font-mono">
@@ -34,18 +45,18 @@ export function LicenseSolver({ rows, charterId }: { rows: LicensePlanRow[]; cha
                   {r.waitSeconds === 0 ? "0" : fmtDuration(r.waitSeconds)}
                 </td>
                 <td className="py-1.5 pl-4 text-right text-white/80">{fmtToken(r.P)}</td>
-                <td className="py-1.5 pl-4 text-right text-white/70">
-                  {r.available ? `${(r.preview.share * 100).toFixed(2)}%` : "—"}
-                </td>
-                <td className="py-1.5 pl-4 text-right text-white/70">
-                  {r.available ? fmtToken(r.preview.Bdelta) : "—"}
-                </td>
-                <td className="py-1.5 pl-4">
+                <td className="py-1.5 pl-4 pr-4 whitespace-nowrap">
                   {r.available ? (
                     <span className="text-held">open</span>
                   ) : (
                     <span className="text-white/55">{r.reason ?? "unavailable"}</span>
                   )}
+                </td>
+                <td className="py-1.5 pl-4 text-right text-white/70">
+                  {r.available ? `${(r.preview.share * 100).toFixed(2)}%` : "—"}
+                </td>
+                <td className="py-1.5 pl-4 text-right text-white/70">
+                  {r.available ? fmtToken(r.preview.Bdelta) : "—"}
                 </td>
               </tr>
             ))}

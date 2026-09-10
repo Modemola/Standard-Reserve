@@ -132,6 +132,26 @@ test("sentinel: a changed fixture invalidates the cached run", async ({ page }) 
   await expect(a1.getByTestId("verdict-broken")).toBeVisible({ timeout: 45_000 });
 });
 
+test("law: the attack table accounts for every fixture that ships", async ({ page }) => {
+  // The page says "Each fixture in attacks/ leans on one of the rules above",
+  // and for a while it did not: A3, A5 and A14 were missing -- which is to say
+  // the three CHEAP findings, the rows most worth reading, were the ones the
+  // reference table left out. Rows may group ids ("A6 / A7 licences"), so this
+  // checks each attack *number* is accounted for rather than each row.
+  const ids: string[] = await (await page.request.get("/attacks/index.json")).json();
+  expect(ids.length).toBeGreaterThan(0);
+
+  await page.goto("/law");
+  const table = page.locator("table").filter({ hasText: "Attack" });
+  const text = await table.innerText();
+
+  const missing = ids.filter((id) => {
+    const n = /^A(\d+)_/.exec(id)?.[1];
+    return !n || !new RegExp(`\\bA${n}\\b`).test(text);
+  });
+  expect(missing, `attacks absent from /law: ${missing.join(", ")}`).toEqual([]);
+});
+
 test("desk: the flip number is the loudest thing on the page", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/desk");
