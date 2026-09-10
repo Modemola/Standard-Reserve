@@ -225,7 +225,7 @@ The Phase 2 spec assumed three things the repo did not yet have. Each was resolv
 
 ### 9.4 Wiring and docs
 
-- [x] Root `pnpm test` now covers engine + sentinel + desk (**118 tests**: 72 engine, 28 sentinel, 18 desk); `pnpm sentinel:run` added
+- [x] Root `pnpm test` now covers engine + sentinel + desk (**118 tests**: 72 engine, 28 sentinel, 18 desk); e2e now **90**; `pnpm sentinel:run` added
 - [x] CI: unit suites step broadened, plus a dedicated Sentinel step that gates the merge on broken invariants and never on yellow findings
 - [x] `docs/ARCHITECTURE-SENTINEL-DESK.md`, `docs/LAW.md` Phase 2 tables, README Phase 2 section + 20-second demo script
 - [ ] **CI confirmed green on GitHub for the Phase 2 commits.** Still blocked, and not on anything technical: PR #1 was merged and closed at `e889c38`, and the workflow only triggers on `push` to `main` or on `pull_request`, so none of the three Phase 2 commits has had a CI run. The branch is now merged up to date with `main` and every gate has been run locally in the workflow's own order — unit suites, `pnpm sentinel:run`, the fixture-sync `--check`, lint, build, `pnpm perf`, and all 88 e2e — but per this repo's own standard that is not the same as green on GitHub, and this repo has already had one bug that only a CI run caught (see §6). Needs a PR opened against `main`.
@@ -245,6 +245,20 @@ Turned the same question on the schema: is any of this configuration doing nothi
 - [x] **`mMayChange` had zero references in the runner.** Copied from the spec's §4.1 interface sketch and never implemented, so a fixture could set it and be asserted nothing — silently. Worse than a missing field, because it reads like a check; it is the same trap the shadow-world machinery was removed for, shipped by me. Removed rather than implemented: "m may change" is a permission, and a permission has nothing to verify.
 - [x] **`ledgerUnchangedFor` was implemented but unusable.** It compared the ledger across the whole run, and any tick accrues issuance, so it could never hold for a fixture that advances time — which is exactly why nothing used it. Re-scoped to the final action as `ledgerUnchangedByLastAction`, which is what the claims that need it were actually saying. That made it real, and two fixtures turned out to be asserting this in prose without testing it: **A7**, whose entire question is "where does the licence payment come from?", checked that something burned but never that no ledger was debited to pay for it; and **A11**, whose teach text ends "no ledger change", never checked that a refused report leaves its target alone. Both now do, both still HELD, and the check is proven non-vacuous by a rigged fixture whose last action is a tick — the ledger must move across it, and the check must go broken.
 - [x] Covered the `pending` path that spec §6 requires for fixtures listed but not yet built, and which no shipped fixture exercises: it grades nothing and gates CI neither way.
+
+### 9.4c What looking at the pages found
+
+Every gate was green, so the next audit had to come from outside them: open the two new surfaces next to a redesigned one and compare. They were written before `main`'s design pass and still drew the old flat panels — **zero** uses of `Card` and **zero** serif headings across all eight components — so they read as a different app once seen side by side. Two of the differences were defects rather than taste, and no gate could have caught either, because contrast passed, nothing overflowed and every control responded.
+
+- [x] **The licence table's columns had collided.** Cells had no horizontal padding at all, so the header read `burn status` as one word and the body rendered `3498.84open`. Fixed with real cell padding.
+- [x] **The charter tombstone was a tall empty box.** `h-full` inside a stretch grid blew it down the entire column. The columns were also badly unbalanced — the left ended near the fold while the right ran on past it — because it had been built as two columns of two and three, when spec §8.3 describes an actual 2×2. It is now that 2×2, with `items-start` so each cell is its own height.
+- [x] Both pages brought onto `Card`, the serif display face and `main`'s section-label treatment, so they belong to the same app as `/lab` and `/law`.
+
+### 9.4d The wiring audit's failure was a real bug, not a flake
+
+- [x] `/sentinel` failed the wiring audit, and re-running made it pass — which is exactly the habit `main`'s own Playwright config warns about, so it got chased instead. **The audit reloads before every control**, so `/sentinel` re-ran all fourteen attacks fifteen-plus times per run, which is what blew its 180s budget under load. The underlying fault was mine: spec §8.2 asks for an auto-run on the **first** visit, and it re-ran on every mount *and* every reload, though verdicts are deterministic and byte-identical each time.
+- [x] Verdicts are now cached for the session, keyed off the fixtures themselves so editing an attack invalidates them rather than serving a stale verdict. A return visit is instant. Only a *full* run is cached — caching a single "Run this" would serve a partial catalogue as though it were complete. Full e2e went from **14.1 minutes with three timeout failures to 6.1 minutes with none**.
+- [x] One of the two new cache tests then failed in the full suite while passing alone, and that was the test's fault, not the page's: the auto-run is deliberately suppressed once a run exceeds 2s (§8.2, "otherwise require one click"), which under load it does — so the page was correctly cache-missing *and* correctly not re-running. The test was measuring two features at once; it now clears that flag so the cache key is what is actually under test.
 
 ### 9.5 The two pump findings, reconciled
 
