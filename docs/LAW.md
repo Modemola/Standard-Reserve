@@ -78,7 +78,7 @@ Run them with `pnpm sentinel:run`, or on `/sentinel`.
 |---|---|---|
 | `A1_wash_volume` | §4 (4.1) | Volume is not flow: a round trip nets to zero and still takes the cut |
 | `A2_one_block_pump` | §5 | Signal reads F_{n-1}+F_{n-2}, never the epoch being pumped — the *single-epoch* case; see `pnpm attack` for the sustained one |
-| `A3_split_across_epochs` | §5 | Raises are a sign test, not a size test — the mechanism a sustained pump uses; slippage, not the rule, is what prices it *(CHEAP)* |
+| `A3_split_across_epochs` | §5 | Raises are a sign test, not a size test: six wei walks m to its ceiling. Slippage cannot price a strategy that moves no size; the 0.05-raise / 0.25-cut asymmetry is what does *(CHEAP)* |
 | `A4_contraction_bait` | §11 (11.1) | Every buyback hour capped at min(10% vault, 0.2% pool) |
 | `A5_fee_switch_jitter` | §4 (4.1) | Zero is the only regime threshold, with no deadband: one wei at the bell decides which vault takes 70% of fee income, and whether m is cut *(CHEAP)* |
 | `A6_license_sniper` | §7-8 | 3 licences per charter per day; 10 branches; inventory does not roll |

@@ -19,7 +19,7 @@ export const LAW_MAPPING = [
 export const LAW_MAPPING_SENTINEL = [
   { engine: "A1 wash / F_n", wp: "§4 (4.1)", notes: "volume is not flow: a round trip nets to zero" },
   { engine: "A2 issuance lag", wp: "§5", notes: "signal is built from F_{n-1}+F_{n-2}, not the epoch being pumped" },
-  { engine: "A3 split raise", wp: "§5", notes: "CHEAP — a raise is a sign test, not a size test; see `pnpm attack` for what a sustained version costs" },
+  { engine: "A3 split raise", wp: "§5", notes: "CHEAP — a raise is a sign test, not a size test: six wei walks m to its ceiling, and only the 0.05/0.25 asymmetry makes it expensive to hold" },
   { engine: "A4 spend_tick", wp: "§11 (11.1)", notes: "every buyback hour capped at min(10% vault, 0.2% pool)" },
   { engine: "A5 regime jitter", wp: "§4 (4.1)", notes: "CHEAP — one wei at the bell decides which vault takes 70% of fee income, and whether m is cut" },
   { engine: "A6 / A7 licences", wp: "§7-8", notes: "3/day per charter, 10 branches, payment burns" },

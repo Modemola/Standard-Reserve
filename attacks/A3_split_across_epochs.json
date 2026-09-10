@@ -1,8 +1,8 @@
 {
   "id": "A3_split_across_epochs",
   "wp": "§5",
-  "title": "Split a small buy across consecutive epochs",
-  "teach": "Raises are earned by two consecutive positive closes, and the rule does not care how large those closes were. Three small buys on three consecutive days walk the multiplier up. This is the mechanism a sustained pump exploits, and the adversarial probes (packages/engine/src/adversary.ts, `pnpm attack`) price it: the strategy really does drive m to its ceiling, and what stops it being profitable is pool slippage, not the raise rule.",
+  "title": "Walk the multiplier up on dust",
+  "teach": "A raise is a sign test, not a size test: any epoch that closes positive counts, however little put it there. Six one-wei buys, one per epoch, walk the multiplier from its launch value to its ceiling — six wei in total, against a hundred-ETH pool. The ceiling is not sticky, though: cuts are immediate and five times larger than raises, so one quiet epoch gives back five epochs of work. See test/A3.test.ts, which measures the whole walk.",
   "severity": "incentive",
   "seed": "default",
   "paramsOverlay": {},
@@ -11,8 +11,8 @@
       "t": 0,
       "op": "swap",
       "side": "buyStd",
-      "amount": "100000000000000000",
-      "note": "0.1 ETH"
+      "amount": "1",
+      "note": "one wei: the smallest possible positive close"
     },
     {
       "t": 0,
@@ -23,7 +23,8 @@
       "t": 86400,
       "op": "swap",
       "side": "buyStd",
-      "amount": "100000000000000000"
+      "amount": "1",
+      "note": "one wei: the smallest possible positive close"
     },
     {
       "t": 86400,
@@ -34,19 +35,55 @@
       "t": 172800,
       "op": "swap",
       "side": "buyStd",
-      "amount": "100000000000000000"
+      "amount": "1",
+      "note": "one wei: the smallest possible positive close"
     },
     {
       "t": 172800,
       "op": "tick",
-      "dt": 86400,
-      "note": "signal is now positive: m earns a raise"
+      "dt": 86400
+    },
+    {
+      "t": 259200,
+      "op": "swap",
+      "side": "buyStd",
+      "amount": "1",
+      "note": "one wei: the smallest possible positive close"
+    },
+    {
+      "t": 259200,
+      "op": "tick",
+      "dt": 86400
+    },
+    {
+      "t": 345600,
+      "op": "swap",
+      "side": "buyStd",
+      "amount": "1",
+      "note": "one wei: the smallest possible positive close"
+    },
+    {
+      "t": 345600,
+      "op": "tick",
+      "dt": 86400
+    },
+    {
+      "t": 432000,
+      "op": "swap",
+      "side": "buyStd",
+      "amount": "1",
+      "note": "one wei: the smallest possible positive close"
+    },
+    {
+      "t": 432000,
+      "op": "tick",
+      "dt": 86400
     }
   ],
   "expect": {
     "invariantsOk": true,
     "polMustNotDecrease": true,
-    "notesYellow": "0.3 ETH of net inflow, spread over three closes, walked the multiplier up. The rule is a sign test, not a size test — so the defence against a larger version of this is the cost of moving the pool, which falls as the pool deepens. See `pnpm attack`.",
+    "notesYellow": "Six wei, one per epoch, took the multiplier from 1.00 to its 1.25 ceiling. Nothing was round-tripped, so none of it paid the spread that the adversarial probes measure against an 80 ETH pump — a strategy that moves no size has nothing to slip. Holding the ceiling costs another wei per epoch; missing one epoch costs 0.25, which is five raises.",
     "yellowWhen": "mIncreased"
   }
 }

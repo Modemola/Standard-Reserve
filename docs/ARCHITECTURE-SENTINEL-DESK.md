@@ -98,8 +98,10 @@ that is an engine bug whichever fixture tripped it.
 All 14 attacks run clean: **11 HELD, 3 CHEAP, 0 BROKEN**. The three yellows are
 findings worth reading rather than bugs:
 
-- `A3_split_across_epochs` — a raise is a sign test, not a size test, so 0.3 ETH
-  spread across three closes walks the multiplier up.
+- `A3_split_across_epochs` — a raise is a sign test, not a size test. **Six
+  wei**, one per epoch, walks the multiplier from 1.00 to its 1.25 ceiling.
+  Holding it costs another wei per epoch; missing one epoch costs 0.25, which
+  is five raises. `test/A3.test.ts` measures the whole walk.
 - `A5_fee_switch_jitter` — the regime threshold is exactly zero with no
   deadband. Measured on two runs identical but for a single wei: an epoch
   closing at `F_n = 0` routes 70% of its fee income to the *contraction* vault
@@ -142,3 +144,31 @@ should be read together:
 
 The honest summary is that the multiplier rule is enforced exactly as written,
 and that being enforced is not the same as being sufficient.
+
+### One refinement to that, from A3
+
+The probes measure a pump as an **80 ETH round trip through a 100 ETH pool**,
+and conclude that its ~47% slippage is what makes it unprofitable. That is
+true of the strategy as measured. It is not true of the cheapest strategy
+available, because the sign test does not care about size:
+
+    six one-wei buys, one per epoch  ->  m goes 1.00 -> 1.25
+
+Six wei, total. Nothing is round-tripped, so nothing pays the spread — a
+strategy that moves no size has nothing to slip, and slippage cannot be the
+defence against it. Supply is untouched too: nothing minted, nothing burned.
+
+Two things keep this from being alarming on its own, and both belong in the
+same breath:
+
+- **The ceiling is not sticky.** Cuts are immediate and five times the size of
+  a raise, so a single quiet epoch gives back 0.25 — five epochs of work. The
+  strategy has to be run every epoch, forever, to hold anything.
+- **The model has no gas.** v1 simulates no chain (spec §0), so a one-wei buy
+  costs one wei here and one transaction's gas in reality. That is still not
+  much, but "six wei" is a statement about the rule, not a quoted price.
+
+What this changes is where the defence is understood to live. It is not in the
+cost of manufacturing the signal, which rounds to nothing; it is in the
+asymmetry between a 0.05 raise and a 0.25 cut, which makes the position
+expensive to *hold* rather than expensive to *reach*.
