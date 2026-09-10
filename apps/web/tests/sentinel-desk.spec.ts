@@ -84,13 +84,9 @@ test("sentinel: a return visit reuses the run instead of recomputing it", async 
 });
 
 test("sentinel: a changed fixture invalidates the cached run", async ({ page }) => {
-  // Two separate features meet on this page and this test is only about one of
-  // them. The auto-run is suppressed for the rest of the session once a run is
-  // measured slower than 2s (spec 8.2: "otherwise require one click"), and
-  // under a loaded full-suite run the first run does exceed it. That would
-  // leave the page correctly cache-missing but deliberately not re-running,
-  // which reads as a cache failure and is not one. Clearing the flag on every
-  // navigation removes the confound and leaves the cache key under test.
+  // The auto-run is suppressed for the rest of the session once a run exceeds
+  // 2s (spec 8.2, "otherwise require one click"). Clearing that keeps this
+  // test about the cache key.
   await page.addInitScript(() => {
     try {
       sessionStorage.removeItem("sentinel:slow");
@@ -99,20 +95,41 @@ test("sentinel: a changed fixture invalidates the cached run", async ({ page }) 
     }
   });
 
-  await page.goto("/sentinel");
-  await expect(page.getByTestId("verdict-held").first()).toBeVisible({ timeout: 20_000 });
-
-  // Serve a catalogue whose fixture differs, so the cache key must not match.
+  // Registered before the first load and toggled between the two. Adding it
+  // just before the reload did not work: the browser served the fixture from
+  // its own HTTP cache, so no request was issued for Playwright to intercept.
+  // no-store keeps the second load going to the network.
+  let modified = false;
   await page.route("**/attacks/A1_wash_volume.json", async (route) => {
-    const res = await route.fetch();
-    const body = await res.json();
-    body.expect = { ...body.expect, sMaxMustNotIncrease: true };
-    await route.fulfill({ json: body });
+    const body = await (await route.fetch()).json();
+    // A wash epoch closes contraction. Demanding "expansion" is a claim the
+    // engine will refuse, so the verdict must flip held -> broken.
+    if (modified) body.expect = { ...body.expect, regimeAfter: "expansion" };
+    await route.fulfill({ json: body, headers: { "cache-control": "no-store" } });
   });
 
+  const a1 = page.getByTestId("attack-A1_wash_volume");
+
+  await page.goto("/sentinel");
+  // Wait for the run to *finish*, not merely for A1's pill to appear.
+  //
+  // A1 is the first attack computed, so its pill lands about thirty
+  // milliseconds in while the other thirteen are still going -- and the cache
+  // is only written once the whole run completes. Reloading on the pill left
+  // nothing cached at all, so the reload re-ran from scratch, A1 came back
+  // broken, and the test passed without the cache key ever being consulted.
+  // It passed just as happily with the key replaced by a constant.
+  await expect(page.getByTestId("last-run")).toBeVisible({ timeout: 45_000 });
+  await expect(a1.getByTestId("verdict-held")).toBeVisible();
+
+  modified = true;
   await page.reload();
-  // A stale cache would show verdicts with no run; a correctly keyed one re-runs.
-  await expect(page.getByTestId("last-run")).toBeVisible({ timeout: 20_000 });
+
+  // Assert the *outcome*, not whether a run indicator appeared: a stale cache
+  // would still show A1 as held, because that is the verdict it stored. Only a
+  // correctly keyed cache misses, replays the changed fixture, and reports the
+  // expectation it now fails.
+  await expect(a1.getByTestId("verdict-broken")).toBeVisible({ timeout: 45_000 });
 });
 
 test("desk: the flip number is the loudest thing on the page", async ({ page }) => {
