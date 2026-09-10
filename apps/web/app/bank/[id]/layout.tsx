@@ -20,21 +20,27 @@ function canonicalId(id: string): string | null {
 /** page.tsx is a client component and so cannot export metadata itself.
  *  generateMetadata runs on the server, so the charter id in the URL ends up
  *  in the tab title -- two cockpits open at once are now distinguishable. */
-export function generateMetadata({ params }: { params: { id: string } }): Metadata {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
   return {
-    title: `Bank ${params.id}`,
-    description: `The Banker's Cockpit for charter ${params.id}: branch ledgers, licence and charter auctions, exit pressure and the what-if drawer.`,
+    title: `Bank ${id}`,
+    description: `The Banker's Cockpit for charter ${id}: branch ledgers, licence and charter auctions, exit pressure and the what-if drawer.`,
   };
 }
 
-export default function BankLayout({
+export default async function BankLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const canonical = canonicalId(params.id);
+  const { id } = await params;
+  const canonical = canonicalId(id);
   if (canonical) redirect(`/bank/${canonical}`);
   return children;
 }

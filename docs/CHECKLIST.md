@@ -364,3 +364,52 @@ noticed the day it happened.
   gated by the vitest test; the fixture's yellow line now reports what moved
   instead of reciting prose.
 
+### 9.9 The pre-ship sweep, and the one thing it found
+
+Everything else in this file is about whether the simulator is honest. This is
+the one item that was about whether it is safe to serve, and it came from
+auditing dependencies rather than code.
+
+- [x] **Next 14.2.35 carried two critical advisories, and there was no patched
+  14.x.** Unauthenticated RCE in the Image Optimization API when AVIF is used,
+  and unauthenticated RCE on Windows-hosted servers, both fixed only in
+  `>=15.5.24`. `14.2.35` is the last 14.2.x ever published and the `next-14`
+  dist-tag points at it, so no patch-level escape existed — the only
+  remediation was the major upgrade. It mattered here because the README
+  deploys this from `main` to a public Vercel URL, and the landing page really
+  does serve AVIF through `next/image`.
+- [x] Each advisory was checked against this app's actual surface rather than
+  taken from the list: no middleware, no Server Actions, no route handlers, no
+  i18n, no custom server, no `remotePatterns`, and the one redirect has a
+  static destination — so the middleware, Server Action and rewrite-SSRF
+  entries never applied. The image and App Router / RSC ones did.
+- [x] **Upgraded to `next@15.5.25` + React 19.3**, plus `recharts@2.15.4` for
+  React 19 (staying on 2.x rather than taking 3.x's API break). Two files
+  needed the async-params migration: the cockpit page unwraps route params
+  with `use()`, and `bank/[id]/layout.tsx` awaits them in both
+  `generateMetadata` and the layout itself.
+- [x] **The dev-only advisories were cleared too**, though none of them ship:
+  vitest 2 → `4.1.11`, which needed vite `^7.3.6` declared explicitly because
+  pnpm kept re-resolving the stale peer from the lockfile, and a
+  `pnpm.overrides` entry for `postcss` because `next` pins `8.4.31` exactly.
+  `pnpm audit` now reports **no known vulnerabilities**, down from 35 (3
+  critical, 12 high).
+- [x] **The perf budget was regenerated, not silenced.** React 19 + Next 15
+  cost about **+10kB** of first-load JS per route, which still passed but left
+  `/desk` roughly 3.8kB of headroom where it had 12.5kB — the next ordinary
+  edit would have tripped CI on a baseline shift rather than a regression. The
+  script's own `--update` path exists for this, and asks for the reason in the
+  commit message.
+- [x] Verified rather than assumed: 130 unit tests, **91/91 e2e**, lint, build,
+  `sentinel:run`, sync `--check`, `pnpm install --frozen-lockfile`, and the law
+  vectors regenerating byte-identical. Plus a runtime pass over all eight
+  routes against a production build, which reported **zero console errors and
+  zero warnings** — the check that matters most on a React major, since that is
+  where a deprecation would surface.
+- [ ] **`next lint` is deprecated and goes away in Next 16.** Left alone
+  deliberately: it works on 15.5, and the codemod rewrites the ESLint config,
+  which is where `react-hooks/rules-of-hooks` lives — the rule §9.4's CI notes
+  credit with catching a conditional `useMemo` that every other gate passed
+  over. Migrating it the day before shipping risks silently dropping that. It
+  is the first thing to do when Next 16 is on the table.
+

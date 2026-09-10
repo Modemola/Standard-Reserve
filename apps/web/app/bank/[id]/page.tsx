@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { use, useMemo, useState } from "react";
 import {
   buyLicense,
   checkIn,
@@ -19,12 +19,15 @@ import { WhatIfDrawer } from "@/components/WhatIfDrawer";
 import { fmtDuration, fmtEth, fmtPct, fmtToken } from "@/lib/format";
 import { useSimStore, useWorld } from "@/lib/sim-context";
 
-export default function BankPage({ params }: { params: { id: string } }) {
+export default function BankPage({ params }: { params: Promise<{ id: string }> }) {
+  // Next 15 hands route params to client components as a promise. Unwrap it
+  // above the early return below, for the same reason the useMemo sits there.
+  const { id } = use(params);
   const store = useSimStore();
   const world = useWorld();
   const [retiring, setRetiring] = useState<number | null>(null);
 
-  const charter = world.charters[params.id];
+  const charter = world.charters[id];
 
   // Every hook has to run before the not-found return below. Calling useMemo
   // after it means the hook count changes the moment a charter stops
@@ -43,7 +46,7 @@ export default function BankPage({ params }: { params: { id: string } }) {
   if (!charter) {
     return (
       <Card className="text-center">
-        <p className="text-white/60">No charter {params.id} in this simulation.</p>
+        <p className="text-white/60">No charter {id} in this simulation.</p>
       </Card>
     );
   }
