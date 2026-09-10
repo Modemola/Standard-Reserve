@@ -33,8 +33,8 @@ export function ExitTape({
   onCrowd: (v: number) => void;
 }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-      <h3 className="mb-3 text-xs font-medium uppercase tracking-widest text-white/50">
+    <div className="rounded-xl border border-white/[0.06] bg-surface p-5 shadow-card">
+      <h3 className="mb-3 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
         Exit tape — the run tax
       </h3>
 

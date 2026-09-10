@@ -10,7 +10,7 @@ export function CharterTombstone({ board }: { board: CharterBoard }) {
     return (
       <div
         data-testid="charter-tombstone"
-        className="flex h-full flex-col items-center justify-center rounded-lg border border-white/10 bg-white/[0.02] p-6 text-center"
+        className="flex flex-col items-center justify-center rounded-xl border border-white/[0.06] bg-surface px-6 py-10 text-center shadow-card"
       >
         <p className="font-mono text-3xl uppercase tracking-[0.3em] text-white/55">unopened</p>
         <p className="mt-3 text-xs text-white/55">
@@ -24,8 +24,8 @@ export function CharterTombstone({ board }: { board: CharterBoard }) {
   }
 
   return (
-    <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-      <h3 className="mb-2 text-xs font-medium uppercase tracking-widest text-white/50">
+    <div className="rounded-xl border border-white/[0.06] bg-surface p-5 shadow-card">
+      <h3 className="mb-2 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
         Charter book
       </h3>
       <p data-testid="charter-price" className="tabular font-mono text-3xl text-expansion">

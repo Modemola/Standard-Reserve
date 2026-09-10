@@ -49,21 +49,26 @@ export default function DeskPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Open Market Desk</h1>
-        <p className="mt-1 max-w-2xl text-sm text-white/60">
+        <h1 className="font-serif text-2xl font-semibold text-paper/95">Open Market Desk</h1>
+        <p className="mt-1 max-w-2xl text-sm text-white/55">
           Prices for the only legal moves the bank has: flip the epoch&rsquo;s sign, take a licence
           now or wait for the decay, or pay the run tax and leave. Quotes are solved on clones of
           the live world.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      {/* A real 2x2, per spec §8.3: flip+tape, licence board, exit tape,
+          charter book. It used to be two columns of two and three, which left
+          the left column ending near the fold while the right ran on past it,
+          and items-stretch blew the charter tombstone up into a tall empty
+          box. items-start lets each cell be its own height. */}
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
         <section className="space-y-4">
           <FlipWidget quote={flip} />
 
-          <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
+          <div className="rounded-xl border border-white/[0.06] bg-surface p-5 shadow-card">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-xs font-medium uppercase tracking-widest text-white/50">
+              <h3 className="font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
                 Pool tape
               </h3>
               <span className="rounded border border-white/15 px-1.5 py-0.5 text-[10px] tracking-widest text-white/55">
@@ -101,15 +106,17 @@ export default function DeskPage() {
           </div>
         </section>
 
-        <section className="space-y-4">
+        <section>
           {charterId ? (
             <LicenseSolver rows={plans} charterId={charterId} />
           ) : (
-            <p className="rounded-lg border border-white/10 p-4 text-sm text-white/55">
+            <p className="rounded-xl border border-white/[0.06] bg-surface p-5 text-sm text-white/55 shadow-card">
               No live charter in this world.
             </p>
           )}
+        </section>
 
+        <section>
           <ExitTape
             impact={impact}
             extraLedger={extraLedger}
@@ -117,7 +124,9 @@ export default function DeskPage() {
             crowd={crowd}
             onCrowd={setCrowd}
           />
+        </section>
 
+        <section>
           <CharterTombstone board={board} />
         </section>
       </div>

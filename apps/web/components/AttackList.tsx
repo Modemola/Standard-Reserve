@@ -13,7 +13,7 @@ export function AttackList({
   onSelect: (id: string) => void;
 }) {
   return (
-    <ul className="divide-y divide-white/5 overflow-hidden rounded-lg border border-white/10">
+    <ul className="divide-y divide-white/[0.05] overflow-hidden rounded-xl border border-white/[0.06] bg-surface shadow-card">
       {fixtures.map((f) => {
         const v = verdicts[f.id];
         const selected = f.id === selectedId;

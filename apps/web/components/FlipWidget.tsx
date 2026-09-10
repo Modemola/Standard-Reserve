@@ -12,8 +12,8 @@ export function FlipWidget({ quote }: { quote: FlipQuote }) {
   const tone = toExpansion ? "text-expansion" : "text-contraction";
 
   return (
-    <div className="rounded-lg border border-white/10 bg-white/[0.03] p-5">
-      <h3 className="text-xs font-medium uppercase tracking-widest text-white/50">
+    <div className="rounded-xl border border-white/[0.06] bg-surface p-5 shadow-card">
+      <h3 className="font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
         ETH to flip sign
       </h3>
       <p

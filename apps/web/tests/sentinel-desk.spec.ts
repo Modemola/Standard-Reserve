@@ -61,6 +61,60 @@ test("lab: an unknown attack id surfaces an error rather than failing silently",
   await expect(page.getByTestId("replay-banner")).toHaveCount(0);
 });
 
+test("sentinel: a return visit reuses the run instead of recomputing it", async ({ page }) => {
+  // Spec 8.2 asks for an auto-run on the *first* visit. This used to re-run the
+  // whole catalogue on every mount and every reload, which is pure waste
+  // because verdicts are deterministic -- and it made the page an expensive,
+  // moving target for the wiring audit, which reloads before every control.
+  await page.goto("/sentinel");
+  await expect(page.getByTestId("last-run")).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByTestId("verdict-held").first()).toBeVisible();
+
+  await page.reload();
+
+  // Verdicts are there immediately, from cache...
+  await expect(page.getByTestId("verdict-held").first()).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByText(/0 broken/)).toBeVisible();
+  // ...and nothing ran to produce them, so there is no run to report.
+  await expect(page.getByTestId("last-run")).toHaveCount(0);
+
+  // Pressing Run all still genuinely re-runs.
+  await page.getByTestId("run-all").click();
+  await expect(page.getByTestId("last-run")).toContainText("run #1", { timeout: 20_000 });
+});
+
+test("sentinel: a changed fixture invalidates the cached run", async ({ page }) => {
+  // Two separate features meet on this page and this test is only about one of
+  // them. The auto-run is suppressed for the rest of the session once a run is
+  // measured slower than 2s (spec 8.2: "otherwise require one click"), and
+  // under a loaded full-suite run the first run does exceed it. That would
+  // leave the page correctly cache-missing but deliberately not re-running,
+  // which reads as a cache failure and is not one. Clearing the flag on every
+  // navigation removes the confound and leaves the cache key under test.
+  await page.addInitScript(() => {
+    try {
+      sessionStorage.removeItem("sentinel:slow");
+    } catch {
+      // Storage unavailable is the same as no flag set.
+    }
+  });
+
+  await page.goto("/sentinel");
+  await expect(page.getByTestId("verdict-held").first()).toBeVisible({ timeout: 20_000 });
+
+  // Serve a catalogue whose fixture differs, so the cache key must not match.
+  await page.route("**/attacks/A1_wash_volume.json", async (route) => {
+    const res = await route.fetch();
+    const body = await res.json();
+    body.expect = { ...body.expect, sMaxMustNotIncrease: true };
+    await route.fulfill({ json: body });
+  });
+
+  await page.reload();
+  // A stale cache would show verdicts with no run; a correctly keyed one re-runs.
+  await expect(page.getByTestId("last-run")).toBeVisible({ timeout: 20_000 });
+});
+
 test("desk: the flip number is the loudest thing on the page", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/desk");
