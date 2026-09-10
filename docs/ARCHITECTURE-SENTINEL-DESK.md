@@ -101,7 +101,11 @@ findings worth reading rather than bugs:
 - `A3_split_across_epochs` — a raise is a sign test, not a size test, so 0.3 ETH
   spread across three closes walks the multiplier up.
 - `A5_fee_switch_jitter` — the regime threshold is exactly zero with no
-  deadband, so dust either side flips which vault an epoch would fund.
+  deadband. Measured on two runs identical but for a single wei: an epoch
+  closing at `F_n = 0` routes 70% of its fee income to the *contraction* vault
+  and takes the multiplier cut; at `F_n = +1 wei` the *expansion* vault takes
+  it and the multiplier is held. Whoever moves last before the bell chooses
+  both. `test/A5.test.ts` runs both sides.
 - `A14_spot_oracle_toy` — `ethPerGoldGram` is declared but unwired; the
   expansion vault holds ETH and never converts, so the gold column is not a
   reserve claim.

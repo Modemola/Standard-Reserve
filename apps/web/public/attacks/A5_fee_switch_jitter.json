@@ -2,22 +2,50 @@
   "id": "A5_fee_switch_jitter",
   "wp": "§4.1",
   "title": "Flicker the regime around the zero threshold",
-  "teach": "Regime is a strict sign test on net flow with no deadband, so alternating dust either side of zero flips which vault the epoch would fund on every single swap. Nothing breaks, but the switch has no hysteresis.",
+  "teach": "Regime is a strict sign test on net flow with no deadband, so an epoch that closes on exactly zero is contraction and one wei of net inflow is expansion. That single wei decides which vault receives 70% of the epoch's fee income, and whether the multiplier is cut at all — see test/A5.test.ts, which runs both sides of the threshold.",
   "severity": "incentive",
   "seed": "default",
   "paramsOverlay": {},
   "actions": [
-    { "t": 0, "op": "swap", "side": "buyStd", "amount": "1000000000000000000", "note": "net +1 ETH: would close expansion" },
-    { "t": 0, "op": "swap", "side": "sellStd", "targetEthOut": "2000000000000000000", "note": "net -1 ETH: would close contraction" },
-    { "t": 0, "op": "swap", "side": "buyStd", "amount": "2000000000000000000", "note": "back to +1" },
-    { "t": 0, "op": "swap", "side": "sellStd", "targetEthOut": "2000000000000000000", "note": "back to -1" },
-    { "t": 0, "op": "tick", "dt": 86400 }
+    {
+      "t": 0,
+      "op": "swap",
+      "side": "buyStd",
+      "amount": "1000000000000000000",
+      "note": "net +1 ETH: would close expansion"
+    },
+    {
+      "t": 0,
+      "op": "swap",
+      "side": "sellStd",
+      "targetEthOut": "2000000000000000000",
+      "note": "net -1 ETH: would close contraction"
+    },
+    {
+      "t": 0,
+      "op": "swap",
+      "side": "buyStd",
+      "amount": "2000000000000000000",
+      "note": "back to +1"
+    },
+    {
+      "t": 0,
+      "op": "swap",
+      "side": "sellStd",
+      "targetEthOut": "2000000000000000000",
+      "note": "back to -1"
+    },
+    {
+      "t": 0,
+      "op": "tick",
+      "dt": 86400
+    }
   ],
   "expect": {
     "invariantsOk": true,
     "regimeAfter": "contraction",
     "polMustNotDecrease": true,
-    "notesYellow": "The regime flipped on every swap. Zero is the only threshold, so dust either side of it moves which vault an epoch would fund.",
+    "notesYellow": "The threshold is exactly zero, with nothing either side of it. Measured on two runs identical but for one wei: at F_n = 0 the contraction vault takes 70% of fee income and m is cut; at F_n = +1 wei the expansion vault takes it and m is held. Whoever moves last before the bell chooses both.",
     "yellowWhen": "regimeFlipped"
   }
 }

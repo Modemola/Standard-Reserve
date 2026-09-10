@@ -21,7 +21,7 @@ export const LAW_MAPPING_SENTINEL = [
   { engine: "A2 issuance lag", wp: "§5", notes: "signal is built from F_{n-1}+F_{n-2}, not the epoch being pumped" },
   { engine: "A3 split raise", wp: "§5", notes: "CHEAP — a raise is a sign test, not a size test; see `pnpm attack` for what a sustained version costs" },
   { engine: "A4 spend_tick", wp: "§11 (11.1)", notes: "every buyback hour capped at min(10% vault, 0.2% pool)" },
-  { engine: "A5 regime jitter", wp: "§4 (4.1)", notes: "CHEAP — the threshold is exactly zero, with no deadband either side" },
+  { engine: "A5 regime jitter", wp: "§4 (4.1)", notes: "CHEAP — one wei at the bell decides which vault takes 70% of fee income, and whether m is cut" },
   { engine: "A6 / A7 licences", wp: "§7-8", notes: "3/day per charter, 10 branches, payment burns" },
   { engine: "A8 / A9 exits", wp: "§9", notes: "run tax rises with the crowd; rebate reaches the stayers only" },
   { engine: "A10 / A11 dormancy", wp: "dormancy section", notes: "30-day window; check-in resets the heartbeat" },

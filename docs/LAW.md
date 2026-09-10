@@ -80,7 +80,7 @@ Run them with `pnpm sentinel:run`, or on `/sentinel`.
 | `A2_one_block_pump` | §5 | Signal reads F_{n-1}+F_{n-2}, never the epoch being pumped — the *single-epoch* case; see `pnpm attack` for the sustained one |
 | `A3_split_across_epochs` | §5 | Raises are a sign test, not a size test — the mechanism a sustained pump uses; slippage, not the rule, is what prices it *(CHEAP)* |
 | `A4_contraction_bait` | §11 (11.1) | Every buyback hour capped at min(10% vault, 0.2% pool) |
-| `A5_fee_switch_jitter` | §4 (4.1) | Zero is the only regime threshold — no deadband *(CHEAP)* |
+| `A5_fee_switch_jitter` | §4 (4.1) | Zero is the only regime threshold, with no deadband: one wei at the bell decides which vault takes 70% of fee income, and whether m is cut *(CHEAP)* |
 | `A6_license_sniper` | §7-8 | 3 licences per charter per day; 10 branches; inventory does not roll |
 | `A7_license_inventory` | §7 | Licence payments burn; no ledger is debited to pay for one |
 | `A8_exit_run` | §9 | The run tax climbs with the crowd, and no exit is ever paused |
