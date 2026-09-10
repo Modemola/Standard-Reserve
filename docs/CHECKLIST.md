@@ -225,7 +225,7 @@ The Phase 2 spec assumed three things the repo did not yet have. Each was resolv
 
 ### 9.4 Wiring and docs
 
-- [x] Root `pnpm test` now covers engine + sentinel + desk (**127 tests**: 73 engine, 36 sentinel, 18 desk); e2e **91**; `pnpm sentinel:run` added
+- [x] Root `pnpm test` now covers engine + sentinel + desk (**130 tests**: 73 engine, 39 sentinel, 18 desk); e2e **91**; `pnpm sentinel:run` added
 - [x] CI: unit suites step broadened, plus a dedicated Sentinel step that gates the merge on broken invariants and never on yellow findings
 - [x] `docs/ARCHITECTURE-SENTINEL-DESK.md`, `docs/LAW.md` Phase 2 tables, README Phase 2 section + 20-second demo script
 - [ ] **CI confirmed green on GitHub for the Phase 2 commits.** Still blocked, and still not on anything technical: PR #1 was merged and closed at `e889c38`, and the workflow only fires on `push` to `main` or on `pull_request`, so none of the Phase 2 commits has had a CI run. Needs a PR opened against `main`. Per this repo's own standard that is not the same as green locally, and §6 records a bug that only a CI run caught — so the pipeline was instead walked step by step against the workflow file, which turned up two steps that had never been exercised at all:
@@ -326,3 +326,41 @@ now carries a number that came out of the engine, with a test that produced it.
   authors; inventing either here would be inventing tokenomics, which §0 rules
   out. What this changes is that the decision is now a concrete one — with a
   number attached — rather than an impression.
+
+### 9.8 A14's note had nothing holding it up
+
+A14 is the third CHEAP finding, and unlike the other two it is a claim about
+what the engine does *not* do: a ten-fold move in `ethPerGoldGram` changes
+nothing, because the expansion vault holds ETH and never converts. That kind of
+claim is true until somebody makes it false, and nothing here would have
+noticed the day it happened.
+
+- [x] **`vaultGoldMustNotDecrease` could not fail.** `expansionGold` is a
+  constant zero — nothing in the engine writes it — so a check that gold has
+  not fallen holds for every possible run. It is the same class as §9.4b's
+  `mMayChange`: a field that reads like a check and asserts nothing. Replaced
+  with `vaultGoldUnchanged`, which is what A14's note actually claims, and
+  which goes red the moment anything writes the field. Both fixtures that used
+  it (A14, A4) now carry the stronger form.
+- [x] **`test/A14.test.ts` asserts the negative directly**: the fixture's own
+  action sequence run under both parameter sets, with the resulting worlds
+  required to be identical to the byte. Its job is to fail one day.
+- [x] **Both proven against a rigged engine, not assumed.** A four-line patch
+  making an expansion close convert to gold turns the test red and makes the
+  fixture report `gold moved 0 -> 31500000000000000`. Before the change the
+  same rig left A14 reporting "no effect on any balance" while gold was
+  visibly moving — the note was false and the suite was silent. The rig was
+  reverted and the file confirmed byte-identical to `HEAD`.
+- [x] **One wrinkle worth writing down**, because it cost a wrong first
+  attempt: `hashWorld` deliberately hashes params alongside state, so *any*
+  overlay changes the hash whether or not a balance moved, and the first
+  version of this test failed for that reason alone. That was the test being
+  wrong, not the engine. The params are now substituted back before comparing,
+  leaving every state field still hashed, and a positive control on
+  `poolFeeBps` — a parameter that is consumed — proves the comparison still
+  detects a real divergence.
+- [x] The verdict stays **CHEAP** rather than becoming BROKEN, which is right:
+  a wired conversion is not an invariant violation, it is a stale note. CI is
+  gated by the vitest test; the fixture's yellow line now reports what moved
+  instead of reciting prose.
+

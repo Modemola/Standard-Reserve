@@ -9,14 +9,33 @@
     "ethPerGoldGram": "2000000000000000000"
   },
   "actions": [
-    { "t": 0, "op": "swap", "side": "buyStd", "amount": "15000000000000000000" },
-    { "t": 0, "op": "tick", "dt": 86400, "note": "expansion close funds the expansion vault" },
-    { "t": 86400, "op": "swap", "side": "buyStd", "amount": "15000000000000000000" },
-    { "t": 86400, "op": "tick", "dt": 86400 }
+    {
+      "t": 0,
+      "op": "swap",
+      "side": "buyStd",
+      "amount": "15000000000000000000"
+    },
+    {
+      "t": 0,
+      "op": "tick",
+      "dt": 86400,
+      "note": "expansion close funds the expansion vault"
+    },
+    {
+      "t": 86400,
+      "op": "swap",
+      "side": "buyStd",
+      "amount": "15000000000000000000"
+    },
+    {
+      "t": 86400,
+      "op": "tick",
+      "dt": 86400
+    }
   ],
   "expect": {
     "invariantsOk": true,
-    "vaultGoldMustNotDecrease": true,
+    "vaultGoldUnchanged": true,
     "polMustNotDecrease": true,
     "notesYellow": "Placeholder oracle. The expansion vault holds ETH and never converts to gold in v1, so a 10x move in ethPerGoldGram has no effect on any balance. Treat the gold column as unimplemented, not as a reserve.",
     "yellowWhen": "always"

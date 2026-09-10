@@ -56,7 +56,13 @@ export const AttackExpectSchema = z.object({
    */
   fnAbsMax: bigintString.optional(),
   polMustNotDecrease: z.boolean().optional(),
-  vaultGoldMustNotDecrease: z.boolean().optional(),
+  /**
+   * Gold is a constant zero in v1 -- nothing writes it -- so "must not
+   * decrease" was a check that could not fail. Equality is the claim A14
+   * actually makes, and it goes red the day somebody wires the conversion,
+   * which is the day both fixtures' notes stop being true.
+   */
+  vaultGoldUnchanged: z.boolean().optional(),
   sMaxMustNotIncrease: z.boolean().optional(),
   /** Proves something actually burned: S_max = HARD_CAP - B only falls on a burn. */
   sMaxMustDecrease: z.boolean().optional(),

@@ -39,7 +39,7 @@
     "regimeAfter": "contraction",
     "maxSpendFractionOfVaultPerTick": 0.1,
     "maxSpendFractionOfPoolPerTick": 0.002,
-    "vaultGoldMustNotDecrease": true,
+    "vaultGoldUnchanged": true,
     "polMustNotDecrease": true,
     "sMaxMustNotIncrease": true,
     "minBuybackTicks": 24

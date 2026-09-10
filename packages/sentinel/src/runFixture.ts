@@ -273,9 +273,9 @@ function checkExpectations(fixture: AttackFixture, run: RunOutput, before: World
       miss.push(`polMustNotDecrease: polStd fell ${before.polStd} -> ${w.polStd}`);
     }
   }
-  if (e.vaultGoldMustNotDecrease && w.vaults.expansionGold < before.vaults.expansionGold) {
+  if (e.vaultGoldUnchanged && w.vaults.expansionGold !== before.vaults.expansionGold) {
     miss.push(
-      `vaultGoldMustNotDecrease: gold fell ${before.vaults.expansionGold} -> ${w.vaults.expansionGold}`,
+      `vaultGoldUnchanged: gold moved ${before.vaults.expansionGold} -> ${w.vaults.expansionGold}; the expansion vault is meant to hold ETH only in v1`,
     );
   }
   if (e.sMaxMustNotIncrease && supplyMax(w) > supplyMax(before)) {
