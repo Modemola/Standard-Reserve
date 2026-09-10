@@ -225,7 +225,7 @@ The Phase 2 spec assumed three things the repo did not yet have. Each was resolv
 
 ### 9.4 Wiring and docs
 
-- [x] Root `pnpm test` now covers engine + sentinel + desk (**119 tests**: 73 engine, 28 sentinel, 18 desk); e2e **90**; `pnpm sentinel:run` added
+- [x] Root `pnpm test` now covers engine + sentinel + desk (**127 tests**: 73 engine, 36 sentinel, 18 desk); e2e **91**; `pnpm sentinel:run` added
 - [x] CI: unit suites step broadened, plus a dedicated Sentinel step that gates the merge on broken invariants and never on yellow findings
 - [x] `docs/ARCHITECTURE-SENTINEL-DESK.md`, `docs/LAW.md` Phase 2 tables, README Phase 2 section + 20-second demo script
 - [ ] **CI confirmed green on GitHub for the Phase 2 commits.** Still blocked, and still not on anything technical: PR #1 was merged and closed at `e889c38`, and the workflow only fires on `push` to `main` or on `pull_request`, so none of the Phase 2 commits has had a CI run. Needs a PR opened against `main`. Per this repo's own standard that is not the same as green locally, and §6 records a bug that only a CI run caught — so the pipeline was instead walked step by step against the workflow file, which turned up two steps that had never been exercised at all:
@@ -288,3 +288,41 @@ The previous visual pass only ever looked at my own two surfaces. Applying the s
 ### 9.6 Optional Phase E+ — deliberately not taken
 
 - [x] Assessed and declined, with a reason rather than silence. The gate ("only after Sentinel A1/A2/A4/A12 are green") is now open, but nothing in Phase 2 warrants a Solidity twin: `flipQuote` is a sign test and a one-wei increment, `exitImpact` reuses the resolution-fee quadratic that `LawMath.sol` already twins, and `secondsUntilFloor` is a **display** helper — twinning it would add ceremony without adding audit value. Reopen this if a Phase 2 formula ever becomes policy rather than presentation.
+
+### 9.7 The two CHEAP findings, measured instead of described
+
+Both surviving yellow verdicts were written as impressions — "the regime
+flickers around zero", "a raise is a sign test, not a size test" — which is
+enough to notice a property and not enough to decide anything about it. Each
+now carries a number that came out of the engine, with a test that produced it.
+
+- [x] **A5 was underselling itself while overstating its symptom.** Only the
+  sign at the epoch *close* routes anything, so flicker between swaps inside an
+  epoch is cosmetic, and the fixture was demonstrating the harmless half.
+  Measured on two runs identical but for a single wei: at `F_n = 0`, 70% of the
+  epoch's fee income goes to the **contraction** vault and `m` is cut to 0.75;
+  at `F_n = +1 wei` it goes to the **expansion** vault and `m` holds at 1.00.
+  One wei at the bell decides both, and whoever moves last places it.
+  `test/A5.test.ts` runs both sides of the threshold and asserts the vaults
+  invert, the multiplier diverges, and only the zero-flow epoch burns through
+  its buyback.
+- [x] **A3's discount is six wei.** If only the sign matters, the sharp question
+  is the minimum, and the minimum is one wei per epoch: `fee = (1 * 30)/10000`
+  rounds to zero, so a one-wei buy closes its epoch at `F_n = +1` and earns a
+  full raise. Six of them walk `m` from 1.00 to its 1.25 ceiling.
+  `test/A3.test.ts` walks it: 6 epochs, 6 wei, every closed epoch exactly `1n`,
+  `M` and `B` untouched, the ceiling held while the wei keeps coming and given
+  back in full after one quiet epoch.
+- [x] **That refines §9.5 rather than contradicting it.** The probes price a
+  pump as an 80 ETH round trip and conclude ~47% slippage is the defence — true
+  of the strategy they measure, but a strategy that moves no size has nothing to
+  slip, and nothing is round-tripped in the dust walk. The defence that does
+  apply is the asymmetry: a 0.05 raise against an immediate 0.25 cut makes the
+  ceiling expensive to **hold** rather than expensive to **reach**. Written into
+  the reconciliation section, along with the caveat that v1 models no chain
+  (§0), so six wei prices the rule and not the transaction.
+- [x] **No policy proposed, deliberately.** Whether a strict sign test wants a
+  deadband, or a raise wants a size floor, is a decision for the whitepaper's
+  authors; inventing either here would be inventing tokenomics, which §0 rules
+  out. What this changes is that the decision is now a concrete one — with a
+  number attached — rather than an impression.
