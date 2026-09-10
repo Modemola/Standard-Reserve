@@ -90,7 +90,7 @@ reading, not bugs — see the Phase 2 architecture doc for what each one means.
 
 ```
 pnpm test
-pnpm sentinel:run            # A1 HELD, A2 HELD, A4 HELD, A12 HELD, A3 CHEAP
+pnpm sentinel:run            # 11 HELD; A3, A5 and A14 CHEAP (findings, not failures)
 pnpm --filter web dev
 
 open /sentinel  → it runs on arrival → select A2 → see F_n spike but m unmoved
