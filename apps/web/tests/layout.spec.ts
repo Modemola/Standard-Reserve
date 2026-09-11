@@ -95,7 +95,15 @@ test("both regimes paint their own colour, everywhere", async ({ page }) => {
   // CPU competing for the same cores, and it pushed this poll over 5s in full
   // runs while it passed 6/6 in isolation. Same call main made for
   // ghost_purge's loader: a budget set too close, not a defect.
-  const REGIME_POLL = { timeout: 20_000 };
+  //
+  // Raised again to 30s when the plain-language explainers landed. They add
+  // roughly a dozen controls per route, and the wiring audit reloads the page
+  // before every single control, so /lab's audit went from 26s to 53s. That is
+  // more parallel work on the same cores: this poll timed out in one full run
+  // and passed in the next, while passing in 9.8s on its own. A poll that
+  // fails half the time is worse than no poll, and the contention it was
+  // budgeted against has moved, so the budget moves with it.
+  const REGIME_POLL = { timeout: 30_000 };
 
   await loadExpansion(page);
   await expect.poll(tickerRegime, REGIME_POLL).toEqual({ text: "expansion", color: EXPANSION });

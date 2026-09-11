@@ -1,4 +1,6 @@
 import type { Auction } from "@standard-law/engine";
+import { Explain } from "@/components/Explain";
+import type { ExplainKey } from "@/lib/explain";
 import { dutchPrice } from "@standard-law/engine";
 import { Timer } from "lucide-react";
 import { Card } from "@/components/Card";
@@ -6,12 +8,14 @@ import { fmtDuration, fmtWad } from "@/lib/format";
 
 export function AuctionClock({
   title,
+  explain,
   auction,
   now,
   unit,
   disabled,
 }: {
   title: string;
+  explain?: ExplainKey;
   auction: Auction;
   now: number;
   unit: string;
@@ -32,6 +36,7 @@ export function AuctionClock({
         <h3 className="flex items-center gap-1.5 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">
           <Timer className="h-3.5 w-3.5 text-white/60" aria-hidden="true" />
           {title}
+          {explain && <Explain k={explain} label={title} />}
         </h3>
         {disabled && (
           <span className="rounded-full border border-white/[0.1] px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/60">

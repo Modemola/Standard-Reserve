@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Explain } from "@/components/Explain";
 import type { LicensePlanRow } from "@standard-law/desk";
 import { fmtDuration, fmtToken } from "@/lib/format";
 
@@ -11,8 +12,9 @@ const KIND_LABEL: Record<LicensePlanRow["kind"], string> = {
 export function LicenseSolver({ rows, charterId }: { rows: LicensePlanRow[]; charterId: string }) {
   return (
     <div className="rounded-xl border border-white/[0.06] bg-surface p-5 shadow-card">
-      <h3 className="mb-3 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
+      <h3 className="flex items-center gap-1.5 mb-3 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
         Licence board — a decaying reserve, not an order book
+        <Explain k="licensePlans" />
       </h3>
       <div className="overflow-x-auto">
         <table data-testid="license-solver" className="w-full text-left text-xs">

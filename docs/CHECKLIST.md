@@ -413,3 +413,75 @@ auditing dependencies rather than code.
   over. Migrating it the day before shipping risks silently dropping that. It
   is the first thing to do when Next 16 is on the table.
 
+## 10. Phase 3 — making it legible to people who are not us
+
+User testing returned a blunt verdict: the build was too complex to understand
+or even look at. That is a real finding and not a styling complaint. Every
+surface was written by people who already knew what `F_n`, `m`, POL, a Dutch
+auction and a CHEAP verdict were, and none of it said.
+
+- [x] **A plain-language glossary** (`apps/web/lib/explain.ts`), roughly fifty
+  entries covering every term and every consequential action. House rules are
+  at the top of the file so later entries stay consistent: `plain` answers
+  "what is this?" in one sentence a stranger could read aloud; `more` is how it
+  works or what the button will do; `note` is only for the thing people get
+  wrong. No entry explains a term using another term that is itself in the
+  glossary — if that feels impossible, the sentence is still too technical.
+- [x] **`components/Explain.tsx`**, the panel that surfaces them. Settles in
+  on the same easing as the rest of the app's motion, exits faster than it
+  enters (a dismissal that takes as long as an arrival reads as lag), grows
+  from the mark you pressed, and draws a gold hairline across its head — the
+  same gesture as the plate borders elsewhere.
+- [x] **Two trigger shapes, for a real reason.** The ringed mark goes beside
+  headings and buttons. In the stat grids the label *itself* becomes the
+  trigger with a dotted rule under it, because those grids are four columns on
+  desktop and two on a phone, and a 24px mark beside an 11px label pushed them
+  into worse wrapping than they already had. The term variant costs no layout
+  at all.
+- [x] **On a phone it is a bottom sheet with a scrim**, not a floating panel.
+  A 320px screen cannot hold a popover beside its anchor without overflowing
+  the page, which the responsive gate treats as a defect, or being squeezed
+  into uselessness.
+- [x] Keyboard and assistive behaviour: `aria-expanded` on the trigger, Escape
+  closes and returns focus, one panel open at a time, and `role="dialog"`
+  *without* `aria-modal` — the sheet does not trap focus, so claiming it would
+  be a lie to a screen reader.
+
+### 10.1 Three defects found by looking at it, not by running the gates
+
+Every gate was green while all three were live, which is the same lesson as
+§9.4c: contrast passed, nothing overflowed, every control responded.
+
+- [x] **Explanations rendered in block capitals.** Triggers sit inside
+  uppercase, letter-spaced labels, and `text-transform` inherits — so plain
+  English came out in caps, which is harder to read than the jargon it was
+  there to explain.
+- [x] **Then the opposite, on the same property.** Form controls carry their
+  own `text-transform` in the UA sheet rather than inheriting, so a label that
+  had been uppercase silently stopped being uppercase the moment it became a
+  trigger, while the labels beside it kept theirs.
+- [x] **Explanations rendered in bold on the Desk**, whose card headings are
+  `font-semibold`. Same bug class, third property. The panel now resets case,
+  tracking, family *and* weight explicitly, and the reason is written above the
+  code so the next person adds the fourth reset rather than rediscovering it.
+- [x] All three are pinned by tests in `tests/explain.spec.ts`, and all three
+  were **proven non-vacuous by rigging the fix back out** and watching them go
+  red, not by assuming.
+
+### 10.2 What it cost, honestly
+
+- [x] **The wiring audit got slower, because it should.** The explainers are
+  real controls, and that audit reloads the page before every single one, so
+  `/lab` went from 26s to 53s and the full suite from 6.1 to ~6.6 minutes.
+  Nothing was exempted from the gate to buy the time back.
+- [x] **`layout.spec.ts`'s regime poll was re-budgeted from 20s to 30s.** It
+  timed out in one full run and passed in the next while passing in 9.8s alone
+  — the contention it was budgeted against in §9.4d has moved, because this
+  work moved it. This is the case that comment already describes, not the
+  §9.4f case where raising a timeout was twice the wrong answer for a test
+  that was failing for an entirely different reason.
+- [x] Perf budget unchanged and still passing: the glossary is prose, which
+  compresses well.
+- [x] 130 unit tests, **100/100 e2e** (91 before, 9 new), lint, build,
+  `sentinel:run`, sync `--check` and perf all green.
+

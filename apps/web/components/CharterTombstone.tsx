@@ -1,4 +1,5 @@
 import type { CharterBoard } from "@standard-law/desk";
+import { Explain } from "@/components/Explain";
 import { fmtEth } from "@/lib/format";
 
 /**
@@ -25,8 +26,9 @@ export function CharterTombstone({ board }: { board: CharterBoard }) {
 
   return (
     <div className="rounded-xl border border-white/[0.06] bg-surface p-5 shadow-card">
-      <h3 className="mb-2 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
+      <h3 className="flex items-center gap-1.5 mb-2 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
         Charter book
+        <Explain k="charterBoard" />
       </h3>
       <p data-testid="charter-price" className="tabular font-mono text-3xl text-expansion">
         {fmtEth(board.pNow ?? 0n)} <span className="text-sm text-white/50">ETH</span>

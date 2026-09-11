@@ -43,6 +43,8 @@ import { Guilloche } from "@/components/Guilloche";
 import { RegimeBadge } from "@/components/RegimeBadge";
 import { Sparkline } from "@/components/Sparkline";
 import { fmtDuration, fmtEth, fmtToken, fmtWad } from "@/lib/format";
+import { Explain } from "@/components/Explain";
+import type { ExplainKey } from "@/lib/explain";
 import { useEpochHistory, useSimStore, useWorld } from "@/lib/sim-context";
 import { SCENARIO_IDS, fetchScenario } from "@/lib/scenarios";
 import type { Scenario } from "@standard-law/engine";
@@ -251,29 +253,31 @@ function LabInner() {
                 <Stat
                   label="net flow (this epoch)"
                   value={fmtEth(world.ethInEpoch - world.ethOutEpoch)}
+                  explain="netFlow"
                 />
                 <StatSpark
                   label="F_n (last epoch)"
+                  explain="regime"
                   value={fmtEth(world.F.at(-1) ?? 0n)}
                   series={history.map((h) => Number(h.F_n) / 1e18)}
                   stroke={regimeStroke((world.F.at(-1) ?? 0n) > 0n ? "expansion" : "contraction")}
                 />
-                <Stat label="signal" value={fmtEth(signal)} />
-                <StatSpark label="m" value={world.m.toFixed(2)} series={history.map((h) => h.m)} />
+                <Stat label="signal" value={fmtEth(signal)} explain="signal" />
+                <StatSpark label="m" value={world.m.toFixed(2)} series={history.map((h) => h.m)} explain="multiplier" />
               </div>
             </div>
           </div>
         </Card>
 
         <Card>
-          <SectionTitle>Supply</SectionTitle>
+          <SectionTitle explain="sCirc">Supply</SectionTitle>
           <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
             <Stat label="S_circ" value={fmtToken(supplyCirc(world))} />
             <div data-testid="s-max">
-              <Stat label="S_max" value={fmtToken(supplyMax(world))} />
+              <Stat label="S_max" value={fmtToken(supplyMax(world))} explain="sMax" />
             </div>
             <Stat label="M (minted)" value={fmtToken(world.M)} />
-            <Stat label="B (burned)" value={fmtToken(world.B)} />
+            <Stat label="B (burned)" value={fmtToken(world.B)} explain="burned" />
           </div>
           <p className="mt-4 border-t border-white/[0.06] pt-3 text-xs text-white/60">
             issuance credits{" "}
@@ -284,11 +288,11 @@ function LabInner() {
         </Card>
 
         <Card>
-          <SectionTitle>Vaults &amp; POL</SectionTitle>
+          <SectionTitle explain="pol">Vaults &amp; POL</SectionTitle>
           <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
             <Stat label="expansion ETH" value={fmtEth(world.vaults.expansionEth)} />
-            <Stat label="expansion gold (unwired)" value={fmtWad(world.vaults.expansionGold, 3)} />
-            <Stat label="contraction ETH" value={fmtEth(world.vaults.contractionEth)} />
+            <Stat label="expansion gold (unwired)" value={fmtWad(world.vaults.expansionGold, 3)} explain="expansionGold" />
+            <Stat label="contraction ETH" value={fmtEth(world.vaults.contractionEth)} explain="contractionVault" />
             <Stat label="POL ETH" value={fmtEth(world.polEth)} />
             <Stat label="POL STD" value={fmtToken(world.polStd)} />
             <Stat
@@ -332,7 +336,7 @@ function LabInner() {
         <Card className="space-y-5">
           <SectionTitle>Injectors</SectionTitle>
 
-          <InjectorGroup label="Market">
+          <InjectorGroup label="Market" explain="buyStd">
             <div className="flex gap-2">
               <input
                 value={buyEthAmount}
@@ -369,7 +373,7 @@ function LabInner() {
             </div>
           </InjectorGroup>
 
-          <InjectorGroup label="Time">
+          <InjectorGroup label="Time" explain="tick">
             <div className="flex gap-2">
               <IconButton icon={Clock} onClick={() => store.apply((w) => tick(w, 3600))}>
                 +1h
@@ -388,6 +392,7 @@ function LabInner() {
 
           <InjectorGroup
             label="Charters"
+            explain="charter"
             hint={`${liveCharterCount} live / ${totalCharterCount} total · daily cap ${world.params.charterDailyCap}`}
           >
             <div className="flex gap-2">
@@ -472,7 +477,7 @@ function LabInner() {
             </div>
           </InjectorGroup>
 
-          <InjectorGroup label="Scenarios">
+          <InjectorGroup label="Scenarios" explain="scenario">
             <div className="flex gap-2">
               <select
                 value={scenarioId}
@@ -491,7 +496,7 @@ function LabInner() {
             </div>
           </InjectorGroup>
 
-          <InjectorGroup label="World">
+          <InjectorGroup label="World" explain="params">
             <IconButton icon={Download} full onClick={exportWorld}>
               export world JSON
             </IconButton>
@@ -558,23 +563,33 @@ function inputClass(width: string): string {
   return `${width} rounded-lg border border-white/[0.08] bg-black/20 px-2.5 py-1.5 text-sm text-paper/90 placeholder:text-white/45 transition-colors duration-150 focus:border-white/25`;
 }
 
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h3 className="font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">{children}</h3>;
+function SectionTitle({ children, explain }: { children: React.ReactNode; explain?: ExplainKey }) {
+  return (
+    <h3 className="flex items-center gap-1.5 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">
+      {children}
+      {explain && <Explain k={explain} />}
+    </h3>
+  );
 }
 
 function InjectorGroup({
   label,
   hint,
+  explain,
   children,
 }: {
   label: string;
   hint?: string;
+  explain?: ExplainKey;
   children: React.ReactNode;
 }) {
   return (
     <div className="space-y-2">
-      <div className="flex items-baseline justify-between gap-2">
-        <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-white/50">{label}</p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-white/50">
+          {label}
+          {explain && <Explain k={explain} label={label} />}
+        </p>
         {hint && <p className="tabular truncate font-mono text-[10px] text-white/45">{hint}</p>}
       </div>
       {children}
@@ -629,10 +644,18 @@ function IconButton({
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, explain }: { label: string; value: string; explain?: ExplainKey }) {
   return (
     <div>
-      <p className="min-h-[2.7em] text-[11px] uppercase leading-[1.35] tracking-wide text-white/55">{label}</p>
+      <p className="min-h-[2.7em] text-[11px] uppercase leading-[1.35] tracking-wide text-white/55">
+        {explain ? (
+          <Explain k={explain} label={label} variant="term">
+            {label}
+          </Explain>
+        ) : (
+          label
+        )}
+      </p>
       <p className="tabular mt-0.5 font-mono text-base text-white/90">{value}</p>
     </div>
   );
@@ -644,15 +667,25 @@ function StatSpark({
   value,
   series,
   stroke = EXPANSION,
+  explain,
 }: {
   label: string;
   value: string;
   series: number[];
   stroke?: string;
+  explain?: ExplainKey;
 }) {
   return (
     <div className="min-w-0">
-      <p className="min-h-[2.7em] text-[11px] uppercase leading-[1.35] tracking-wide text-white/55">{label}</p>
+      <p className="min-h-[2.7em] text-[11px] uppercase leading-[1.35] tracking-wide text-white/55">
+        {explain ? (
+          <Explain k={explain} label={label} variant="term">
+            {label}
+          </Explain>
+        ) : (
+          label
+        )}
+      </p>
       <p className="tabular mt-0.5 font-mono text-base text-white/90">{value}</p>
       <Sparkline values={series} stroke={stroke} width={104} height={22} className="mt-1.5" />
     </div>

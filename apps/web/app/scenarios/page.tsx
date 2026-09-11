@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Explain } from "@/components/Explain";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import Link from "next/link";
@@ -71,7 +72,10 @@ export default function ScenariosPage() {
           uid="scenarios"
           className="pointer-events-none absolute -right-40 -top-52 -z-10 h-[380px] w-[380px] opacity-30"
         />
-        <h1 className="optical-title font-display text-3xl text-paper">Scenarios</h1>
+        <h1 className="optical-title flex items-center gap-2.5 font-display text-3xl text-paper">
+          Scenarios
+          <Explain k="scenario" label="a scenario" />
+        </h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/60">
           Five scripted worlds, each built to isolate one behaviour of the policy and make it
           impossible to miss. They are ordinary JSON — a list of timestamped actions — replayed

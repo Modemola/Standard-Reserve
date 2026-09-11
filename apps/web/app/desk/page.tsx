@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Explain } from "@/components/Explain";
 import { applySwap } from "@standard-law/engine";
 import { charterBoard, exitImpact, flipQuote, licensePlans, poolPrints } from "@standard-law/desk";
 import { CharterTombstone } from "@/components/CharterTombstone";
@@ -68,9 +69,10 @@ export default function DeskPage() {
 
           <div className="rounded-xl border border-white/[0.06] bg-surface p-5 shadow-card">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
+              <h3 className="flex items-center gap-1.5 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
                 Pool tape
-              </h3>
+                <Explain k="poolTape" />
+      </h3>
               <span className="rounded border border-white/15 px-1.5 py-0.5 text-[10px] tracking-widest text-white/55">
                 SIM
               </span>

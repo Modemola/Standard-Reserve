@@ -17,6 +17,8 @@ import { ExitTicket } from "@/components/ExitTicket";
 import { RegimeBadge } from "@/components/RegimeBadge";
 import { WhatIfDrawer } from "@/components/WhatIfDrawer";
 import { fmtDuration, fmtEth, fmtPct, fmtToken } from "@/lib/format";
+import { Explain } from "@/components/Explain";
+import type { ExplainKey } from "@/lib/explain";
 import { useSimStore, useWorld } from "@/lib/sim-context";
 
 export default function BankPage({ params }: { params: Promise<{ id: string }> }) {
@@ -71,13 +73,14 @@ export default function BankPage({ params }: { params: Promise<{ id: string }> }
         <div className="flex flex-wrap items-center justify-between gap-5">
           <RegimeBadge regime={regime} size="lg" />
           <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-4">
-            <Stat label="net flow this epoch" value={fmtEth(world.ethInEpoch - world.ethOutEpoch)} />
-            <Stat label="signal" value={fmtEth(signal)} />
-            <Stat label="m now" value={world.m.toFixed(2)} />
-            <Stat label="live branches" value={`${liveBranches.length} / ${world.params.maxBranches}`} />
-            <Stat label="total ledger" value={`${fmtToken(totalLedger)} STD`} />
-            <Stat label="heartbeat" value={fmtDuration(timeToDormancy) + " to dormancy"} />
+            <Stat label="net flow this epoch" value={fmtEth(world.ethInEpoch - world.ethOutEpoch)} explain="netFlow" />
+            <Stat label="signal" value={fmtEth(signal)} explain="signal" />
+            <Stat label="m now" value={world.m.toFixed(2)} explain="multiplier" />
+            <Stat label="live branches" value={`${liveBranches.length} / ${world.params.maxBranches}`} explain="branch" />
+            <Stat label="total ledger" value={`${fmtToken(totalLedger)} STD`} explain="totalLedger" />
+            <Stat label="heartbeat" value={fmtDuration(timeToDormancy) + " to dormancy"} explain="heartbeat" />
           </div>
+          <div className="flex items-center gap-2">
           <button
             onClick={() => store.apply((w) => checkIn(w, charter.id))}
             className="inline-flex items-center gap-1.5 rounded-lg border border-expansion/40 bg-expansion/10 px-4 py-2 text-sm text-expansion shadow-glow-expansion transition-transform duration-150 hover:scale-[1.03] active:scale-[0.98]"
@@ -85,6 +88,8 @@ export default function BankPage({ params }: { params: Promise<{ id: string }> }
             <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
             check in
           </button>
+          <Explain k="checkIn" />
+          </div>
         </div>
       </Card>
 
@@ -102,9 +107,10 @@ export default function BankPage({ params }: { params: Promise<{ id: string }> }
         </div>
 
         <div className="space-y-4 lg:col-span-4">
-          <AuctionClock title="License clock" auction={world.licenseAuction} now={world.now} unit="STD" />
+          <AuctionClock title="License clock" auction={world.licenseAuction} now={world.now} unit="STD" explain="dutchAuction" />
           <AuctionClock
             title="Charter clock"
+            explain="charter"
             auction={world.charterAuction}
             now={world.now}
             unit="ETH"
@@ -114,6 +120,7 @@ export default function BankPage({ params }: { params: Promise<{ id: string }> }
             <h3 className="mb-2 flex items-center gap-1.5 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">
               <Gauge className="h-3.5 w-3.5 text-white/60" aria-hidden="true" />
               Exit pressure
+              <Explain k="exitFee" />
             </h3>
             <p className="text-white/55">current fee rate</p>
             <p className="tabular font-mono text-xl text-paper/95">{fmtPct(feeRate)}</p>
@@ -137,10 +144,18 @@ export default function BankPage({ params }: { params: Promise<{ id: string }> }
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, explain }: { label: string; value: string; explain?: ExplainKey }) {
   return (
     <div>
-      <p className="min-h-[2.7em] text-[11px] uppercase leading-[1.35] tracking-wide text-white/55">{label}</p>
+      <p className="min-h-[2.7em] text-[11px] uppercase leading-[1.35] tracking-wide text-white/55">
+        {explain ? (
+          <Explain k={explain} label={label} variant="term">
+            {label}
+          </Explain>
+        ) : (
+          label
+        )}
+      </p>
       <p className="tabular mt-0.5 font-mono text-white/90">{value}</p>
     </div>
   );

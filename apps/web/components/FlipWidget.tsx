@@ -1,4 +1,5 @@
 import type { FlipQuote } from "@standard-law/desk";
+import { Explain } from "@/components/Explain";
 import { fmtEth } from "@/lib/format";
 
 /**
@@ -13,8 +14,9 @@ export function FlipWidget({ quote }: { quote: FlipQuote }) {
 
   return (
     <div className="rounded-xl border border-white/[0.06] bg-surface p-5 shadow-card">
-      <h3 className="font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
+      <h3 className="flex items-center gap-1.5 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
         ETH to flip sign
+        <Explain k="flip" />
       </h3>
       <p
         data-testid="flip-eth"

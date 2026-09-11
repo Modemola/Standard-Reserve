@@ -1,4 +1,5 @@
 import type { ExitImpact } from "@standard-law/desk";
+import { Explain } from "@/components/Explain";
 import { fmtPct, fmtToken } from "@/lib/format";
 
 /** Burn vs rebate as a single proportional bar — where the run tax actually goes. */
@@ -34,8 +35,9 @@ export function ExitTape({
 }) {
   return (
     <div className="rounded-xl border border-white/[0.06] bg-surface p-5 shadow-card">
-      <h3 className="mb-3 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
+      <h3 className="flex items-center gap-1.5 mb-3 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/85">
         Exit tape — the run tax
+        <Explain k="exitFee" />
       </h3>
 
       {!impact ? (

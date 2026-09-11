@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Explain } from "@/components/Explain";
 import { useRouter } from "next/navigation";
 import { runFixture } from "@standard-law/sentinel";
 import type { AttackFixture, Verdict } from "@standard-law/sentinel";
@@ -171,7 +172,10 @@ export default function SentinelPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-serif text-2xl font-semibold text-paper/95">Sentinel</h1>
+          <h1 className="flex items-center gap-2 font-serif text-2xl font-semibold text-paper/95">
+            Sentinel
+            <Explain k="sentinel" label="Sentinel" />
+          </h1>
           <p className="mt-1 max-w-2xl text-sm text-white/55">
             Hostile physics. Each fixture below is an attack replayed against the same engine the
             Lab and the Cockpit run on. Attacks are against the local engine, not mainnet.

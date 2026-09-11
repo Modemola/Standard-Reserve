@@ -1,4 +1,5 @@
 import type { AttackFixture, Snapshot, Verdict } from "@standard-law/sentinel";
+import { Explain } from "@/components/Explain";
 import { TapeTable } from "./TapeTable";
 import { VerdictPill } from "./VerdictPill";
 import { fmtEth, fmtToken } from "@/lib/format";
@@ -61,6 +62,9 @@ export function AttackDetail({
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="font-mono text-sm text-white/85">{fixture.id}</h2>
           <VerdictPill status={verdict ? verdict.status : "pending"} size="lg" />
+          {verdict?.status === "held" && <Explain k="verdictHeld" label="a held verdict" />}
+          {verdict?.status === "cheap" && <Explain k="verdictCheap" label="a cheap verdict" />}
+          {verdict?.status === "broken" && <Explain k="verdictBroken" label="a broken verdict" />}
           <span className="font-mono text-xs text-white/55">{fixture.wp}</span>
           <span className="rounded border border-white/10 px-2 py-0.5 text-[11px] text-white/55">
             {fixture.severity}
