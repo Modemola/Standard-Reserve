@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, FlaskConical, Landmark } from "lucide-react";
+import { ArrowRight, ArrowUpRight, CandlestickChart, FlaskConical, Landmark, ShieldAlert } from "lucide-react";
 import { Card } from "@/components/Card";
 import { Guilloche } from "@/components/Guilloche";
 import { Motes } from "@/components/Motes";
@@ -98,6 +98,20 @@ export default function HomePage() {
             >
               <Landmark className="h-4 w-4" aria-hidden="true" />
               Enter demo bank #{DEMO_CHARTER_ID.replace(/^c-/, "")}
+            </Link>
+            <Link
+              href="/sentinel"
+              className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-surface px-6 py-3 text-sm text-white/75 shadow-card transition-colors duration-200 hover:border-white/25 hover:text-paper"
+            >
+              <ShieldAlert className="h-4 w-4" aria-hidden="true" />
+              Open Sentinel
+            </Link>
+            <Link
+              href="/desk"
+              className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-surface px-6 py-3 text-sm text-white/75 shadow-card transition-colors duration-200 hover:border-white/25 hover:text-paper"
+            >
+              <CandlestickChart className="h-4 w-4" aria-hidden="true" />
+              Open Desk
             </Link>
           </div>
 

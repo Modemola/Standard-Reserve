@@ -23,11 +23,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Scenarios in sync (engine tests replay scenarios/, the app ships public/scenarios/)
-        run: node scripts/sync-scenarios.mjs --check
-
-      - name: Engine test suite (Phase A gate)
+      - name: Unit suites (engine, sentinel, desk)
         run: pnpm test
+
+      # Invariant attacks gate the merge; yellow CHEAP findings never do.
+      - name: Sentinel attack suite
+        run: pnpm sentinel:run
+
+      - name: Fixtures in sync (tests replay scenarios/ and attacks/, the app ships the public/ copies)
+        run: node scripts/sync-scenarios.mjs --check
 
       # react-hooks/rules-of-hooks is the point of this step. It caught a real
       # conditional useMemo in the cockpit that every other gate -- types,

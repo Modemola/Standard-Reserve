@@ -1,0 +1,29 @@
+{
+  "id": "A7_license_inventory",
+  "wp": "§7",
+  "title": "Where does the licence payment come from?",
+  "teach": "v1 has no wallet, so a licence payment is recorded purely as a burn: B rises, S_max falls, and no branch ledger is debited to pay for it. This fixture pins that documented rule — it fails if the Cockpit is ever changed to settle licences out of accrued ledger instead.",
+  "severity": "invariant",
+  "seed": "default",
+  "paramsOverlay": {},
+  "actions": [
+    {
+      "t": 0,
+      "op": "tick",
+      "dt": 43200,
+      "note": "let c-0001 accrue some ledger first"
+    },
+    {
+      "t": 43200,
+      "op": "buyLicense",
+      "charterId": "c-0001"
+    }
+  ],
+  "expect": {
+    "invariantsOk": true,
+    "sMaxMustDecrease": true,
+    "lastActionSucceeds": true,
+    "polMustNotDecrease": true,
+    "ledgerUnchangedByLastAction": "c-0001"
+  }
+}

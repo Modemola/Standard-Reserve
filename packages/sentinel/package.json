@@ -1,0 +1,24 @@
+{
+  "name": "@standard-law/sentinel",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@standard-law/engine": "workspace:*",
+    "@standard-law/params": "workspace:*",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vite": "^7.3.6",
+    "vitest": "^4.1.11"
+  }
+}

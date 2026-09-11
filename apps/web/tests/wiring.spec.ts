@@ -20,7 +20,7 @@ import { expect, test, type Page } from "@playwright/test";
  * was fixed.
  */
 
-const ROUTES = ["/", "/lab", "/bank/c-0042", "/sweep", "/scenarios", "/law"];
+const ROUTES = ["/", "/lab", "/bank/c-0042", "/desk", "/sweep", "/sentinel", "/scenarios", "/law"];
 
 /**
  * Controls that legitimately change nothing on the current page. Each is
@@ -38,6 +38,13 @@ const INERT = [
   // Triggers a file download; there is nothing for the page to change.
   // Asserted to produce world-epoch-N.txt in that same test.
   /^export world JSON$/,
+  // Same shape: writes <id>.verdict.json and leaves the page alone. Asserted
+  // to actually produce the file in "Sentinel's inert controls" below.
+  /^Download verdict\.json$/,
+  // The attack selected on first paint. Selecting the row that is already
+  // selected is genuinely a no-op; selecting any other row swaps the detail
+  // pane, which is asserted below.
+  /^A1_wash_volume/,
 ];
 
 const isInert = (label: string) => INERT.some((re) => re.test(label));
@@ -174,4 +181,32 @@ test("the what-if sliders move the preview and arm the commit", async ({ page })
 
   await expect(slider).not.toHaveValue("0");
   await expect(commit).toBeEnabled();
+});
+
+test("Sentinel's inert controls are inert for the reason claimed", async ({ page }) => {
+  await page.goto("/sentinel");
+  await expect(page.getByTestId("verdict-held").first()).toBeVisible({ timeout: 20_000 });
+
+  // "Download verdict.json" changes nothing on the page because it writes a file.
+  const download = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download verdict.json" }).click();
+  expect((await download).suggestedFilename()).toMatch(/\.verdict\.json$/);
+
+  // The first row is inert only because it is already selected: any other row
+  // must swap the detail pane.
+  await expect(page.getByRole("heading", { level: 2 })).toContainText("A1_wash_volume");
+  await page.getByTestId("attack-A8_exit_run").click();
+  await expect(page.getByRole("heading", { level: 2 })).toContainText("A8_exit_run");
+});
+
+test("re-running the Sentinel suite is visible to the user", async ({ page }) => {
+  await page.goto("/sentinel");
+  await expect(page.getByTestId("last-run")).toBeVisible({ timeout: 20_000 });
+
+  // Attacks are deterministic, so the verdicts are identical on a second run.
+  // The run counter is what tells the user the button did anything at all.
+  const first = await page.getByTestId("last-run").innerText();
+  await page.getByTestId("run-all").click();
+  await expect(page.getByTestId("last-run")).not.toHaveText(first, { timeout: 20_000 });
+  await expect(page.getByTestId("last-run")).toContainText("run #2");
 });

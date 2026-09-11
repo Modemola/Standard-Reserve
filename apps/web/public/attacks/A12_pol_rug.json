@@ -1,0 +1,26 @@
+{
+  "id": "A12_pol_rug",
+  "wp": "§11",
+  "title": "Pull protocol-owned liquidity back out",
+  "teach": "Churn the pool both ways, buy licenses, retire branches and roll epochs. POL is fed by the 15% fee leg and has no withdrawal path anywhere in the engine, so both legs only ever move up.",
+  "severity": "invariant",
+  "seed": "default",
+  "paramsOverlay": {},
+  "actions": [
+    { "t": 0, "op": "swap", "side": "buyStd", "amount": "8000000000000000000" },
+    { "t": 0, "op": "buyLicense", "charterId": "c-0001" },
+    { "t": 0, "op": "tick", "dt": 86400, "note": "expansion close: POL takes its 15%" },
+    { "t": 86400, "op": "swap", "side": "sellStd", "targetEthOut": "12000000000000000000", "note": "dump harder than the buy" },
+    { "t": 86400, "op": "tick", "dt": 86400, "note": "contraction close plus a day of buybacks" },
+    { "t": 172800, "op": "retire", "charterId": "c-0002", "branchId": 0 },
+    { "t": 172800, "op": "buyLicense", "charterId": "c-0003" },
+    { "t": 172800, "op": "tick", "dt": 86400 },
+    { "t": 259200, "op": "swap", "side": "buyStd", "amount": "3000000000000000000" },
+    { "t": 259200, "op": "tick", "dt": 86400 }
+  ],
+  "expect": {
+    "invariantsOk": true,
+    "polMustNotDecrease": true,
+    "sMaxMustNotIncrease": true
+  }
+}

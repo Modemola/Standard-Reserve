@@ -1,0 +1,33 @@
+{
+  "id": "A11_false_checkin_grief",
+  "wp": "dormancy",
+  "title": "Report a bank that is still checking in",
+  "teach": "Check-in resets the heartbeat, so a charter that shows up on day 29 cannot be revoked on day 31. The failed report changes nothing about the bank it was aimed at.",
+  "severity": "invariant",
+  "seed": "default",
+  "paramsOverlay": {},
+  "actions": [
+    {
+      "t": 2505600,
+      "op": "checkIn",
+      "charterId": "c-0001",
+      "note": "day 29: still alive"
+    },
+    {
+      "t": 2678400,
+      "op": "reportDormant",
+      "charterId": "c-0001",
+      "reporterKey": "griefer",
+      "note": "day 31, but only day 2 of the heartbeat"
+    }
+  ],
+  "expect": {
+    "invariantsOk": true,
+    "rejectionsInclude": [
+      "not_yet_dormant"
+    ],
+    "lastErrorContains": "not_yet_dormant",
+    "charterAlive": "c-0001",
+    "ledgerUnchangedByLastAction": "c-0001"
+  }
+}

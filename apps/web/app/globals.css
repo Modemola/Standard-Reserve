@@ -208,6 +208,133 @@ textarea:focus-visible {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
+/* --- Plain-language explainers (components/Explain.tsx) ------------------
+ *
+ * The panel settles rather than snapping: it rises a few pixels while coming
+ * up from 96%, on the same cubic-bezier as .rise so it belongs to the rest of
+ * the app's motion. The exit is faster than the entrance -- roughly two
+ * thirds -- because a dismissal that takes as long as an arrival reads as
+ * lag, not polish.
+ *
+ * Transform origin sits at the top, where the nub is, so the panel appears to
+ * grow out of the mark you pressed instead of materialising in place. */
+@keyframes explain-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -6px, 0) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes explain-out {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, -4px, 0) scale(0.98);
+  }
+}
+
+.explain-in {
+  transform-origin: top center;
+  animation: explain-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.explain-out {
+  transform-origin: top center;
+  animation: explain-out 0.16s ease-in both;
+  pointer-events: none;
+}
+
+/* On a phone the panel is a sheet at the bottom of the screen, so it travels
+   up from below the fold instead of scaling out of a mark too small to see. */
+@keyframes explain-sheet-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes explain-sheet-out {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+}
+
+.explain-sheet-in {
+  animation: explain-sheet-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.explain-sheet-out {
+  animation: explain-sheet-out 0.16s ease-in both;
+  pointer-events: none;
+}
+
+/* Scrim behind the phone sheet. Fades a touch slower than the sheet arrives
+   so the dimming reads as the background receding rather than a flash. */
+@keyframes explain-scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.explain-scrim-in {
+  animation: explain-scrim-in 0.32s ease-out both;
+}
+
+.explain-scrim-out {
+  animation: explain-scrim-in 0.16s ease-in reverse both;
+  pointer-events: none;
+}
+
+/* The gold rule draws itself across the head of the panel, a beat behind the
+   panel's own arrival so the two read as one gesture rather than a race. */
+@keyframes explain-rule {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+.explain-rule {
+  animation: explain-rule 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+/* The nub arrives last and briefly, so the eye lands on the text first. */
+@keyframes explain-nub {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.explain-nub {
+  animation: explain-nub 0.2s ease-out 0.06s both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   /* Blanket first, exceptions after.
    *
@@ -230,7 +357,12 @@ textarea:focus-visible {
     scroll-behavior: auto !important;
   }
 
-  /* Animations whose *end* state is not the state we want to rest in. */
+  /* The explainer animations are deliberately absent from the exceptions
+   * below: every one of them uses `both` and ends on the state we want to
+   * rest in -- panel visible, rule drawn, nub shown -- so collapsing the
+   * duration lands them there immediately, which is exactly right.
+   *
+   * Animations whose *end* state is not the state we want to rest in: */
   .mote {
     animation: none;
     opacity: 0.22;

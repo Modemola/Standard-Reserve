@@ -6,7 +6,8 @@
       "baseDaily": "unpublished_placeholder",
       "epochSeconds": "unpublished_placeholder",
       "feeCurve": "unpublished_placeholder",
-      "licenseMinFloorStd": "implementation_default, WP leaves min floor unspecified"
+      "licenseMinFloorStd": "implementation_default, WP leaves min floor unspecified",
+      "floorEpsilon": "implementation_default, Desk display tolerance only — not a policy constant"
     }
   },
   "epochSeconds": 86400,
@@ -33,5 +34,6 @@
   "feeCeil": 0.35,
   "exitDenomMin": "1000000000000000000",
   "withdrawWindowSeconds": 604800,
-  "licenseMinFloorStd": "1000000000000000000"
+  "licenseMinFloorStd": "1000000000000000000",
+  "floorEpsilon": 0.01
 }

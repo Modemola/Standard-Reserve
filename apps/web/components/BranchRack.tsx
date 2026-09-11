@@ -1,4 +1,5 @@
 import type { Charter } from "@standard-law/engine";
+import { Explain } from "@/components/Explain";
 import { LogOut, Plus } from "lucide-react";
 import { fmtDuration, fmtToken } from "@/lib/format";
 
@@ -20,7 +21,21 @@ export function BranchRack({
   onRetire: (branchId: number) => void;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+    <div>
+      {/* The grid had no heading at all, so nothing on screen said what these
+          tiles were. The legend names the three ideas and explains each. */}
+      <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-medium uppercase tracking-[0.14em] text-white/50">
+        <span className="flex items-center gap-1.5">
+          Branches <Explain k="branch" />
+        </span>
+        <span className="flex items-center gap-1.5">
+          Licences <Explain k="license" />
+        </span>
+        <span className="flex items-center gap-1.5">
+          Closing one <Explain k="retire" />
+        </span>
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
       {charter.branches.map((branch) => {
         if (!branch.alive) {
           return (
@@ -74,6 +89,7 @@ export function BranchRack({
           </div>
         );
       })}
+      </div>
     </div>
   );
 }

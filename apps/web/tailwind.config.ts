@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import { CONTRACTION, EXPANSION } from "./lib/palette";
+import { CHEAP, CONTRACTION, EXPANSION, HELD } from "./lib/palette";
 
 const config: Config = {
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}"],
@@ -17,6 +17,13 @@ const config: Config = {
         // buttons under the threshold. This clears 4.5:1 on every surface in
         // the palette while staying the same brick hue.
         contraction: CONTRACTION,
+        // Sentinel verdicts. Held reads as "the rule stopped it", cheap as
+        // "allowed but worth noting". Broken reuses the contraction red
+        // rather than the pre-lift #C0392B, which would fail AA on these
+        // surfaces. Measured on the card surface: held 5.58:1, cheap 8.10:1.
+        held: HELD,
+        cheap: CHEAP,
+        broken: CONTRACTION,
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],

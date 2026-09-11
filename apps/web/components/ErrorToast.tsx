@@ -20,6 +20,10 @@ const MESSAGES: Record<string, string> = {
   "amount must be positive": "Enter an amount greater than zero.",
   // App-level, not from the engine (see lab/page.tsx loadScenarioById).
   scenario_load_failed: "Couldn't load that scenario. Check your connection and try again.",
+  // Same shape, for /lab?sentinel=<id> (see lab/page.tsx loadAttackById): a
+  // mistyped or retired attack id must say so rather than leave the Lab
+  // showing the demo world under a URL that names an attack.
+  attack_load_failed: "Couldn't load that attack. Check the link and try again.",
   scenario_unknown_op: "That scenario contains a step this build doesn't recognise — it may be out of date.",
   tick_truncated: "That jump was too far to simulate in one step — the clock advanced as far as it could.",
 };

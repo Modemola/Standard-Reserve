@@ -6,15 +6,21 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "pnpm --filter @standard-law/engine test",
+    "test": "pnpm -r run test",
     "dev": "pnpm --filter web dev",
     "build": "pnpm -r build",
     "perf": "node scripts/check-budget.mjs",
     "perf:update": "node scripts/check-budget.mjs --update",
     "sweep": "pnpm --filter @standard-law/engine run sweep",
-    "attack": "pnpm --filter @standard-law/engine run attack"
+    "attack": "pnpm --filter @standard-law/engine run attack",
+    "sentinel:run": "pnpm --filter @standard-law/sentinel exec tsx src/cli.ts"
   },
   "devDependencies": {
     "typescript": "^5.6.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "postcss": "^8.5.28"
+    }
   }
 }

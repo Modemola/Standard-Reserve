@@ -1,0 +1,20 @@
+{
+  "id": "A10_ghost_grief",
+  "wp": "dormancy",
+  "title": "Report a charter one hour early",
+  "teach": "A griefer tries to revoke a quiet charter just before the window closes and is refused. Two hours later the same call succeeds: 70% of the ledger becomes the revocation fee, the reporter's bounty is capped, and the charter is gone.",
+  "severity": "invariant",
+  "seed": "default",
+  "paramsOverlay": {},
+  "actions": [
+    { "t": 2588400, "op": "reportDormant", "charterId": "c-0001", "reporterKey": "griefer", "note": "29d 23h — one hour early" },
+    { "t": 2595600, "op": "reportDormant", "charterId": "c-0001", "reporterKey": "griefer", "note": "30d 1h — now it lands" }
+  ],
+  "expect": {
+    "invariantsOk": true,
+    "rejectionsInclude": ["not_yet_dormant"],
+    "lastActionSucceeds": true,
+    "charterGone": "c-0001",
+    "sMaxMustDecrease": true
+  }
+}

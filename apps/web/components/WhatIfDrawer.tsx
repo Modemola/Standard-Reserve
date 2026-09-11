@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Explain } from "@/components/Explain";
 import {
   DAY_SECONDS,
   applySwap,
@@ -98,7 +99,10 @@ export function WhatIfDrawer({
 
   return (
     <Card>
-      <h3 className="mb-4 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">What-if</h3>
+      <h3 className="mb-4 flex items-center gap-1.5 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-white/75">
+        What-if
+        <Explain k="whatIf" />
+      </h3>
 
       <Slider
         label="Remaining-epoch ETH flow"

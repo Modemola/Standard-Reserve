@@ -1,0 +1,22 @@
+{
+  "id": "A13_issuance_budget",
+  "wp": "§3",
+  "title": "Run the issuance budget dry",
+  "teach": "With issuance dialled far up, the 900M budget is reached in days rather than decades. Once credits hit the cap base issuance stops dead — but the fee machinery keeps running, so trading still funds the vaults and protocol-owned liquidity.",
+  "severity": "invariant",
+  "seed": "default",
+  "paramsOverlay": {
+    "baseDailyStd": "300000000000000000000000000"
+  },
+  "actions": [
+    { "t": 0, "op": "fastForwardEpochs", "epochs": 12, "note": "burn through the 900M issuance budget" },
+    { "t": 1036800, "op": "swap", "side": "buyStd", "amount": "5000000000000000000", "note": "fees still flow after the budget is gone" },
+    { "t": 1036800, "op": "tick", "dt": 86400 }
+  ],
+  "expect": {
+    "invariantsOk": true,
+    "issuanceCreditsAtMost": "900000000000000000000000000",
+    "baseIssuanceStopped": true,
+    "polMustIncrease": true
+  }
+}

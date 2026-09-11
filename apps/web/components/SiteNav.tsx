@@ -13,7 +13,9 @@ const NAV = [
   // Derived, not hardcoded: changing the demo charter must not silently
   // leave this link pointing at a charter that no longer exists.
   { href: `/bank/${DEMO_CHARTER_ID}`, label: "Bank" },
+  { href: "/desk", label: "Desk" },
   { href: "/sweep", label: "Sweep" },
+  { href: "/sentinel", label: "Sentinel" },
   { href: "/scenarios", label: "Scenarios" },
   { href: "/law", label: "Law" },
 ];

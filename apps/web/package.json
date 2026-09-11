@@ -10,26 +10,29 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "sync:fixtures": "node ../../scripts/sync-scenarios.mjs"
   },
   "dependencies": {
+    "@standard-law/desk": "workspace:*",
     "@standard-law/engine": "workspace:*",
     "@standard-law/params": "workspace:*",
+    "@standard-law/sentinel": "workspace:*",
     "lucide-react": "^1.40.0",
-    "next": "^14.2.15",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "recharts": "^2.13.0"
+    "next": "^15.5.25",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "recharts": "^2.15.4"
   },
   "devDependencies": {
     "@playwright/test": "^1.48.2",
     "@types/node": "^22.9.0",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.1",
-    "eslint-config-next": "^14.2.35",
-    "postcss": "^8.4.47",
+    "eslint-config-next": "^15.5.25",
+    "postcss": "^8.5.28",
     "tailwindcss": "^3.4.14",
     "typescript": "^5.6.3"
   }

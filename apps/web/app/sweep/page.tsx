@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Explain } from "@/components/Explain";
 import { VERDICT_MEANING, WORKLOADS } from "@standard-law/engine";
 import type { Verdict } from "@standard-law/engine";
 import { AlertTriangle, Play, Loader2, X } from "lucide-react";
@@ -99,7 +100,10 @@ export default function SweepPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="optical-title font-display text-3xl text-paper">Sweep</h1>
+        <h1 className="optical-title flex items-center gap-2.5 font-display text-3xl text-paper">
+          Sweep
+          <Explain k="sweep" label="a sweep" />
+        </h1>
         <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/60">
           The Lab drives one world down one path — that shows you what the policy{" "}
           <em>did</em>, never whether it is sound. A sweep runs a grid of parameter values

@@ -1,0 +1,47 @@
+{
+  "id": "A4_contraction_bait",
+  "wp": "§11.1",
+  "title": "Bait the contraction vault into a fast drain",
+  "teach": "Force a contraction close so the vault fills, then run a full day of hourly buybacks. Every single hour is capped at min(10% of the vault, 0.2% of the pool), so the vault cannot be emptied into the pool in one move — and it never sells gold to fund one.",
+  "severity": "invariant",
+  "seed": "default",
+  "paramsOverlay": {},
+  "actions": [
+    {
+      "t": 0,
+      "op": "swap",
+      "side": "buyStd",
+      "amount": "20000000000000000000",
+      "note": "20 ETH in, so the fee bucket has something to split"
+    },
+    {
+      "t": 0,
+      "op": "swap",
+      "side": "sellStd",
+      "targetEthOut": "25000000000000000000",
+      "note": "25 ETH out: net flow goes negative"
+    },
+    {
+      "t": 0,
+      "op": "tick",
+      "dt": 86400,
+      "note": "close contraction; 70% of fee income funds the contraction vault"
+    },
+    {
+      "t": 86400,
+      "op": "tick",
+      "dt": 86400,
+      "note": "24 hours of hourly buybacks"
+    }
+  ],
+  "expect": {
+    "invariantsOk": true,
+    "regimeAfter": "contraction",
+    "maxSpendFractionOfVaultPerTick": 0.1,
+    "maxSpendFractionOfPoolPerTick": 0.002,
+    "vaultGoldUnchanged": true,
+    "polMustNotDecrease": true,
+    "sMaxMustNotIncrease": true,
+    "minBuybackTicks": 24
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "A6_license_sniper",
+  "wp": "§7-8",
+  "title": "Snipe the licence board past its caps",
+  "teach": "Buy the daily maximum three days running to fill the rack, then try for a fourth in a day and an eleventh branch. Both caps hold, and yesterday's unsold inventory does not carry into today.",
+  "severity": "invariant",
+  "seed": "default",
+  "paramsOverlay": {},
+  "actions": [
+    { "t": 0, "op": "buyLicense", "charterId": "c-0001" },
+    { "t": 0, "op": "buyLicense", "charterId": "c-0001" },
+    { "t": 0, "op": "buyLicense", "charterId": "c-0001" },
+    { "t": 0, "op": "buyLicense", "charterId": "c-0001", "note": "fourth in one day" },
+    { "t": 86400, "op": "buyLicense", "charterId": "c-0001" },
+    { "t": 86400, "op": "buyLicense", "charterId": "c-0001" },
+    { "t": 86400, "op": "buyLicense", "charterId": "c-0001" },
+    { "t": 172800, "op": "buyLicense", "charterId": "c-0001" },
+    { "t": 172800, "op": "buyLicense", "charterId": "c-0001" },
+    { "t": 172800, "op": "buyLicense", "charterId": "c-0001", "note": "rack is now full at 10" },
+    { "t": 259200, "op": "buyLicense", "charterId": "c-0001", "note": "eleventh branch" }
+  ],
+  "expect": {
+    "invariantsOk": true,
+    "rejectionsInclude": ["per_charter_daily_cap", "max_branches"],
+    "lastErrorContains": "max_branches",
+    "maxLiveBranchesFor": "c-0001",
+    "sMaxMustDecrease": true
+  }
+}

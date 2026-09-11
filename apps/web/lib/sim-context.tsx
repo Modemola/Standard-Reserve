@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useRef, useSyncExternalStore } from "react";
 import { SimStore } from "@standard-law/engine";
-import type { World } from "@standard-law/engine";
+import type { TapeRow, World } from "@standard-law/engine";
 import { buildDemoWorld } from "./demo-seed";
 
 export interface EpochSnapshot {
@@ -83,4 +83,17 @@ export function useEpochHistory(): EpochSnapshot[] {
     () => store.world.epoch,
   );
   return historyRef.current;
+}
+
+/**
+ * The shared print tape. Lab, Desk and the cockpit all write to it through
+ * SimStore.apply, so what the Desk shows is what actually hit the World.
+ */
+export function useTape(): TapeRow[] {
+  const { store } = useSimContext();
+  return useSyncExternalStore(
+    (cb) => store.subscribe(cb),
+    () => store.tape,
+    () => store.tape,
+  );
 }

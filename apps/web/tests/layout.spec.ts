@@ -89,14 +89,30 @@ test("both regimes paint their own colour, everywhere", async ({ page }) => {
   // The demo world now opens in expansion, so contraction is reached by
   // loading exodus rather than by doing nothing.
   // Both halves of the palette, each asserted while its own regime is live.
+  // 20s, not the 5s default. These polls wait on a scenario replaying through
+  // the real engine in the browser, and the suite now also mounts /sentinel --
+  // which runs all 14 attacks on arrival -- in parallel workers. That is real
+  // CPU competing for the same cores, and it pushed this poll over 5s in full
+  // runs while it passed 6/6 in isolation. Same call main made for
+  // ghost_purge's loader: a budget set too close, not a defect.
+  //
+  // Raised again to 30s when the plain-language explainers landed. They add
+  // roughly a dozen controls per route, and the wiring audit reloads the page
+  // before every single control, so /lab's audit went from 26s to 53s. That is
+  // more parallel work on the same cores: this poll timed out in one full run
+  // and passed in the next, while passing in 9.8s on its own. A poll that
+  // fails half the time is worse than no poll, and the contention it was
+  // budgeted against has moved, so the budget moves with it.
+  const REGIME_POLL = { timeout: 30_000 };
+
   await loadExpansion(page);
-  await expect.poll(tickerRegime).toEqual({ text: "expansion", color: EXPANSION });
+  await expect.poll(tickerRegime, REGIME_POLL).toEqual({ text: "expansion", color: EXPANSION });
   await expect(page.getByTestId("regime-badge")).toHaveCSS("color", EXPANSION);
 
   await page.getByRole("combobox").selectOption("exodus");
   await page.getByRole("button", { name: "load scenario" }).click();
   await expect(page.getByTestId("regime-badge")).toHaveText(/contraction/i);
-  await expect.poll(tickerRegime).toEqual({ text: "contraction", color: CONTRACTION });
+  await expect.poll(tickerRegime, REGIME_POLL).toEqual({ text: "contraction", color: CONTRACTION });
   await expect(page.getByTestId("regime-badge")).toHaveCSS("color", CONTRACTION);
 
   // Charts must draw from the same palette, not their own copy of it.

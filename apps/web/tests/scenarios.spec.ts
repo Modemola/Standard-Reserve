@@ -85,17 +85,36 @@ test("wash_same_epoch: equal buy and sell nets F_n ~ 0 and does not pump issuanc
 }) => {
   await load(page, "wash_same_epoch");
   const t = await ticker(page);
-  // "F_n ~ 0" -- not exactly zero, because the pool fee is charged on both
-  // legs, so a wash costs the trader something. The point is that volume
-  // alone moves it a rounding error rather than a regime.
   expect(Math.abs(t.F_n!)).toBeLessThan(1);
-  // Issuance is not pumped by volume: m stays at its launch value.
-  expect(t.m).toBe(1);
-  // The load-bearing assertion, and the one that separates a wash from a
-  // genuine outflow: exodus also ends at F_n 0 and m 1, so without this the
-  // test passed when handed the wrong scenario. Volume is not direction --
-  // round-tripping the same ETH must not tip the world into contraction.
-  expect(t.regime).toBe("expansion");
+
+  // Issuance is not pumped by volume. The scenario round-trips a million
+  // STD and the multiplier still comes down, exactly as it would for an
+  // epoch with no trading at all -- which is the whole teaching point.
+  expect(t.m).toBeLessThan(1);
+
+  // Contraction, not expansion, and this is the rule rather than a quirk:
+  // ARCHITECTURE.md line 120 defines `regime = F_n > 0 ? expansion :
+  // contraction // zero = contraction`, and line 504 specifies this very
+  // scenario as "equal buy+sell, F_n=0 -> contraction fees". A perfect wash
+  // lands exactly on that threshold.
+  //
+  // This assertion used to read `expansion`, and it was right about the file
+  // as it then stood: the sell was a hand-estimated round number that pulled
+  // 0.99385 ETH back against 1 ETH in, so F_n closed at +0.0061 and the epoch
+  // tipped expansion with m untouched. That made the /scenarios card say
+  // "ends in expansion, m lands at 1.00" directly beneath a description
+  // promising contraction-side routing. The sell is now solved against the
+  // engine's own sellStd so ETH out equals ETH in to the wei.
+  expect(t.regime).toBe("contraction");
+
+  // The discriminator the old `expansion` assertion was carrying: exodus also
+  // closes contraction with m cut, so regime alone would pass on the wrong
+  // scenario. Supply separates them properly. A wash mints nothing to anybody
+  // -- it only burns, through the contraction buyback -- so the float ends
+  // *below* its genesis 100M. Exodus retires a branch, which mints to the
+  // leaver and pushes the float above it.
+  expect(t.sCirc!).toBeLessThan(100_000_000);
+
   expect(t.epoch).toBeGreaterThan(0); // the epoch actually closed
 });
 

@@ -1,0 +1,40 @@
+{
+  "id": "A1_wash_volume",
+  "wp": "§4.1",
+  "title": "Wash volume to fake inflow",
+  "teach": "Buy and sell the same ETH inside one epoch. The volume is enormous and the net flow is zero, so the epoch still closes contraction and the multiplier is still cut. Trading against yourself does not print issuance.",
+  "severity": "invariant",
+  "seed": "default",
+  "paramsOverlay": {},
+  "actions": [
+    {
+      "t": 0,
+      "op": "swap",
+      "side": "buyStd",
+      "amount": "10000000000000000000",
+      "note": "10 ETH in"
+    },
+    {
+      "t": 0,
+      "op": "swap",
+      "side": "sellStd",
+      "targetEthOut": "10000000000000000000",
+      "note": "pull the same 10 ETH straight back out"
+    },
+    {
+      "t": 0,
+      "op": "tick",
+      "dt": 86400,
+      "note": "close the epoch the wash ran in"
+    }
+  ],
+  "expect": {
+    "invariantsOk": true,
+    "fnAbsMax": "1000000000000",
+    "regimeAfter": "contraction",
+    "mMustNotIncrease": true,
+    "polMustNotDecrease": true,
+    "sMaxMustNotIncrease": true,
+    "mAtMost": 0.75
+  }
+}

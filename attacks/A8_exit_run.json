@@ -1,0 +1,28 @@
+{
+  "id": "A8_exit_run",
+  "wp": "§9",
+  "title": "Crowd the exit inside one 7-day window",
+  "teach": "Many branches retire in quick succession. The resolution fee climbs toward its ceiling as the trailing window fills, half of every fee burns, and no exit is ever paused or queued — leaving stays possible, it just gets more expensive.",
+  "severity": "invariant",
+  "seed": "default",
+  "paramsOverlay": {},
+  "actions": [
+    { "t": 0, "op": "tick", "dt": 172800, "note": "two epochs of accrual so there is ledger worth exiting" },
+    { "t": 172800, "op": "retire", "charterId": "c-0001", "branchId": 0 },
+    { "t": 172800, "op": "retire", "charterId": "c-0002", "branchId": 0 },
+    { "t": 172800, "op": "retire", "charterId": "c-0003", "branchId": 0 },
+    { "t": 172800, "op": "retire", "charterId": "c-0004", "branchId": 0 },
+    { "t": 172800, "op": "retire", "charterId": "c-0005", "branchId": 0 },
+    { "t": 172800, "op": "retire", "charterId": "c-0006", "branchId": 0 },
+    { "t": 172800, "op": "retire", "charterId": "c-0007", "branchId": 0 },
+    { "t": 172800, "op": "retire", "charterId": "c-0008", "branchId": 0 }
+  ],
+  "expect": {
+    "invariantsOk": true,
+    "feeRateMustRise": true,
+    "feeRateAtMost": 0.35,
+    "lastActionSucceeds": true,
+    "sMaxMustDecrease": true,
+    "polMustNotDecrease": true
+  }
+}
