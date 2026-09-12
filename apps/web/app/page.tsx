@@ -2,8 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, CandlestickChart, FlaskConical, Landmark, ShieldAlert } from "lucide-react";
 import { Card } from "@/components/Card";
-import { Guilloche } from "@/components/Guilloche";
-import { Motes } from "@/components/Motes";
+import { HeroPlate } from "@/components/HeroPlate";
 import { DEMO_CHARTER_ID } from "@/lib/demo-seed";
 // Static import (not a "/hero-preview.jpg" string): this is what lets next
 // read the real 2100x1110 up front and generate the blur placeholder.
@@ -38,14 +37,21 @@ export default function HomePage() {
       {/* ── Hero ───────────────────────────────────────────────── */}
       {/* overflow-hidden: the rosette is deliberately wider than the column,
           and without this it pushes the page horizontally on small screens. */}
-      <section className="relative isolate -mt-4 overflow-hidden pb-4 pt-10 sm:pt-16">
-        <Motes className="-z-20 -inset-y-24" />
-        <Guilloche className="absolute left-1/2 top-[38%] -z-10 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 opacity-45 sm:h-[680px] sm:w-[680px]" />
-        {/* Scrim: keeps the engraving legible as texture without letting it
-            compete with the copy sitting on top of it. */}
+      {/* The plate is framed rather than full-bleed. Bleeding it would mean
+          w-screen inside a max-w-6xl main, which is the classic way to buy a
+          horizontal scrollbar on the one gate that checks for it — and the
+          product shot below is already a framed panel, so a framed hero is
+          the house style rather than a compromise. */}
+      <section className="relative isolate -mt-4 min-h-[34rem] overflow-hidden rounded-2xl border border-white/[0.07] pb-40 pt-12 shadow-[0_40px_90px_-40px_rgba(0,0,0,0.9)] sm:min-h-[41rem] sm:pb-48 sm:pt-16">
+        <div aria-hidden="true" className="absolute inset-0 -z-20">
+          <HeroPlate />
+        </div>
+        {/* Scrim: keeps the orbits legible as texture without letting them
+            compete with the copy sitting on top. Radial rather than a canvas
+            edge-ramp, because this copy is centred — see HeroPlate. */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_50%_at_50%_42%,rgba(8,9,11,0.92)_0%,rgba(8,9,11,0.7)_45%,transparent_75%)]"
+          className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_66%_44%_at_50%_28%,rgba(8,9,11,0.95)_0%,rgba(8,9,11,0.85)_46%,rgba(8,9,11,0.3)_74%,transparent_92%)]"
         />
 
         <CornerFrame />
